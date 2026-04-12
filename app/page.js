@@ -145,7 +145,7 @@ function ParticleMesh() {
 // ── Glitch text ───────────────────────────────────────────────────────────────
 function GlitchText({ children, style = {} }) {
   return (
-    <span className="glitch" data-text={children} style={{ position:"relative", ...style }}>
+    <span className="glitch" style={{ ...style }}>
       {children}
     </span>
   );
@@ -295,7 +295,7 @@ export default function SafuuLanding() {
         @keyframes marquee    { from{transform:translateX(0)}to{transform:translateX(-50%)} }
         @keyframes pulse-red  { 0%,100%{box-shadow:0 0 0 0 rgba(220,30,30,0.5)}60%{box-shadow:0 0 0 16px rgba(220,30,30,0)} }
         @keyframes pulse-green{ 0%,100%{box-shadow:0 0 0 0 rgba(0,230,118,0.5)}60%{box-shadow:0 0 0 16px rgba(0,230,118,0)} }
-        @keyframes glitch1    { 0%,90%,100%{clip-path:none;transform:none}
+        
           91%{clip-path:inset(20% 0 60% 0);transform:translate(-4px,0);color:#ff2020}
           93%{clip-path:inset(60% 0 20% 0);transform:translate(4px,0);color:#00e676}
           95%{clip-path:none;transform:none} }
@@ -319,12 +319,7 @@ export default function SafuuLanding() {
           50%{border-color:rgba(220,30,30,0.4)}
         }
 
-        .glitch { animation: glitch1 7s infinite; }
-        .glitch::before {
-          content:attr(data-text); position:absolute; left:-2px; top:0;
-          color:rgba(255,30,30,0.6); clip-path:inset(0 0 65% 0);
-          animation:glitch1 5s 0.3s infinite; pointer-events:none;
-        }
+        .glitch { animation: flicker 6s infinite; }
 
         .btn-cyber:hover {
           background: rgba(0,230,118,0.15) !important;
@@ -383,7 +378,7 @@ export default function SafuuLanding() {
             {[...Array(2)].map((_,i)=>(
               <span key={i} style={{ display:"inline-flex", alignItems:"center" }}>
                 {[
-                  "⬤ ሙስና ይጥፋእ — CORRUPTION MUST FALL",
+                  "⬤ ሙስና ይጥፋእ — JUSTICE WILL PREVAIL",
                   "⬤ SYSTEM :: ONLINE // ANONYMOUS // ENCRYPTED",
                   "⬤ IDENTITY_STORAGE :: NULL — NEVER RECORDED",
                   "⬤ ሙስናን ሪፖርት አድርጉ — REPORT NOW",
@@ -504,7 +499,7 @@ export default function SafuuLanding() {
             </div>
             <TerminalLine prefix="$" text="safuu --mode=anonymous --encrypt=AES256"    delay={200}/>
             <TerminalLine prefix=">" text="Initialising secure pipeline..."            delay={900}  color="rgba(0,230,118,0.55)"/>
-            <TerminalLine prefix=">" text="WARNING: corruption detected in system"     delay={1600} color="rgba(220,60,60,0.9)"/>
+            <TerminalLine prefix=">" text="WARNING: ሙስና ታውቋል — anomaly flagged"     delay={1600} color="rgba(220,60,60,0.9)"/>
             <TerminalLine prefix=">" text="Identity: HASH_ONLY [ SHA256 → irreversible ]" delay={2300} color="rgba(0,230,118,0.7)"/>
             <TerminalLine prefix=">" text="Encryption: AES-256-GCM // ACTIVE ✓"       delay={3000} color="#00e676"/>
             <TerminalLine prefix=">" text="Pipeline READY. ሙስናን ሪፖርት አድርጉ."          delay={3700} color="#e8c84b"/>
