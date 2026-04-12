@@ -1,25 +1,14 @@
 export default function sitemap() {
-  const base = "https://safuu.net";
-  const now  = new Date();
-  const pages = [
-    ["/",              "daily",   1   ],
-    ["/transparency",  "daily",   0.9 ],
-    ["/report",        "weekly",  0.95],
-    ["/analytics",     "daily",   0.8 ],
-    ["/am",            "monthly", 0.75],
-    ["/or",            "monthly", 0.75],
-    ["/ti",            "monthly", 0.75],
-    ["/about",         "monthly", 0.7 ],
-    ["/sms",           "monthly", 0.65],
-    ["/partners",      "monthly", 0.6 ],
-    ["/press",         "monthly", 0.6 ],
-    ["/api-docs",      "monthly", 0.55],
-    ["/donate",        "monthly", 0.5 ],
-    ["/faq",           "monthly", 0.78],
-    ["/changelog",     "weekly",  0.5 ],
-    ["/privacy",       "yearly",  0.4 ],
-  ];
-  return pages.map(([url, freq, pri]) => ({
-    url:`${base}${url}`, lastModified:now, changeFrequency:freq, priority:pri,
-  }));
+  const base = "https://safuu.net"; const now = new Date();
+  return [
+    ["/",              "daily",   1   ],["/transparency",  "daily",   0.9 ],
+    ["/tracker",       "daily",   0.85],["/report",        "weekly",  0.95],
+    ["/analytics",     "daily",   0.8 ],["/faq",           "monthly", 0.78],
+    ["/am",            "monthly", 0.75],["/or",            "monthly", 0.75],
+    ["/ti",            "monthly", 0.75],["/so",            "monthly", 0.72],
+    ["/about",         "monthly", 0.7 ],["/sms",           "monthly", 0.65],
+    ["/partners",      "monthly", 0.6 ],["/press",         "monthly", 0.6 ],
+    ["/api-docs",      "monthly", 0.55],["/donate",        "monthly", 0.5 ],
+    ["/changelog",     "weekly",  0.5 ],["/privacy",       "yearly",  0.4 ],
+  ].map(([url,freq,pri])=>({url:`${base}${url}`,lastModified:now,changeFrequency:freq,priority:pri}));
 }

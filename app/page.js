@@ -384,7 +384,7 @@ export default function Safuu() {
         </div>
 
         <div className="hide-mob" style={{display:"flex",gap:"32px",alignItems:"center"}}>
-          {[["#how","PROCESS"],["#agencies","AGENCIES"],["/faq","FAQ"],["/transparency","WALL"],["/about","ABOUT"]].map(([h,l])=>(
+          {[["#how","PROCESS"],["#agencies","AGENCIES"],["/tracker","TRACKER"],["/transparency","WALL"],["/faq","FAQ"]].map(([h,l])=>(
             <a key={l} href={h} className="lnk" style={{fontSize:"10px",color:`rgba(0,212,255,0.45)`,
               fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",transition:"color 0.2s"}}>{l}</a>
           ))}
