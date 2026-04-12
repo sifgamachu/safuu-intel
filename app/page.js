@@ -76,88 +76,14 @@ function GeezMatrixRain() {
     window.addEventListener("resize", resize);
     return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
   }, []);
-  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.09, pointerEvents:"none" }}/>;
+  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.07, pointerEvents:"none" }}/>;
 }
 
 // ── "NO TO CORRUPTION" floating words ─────────────────────────────────────────
 // 12 languages, Ethiopic script heavy
-const NO_CORRUPTION_PHRASES = [
-  { text:"ሙስና አይሆንም",       color:"rgba(255,60,60,0.34)"  }, // Amharic: Corruption won't happen
-  { text:"ሙስናን አንቀበልም",     color:"rgba(220,30,30,0.38)"  }, // Amharic: We won't accept corruption
-  { text:"ሙስና ጠላት ነው",      color:"rgba(255,80,40,0.36)"   }, // Amharic: Corruption is the enemy
-  { text:"ሙስና ሃገርን ይበልዛል",  color:"rgba(200,20,20,0.41)"   }, // Amharic: Corruption destroys the nation
-  { text:"ሙስና = ስርቆት",       color:"rgba(255,20,20,0.41)"   }, // Amharic: Corruption = Theft
-  { text:"ሙስናን ሪፖርት አድርጉ",  color:"rgba(0,230,118,0.29)"  }, // Amharic: Report corruption
-  { text:"ሙስና ይጥፋእ",        color:"rgba(255,50,50,0.34)"  }, // Tigrinya: Down with corruption
-  { text:"ሙስና ዘቡ",           color:"rgba(200,40,40,0.38)"  }, // Tigrinya
-  { text:"Malaanmmaltummaa Dhabamu", color:"rgba(255,70,30,0.34)" }, // Oromiffa
-  { text:"Malaanmmaltummaaf Miti",   color:"rgba(240,50,50,0.36)"  }, // Oromiffa
-  { text:"Musuqmaasuqa Maya",  color:"rgba(255,50,50,0.34)"  }, // Somali
-  { text:"NO TO CORRUPTION",   color:"rgba(255,30,30,0.41)"   }, // English
-  { text:"CORRUPTION = THEFT", color:"rgba(220,0,0,0.43)"    }, // English
-  { text:"REPORT. EXPOSE. STOP.", color:"rgba(0,230,118,0.27)" }, // English
-];
 
-function FloatingCorruptionWords() {
-  const [words, setWords] = useState([]);
-  const idRef = useRef(0);
 
-  const spawnWord = () => {
-    const phrase = NO_CORRUPTION_PHRASES[Math.floor(Math.random() * NO_CORRUPTION_PHRASES.length)];
-    const id = ++idRef.current;
-    const isGeez = /[\u1200-\u137F]/.test(phrase.text);
-    return {
-      id,
-      ...phrase,
-      x: 5 + Math.random() * 85,       // % from left
-      y: 10 + Math.random() * 75,       // % from top
-      size: isGeez ? 11 + Math.random() * 14 : 10 + Math.random() * 10,
-      duration: 6000 + Math.random() * 6000,
-      isGeez,
-      born: Date.now(),
-    };
-  };
 
-  useEffect(() => {
-    // Initial burst
-    setWords(Array.from({ length: 5 }, () => spawnWord()));
-
-    const interval = setInterval(() => {
-      setWords(prev => {
-        const now = Date.now();
-        const alive = prev.filter(w => now - w.born < w.duration + 1000);
-        // Always keep 8-14 words on screen
-        const toAdd = Math.max(0, 5 - alive.length);
-        return [...alive, ...Array.from({ length: toAdd }, () => spawnWord())];
-      });
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none", overflow:"hidden" }}>
-      {words.map(w => (
-        <div key={w.id} style={{
-          position:"absolute",
-          left:`${w.x}%`,
-          top:`${w.y}%`,
-          fontSize:`${w.size}px`,
-          color: w.color,
-          fontFamily: w.isGeez ? "'Noto Serif Ethiopic',serif" : "monospace",
-          fontWeight: "800",
-          letterSpacing: w.isGeez ? "0.03em" : "0.1em",
-          whiteSpace:"nowrap",
-          animation:`wordFloat ${w.duration}ms ease-in-out forwards`,
-          textShadow: `0 0 12px ${w.color}, 0 0 24px ${w.color.replace(/[\d.]+\)$/, "0.3)")}`,
-          filter: "blur(0px)",
-          transform:"translateZ(0)",
-        }}>
-          {w.text}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 // ── Particle mesh ──────────────────────────────────────────────────────────────
 function ParticleMesh() {
@@ -210,7 +136,7 @@ function ParticleMesh() {
     draw();
     return () => cancelAnimationFrame(animId);
   }, []);
-  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.2, pointerEvents:"none" }}/>;
+  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.12, pointerEvents:"none" }}/>;
 }
 
 // ── Glitch text ───────────────────────────────────────────────────────────────
@@ -420,7 +346,6 @@ export default function SafuuLanding() {
       {/* ── BG Layers ── */}
       <GeezMatrixRain/>
       <ParticleMesh/>
-      <FloatingCorruptionWords/>
 
       {/* Grid overlay */}
       <div style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none",
