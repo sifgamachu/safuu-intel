@@ -302,7 +302,21 @@ export default function Safuu() {
         .faq-row:hover{background:rgba(0,212,255,0.03)}
         .lnk:hover{color:${CY}!important}
         ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.3)}::-webkit-scrollbar-track{background:#000}
-        @media(max-width:768px){.hero-grid{grid-template-columns:1fr!important}.hide-mob{display:none!important}}
+        @media(max-width:768px){
+          .hero-grid{grid-template-columns:1fr!important}
+          .hide-mob{display:none!important}
+          .stats-grid{grid-template-columns:1fr 1fr!important}
+          .process-grid{grid-template-columns:1fr 1fr!important}
+        }
+        @media(max-width:540px){
+          .stats-grid{grid-template-columns:1fr 1fr!important}
+          .process-grid{grid-template-columns:1fr!important}
+          .shield-grid{grid-template-columns:1fr!important}
+          .agency-grid{grid-template-columns:1fr 1fr!important}
+          .section-pad{padding:60px 20px!important}
+          .hero-pad{padding:60px 20px 40px!important}
+          nav{padding:0 20px!important}
+        }
         @media(max-width:600px){.stats-grid{grid-template-columns:1fr 1fr!important}}
       `}</style>
 
@@ -370,7 +384,7 @@ export default function Safuu() {
         </div>
 
         <div className="hide-mob" style={{display:"flex",gap:"32px",alignItems:"center"}}>
-          {[["#how","PROCESS"],["#impact","IMPACT"],["#agencies","AGENCIES"],["#faq","FAQ"],["/about","ABOUT"],["/transparency","WALL"]].map(([h,l])=>(
+          {[["#how","PROCESS"],["#agencies","AGENCIES"],["#faq","FAQ"],["/transparency","WALL"],["/about","ABOUT"]].map(([h,l])=>(
             <a key={l} href={h} className="lnk" style={{fontSize:"10px",color:`rgba(0,212,255,0.45)`,
               fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",transition:"color 0.2s"}}>{l}</a>
           ))}
@@ -383,7 +397,7 @@ export default function Safuu() {
 
       {/* ══════════════════ HERO ══════════════════ */}
       <section style={{position:"relative",zIndex:5,minHeight:"95vh",display:"flex",
-        alignItems:"center",padding:"80px 40px 60px",overflow:"hidden"}}>
+        alignItems:"center",padding:"80px 40px 60px",WebkitFontSmoothing:"antialiased",overflow:"hidden"}}>
 
         {/* Cyan accent line — left edge */}
         <div style={{position:"absolute",left:0,top:"15%",bottom:"15%",width:"2px",
@@ -428,13 +442,18 @@ export default function Safuu() {
               Names disclosed when evidence reaches the threshold. Collaborative intelligence for Ethiopia.
             </p>
 
-            <div style={{display:"flex",gap:"12px",flexWrap:"wrap",marginBottom:"32px"}}>
-              <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-gold">
-                ⚖ Report Anonymously
+            <div style={{display:"flex",gap:"12px",flexWrap:"wrap",marginBottom:"24px"}}>
+              <a href="/report" className="btn-gold">
+                ⚖ Report Online
               </a>
-              <a href="#how" className="btn-outline">
-                How It Works
+              <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-outline">
+                Telegram Bot
               </a>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"32px"}}>
+              <div style={{height:"1px",flex:1,background:"rgba(0,212,255,0.08)"}}/>
+              <span style={{fontSize:"9px",color:"rgba(0,212,255,0.3)",fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",flexShrink:0}}>OR SMS 21000 FROM ANY PHONE</span>
+              <div style={{height:"1px",flex:1,background:"rgba(0,212,255,0.08)"}}/>
             </div>
 
             {/* Status indicators */}
@@ -500,7 +519,7 @@ export default function Safuu() {
         borderTop:`1px solid rgba(0,212,255,0.1)`,borderBottom:`1px solid rgba(0,212,255,0.1)`,
         background:"rgba(0,0,0,0.6)"}}>
         <div style={{maxWidth:"1180px",margin:"0 auto",padding:"0 40px"}}>
-          <div className="stats-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)"}}>
+          <div className="stats-grid" className="stats-grid" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)"}}>
             {STATS.map((s,i)=>{
               const [ref,vis]=useReveal(); const n=useCount(s.n,vis);
               return(
@@ -544,7 +563,7 @@ export default function Safuu() {
           </div>
           );})()}
 
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:"12px"}}>
+          <div className="process-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:"12px"}}>
             {PROCESS.map((s,i)=>{
               const [r,v]=useReveal();
               return(
@@ -611,7 +630,7 @@ export default function Safuu() {
               letterSpacing:"-0.01em",flexShrink:0}}>Zero trust. Zero identity.</h2>
           </div>
           );})()}
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:"10px"}}>
+          <div className="shield-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:"10px"}}>
             {SHIELDS.map((s,i)=>{
               const [r,v]=useReveal();
               return(
@@ -651,7 +670,7 @@ export default function Safuu() {
               letterSpacing:"-0.01em",flexShrink:0}}>Ethiopian accountability bodies</h2>
           </div>
           );})()}
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(185px,1fr))",gap:"10px"}}>
+          <div className="agency-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(185px,1fr))",gap:"10px"}}>
             {AGENCIES.map((a,i)=>{
               const [r,v]=useReveal();
               return(
@@ -741,7 +760,7 @@ export default function Safuu() {
               <span style={{color:`rgba(0,212,255,0.4)`}}>// anonymous · encrypted · verified · court-ready</span>
             </p>
             <div style={{display:"flex",gap:"14px",flexWrap:"wrap"}}>
-              <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-gold" style={{fontSize:"13px",padding:"15px 40px"}}>
+              <a href="/report" className="btn-gold" style={{fontSize:"13px",padding:"15px 40px"}}>
                 ⚖ Start Reporting Now
               </a>
               <a href="/transparency" className="btn-outline" style={{fontSize:"12px",padding:"14px 28px"}}>
@@ -774,7 +793,7 @@ export default function Safuu() {
               </div>
             </div>
             <div style={{display:"flex",gap:"32px",flexWrap:"wrap"}}>
-              {[["/transparency","Transparency Wall"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuEthBot","Telegram"]].map(([h,l])=>(
+              {[["/transparency","Transparency Wall"],["/about","About"],["/report","File a Report"],["/sms","SMS Guide"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuEthBot","Telegram"]].map(([h,l])=>(
                 <a key={l} href={h} target={h.startsWith("http")?"_blank":"_self"} rel="noreferrer"
                   className="lnk" style={{fontSize:"10px",color:`rgba(0,212,255,0.3)`,
                     fontFamily:"'Courier New',monospace",letterSpacing:"0.1em",transition:"color 0.2s"}}>{l}</a>
