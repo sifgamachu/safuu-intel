@@ -793,7 +793,7 @@ export default function Safuu() {
               </div>
             </div>
             <div style={{display:"flex",gap:"32px",flexWrap:"wrap"}}>
-              {[["/transparency","Transparency Wall"],["/analytics","Analytics"],["/about","About"],["/report","File a Report"],["/sms","SMS Guide"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuEthBot","Telegram"]].map(([h,l])=>(
+              {[["/transparency","Transparency Wall"],["/analytics","Analytics"],["/report","File a Report"],["/sms","SMS Guide"],["/about","About"],["/partners","Partners"],["/press","Press Kit"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuEthBot","Telegram"]].map(([h,l])=>(
                 <a key={l} href={h} target={h.startsWith("http")?"_blank":"_self"} rel="noreferrer"
                   className="lnk" style={{fontSize:"10px",color:`rgba(0,212,255,0.3)`,
                     fontFamily:"'Courier New',monospace",letterSpacing:"0.1em",transition:"color 0.2s"}}>{l}</a>
