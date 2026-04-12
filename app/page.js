@@ -204,16 +204,16 @@ function TLine({ text, delay=0, color="#c9a84c", dim }) {
 // ── Data ──────────────────────────────────────────────────────────────────────
 const TYPES = ["land fraud","procurement bribery","customs extortion","court corruption","tax evasion","nepotism","embezzlement","police extortion"];
 const STATS = [
-  {n:233,s:"+",l:"Tips Received",       d:"all anonymous"},
-  {n:139,s:"", l:"AI-Verified Reports", d:"forensics confirmed"},
-  {n:15, s:"+",l:"Officials on Record", d:"6 regions tracked"},
-  {n:3,  s:"", l:"Active Investigations",d:"FEACC escalated"},
+  {n:233,s:"+",l:"Tips Received",       d:"// identity_stored = null"},
+  {n:139,s:"", l:"Forensically Verified",d:"// exif + hive + claude"},
+  {n:15, s:"+",l:"Officials on Record",  d:"// 6 regions · FEACC-eligible"},
+  {n:3,  s:"", l:"Cases Escalated",       d:"// FEACC · formal investigation"},
 ];
 const PROCESS = [
-  {n:"01",icon:"📲",title:"ANONYMOUS_INPUT()",    body:"Telegram voice or text. SMS from any phone. 11 Ethiopian languages. Zero identity stored — SHA-256 one-way hash only."},
-  {n:"02",icon:"🔬",title:"AI_VERIFY(evidence)",  body:"EXIF forensics. Hive AI image detection at 94% accuracy. Whisper voice transcription. Claude categorizes severity."},
-  {n:"03",icon:"⚖️",title:"ROUTE_TO(agency)",    body:"Auto-matched to FEACC, Police, Ombudsman, OFAG, or EHRC. No manual steps. No delays."},
-  {n:"04",icon:"📊",title:"DISCLOSE_AT(threshold)",body:"City and office shown immediately. Full name publicly disclosed when verified reports reach the configured threshold."},
+  {n:"01",icon:"📲",title:"ANONYMOUS_INPUT()",    body:"Encrypted intake via Telegram or SMS shortcode 21000. 11 Ethiopian languages. SHA-256 one-way hash — your identity does not enter the system."},
+  {n:"02",icon:"🔬",title:"AI_VERIFY(evidence)",  body:"EXIF timestamp cross-check. AI-image authentication at 94% accuracy. Whisper voice transcription. Claude severity classification. Every step logged."},
+  {n:"03",icon:"⚖️",title:"ROUTE_TO(agency)",    body:"Algorithmic routing to FEACC, Federal Police, Ombudsman, OFAG, or EHRC. No human bottleneck. Case record opened immediately."},
+  {n:"04",icon:"📊",title:"DISCLOSE_AT(threshold)",body:"Below threshold: institution and city only — protecting against false accusation. At threshold: full name published to the accountability wall. Case formally escalated."},
 ];
 const SHIELDS = [
   {code:"SHA-256",   val:"One-way hash — irreversible",    icon:"🔐", c:"#c9a84c"},
@@ -231,10 +231,10 @@ const AGENCIES = [
   {name:"OFAG",        am:"ዋና ኦዲተር",    phone:"—",    c:"#fb923c"},
 ];
 const FAQS = [
-  {q:"Is reporting truly anonymous?",   a:"Yes. SAFUU never stores your Telegram username, user ID, phone, or real name. One-way SHA-256 — impossible to reverse. Not even administrators can identify you."},
-  {q:"What happens after I submit?",    a:"Claude AI categorizes type and severity. Evidence is forensically verified. The tip is auto-routed to the correct agency. Reports cluster — at threshold, name disclosed publicly."},
+  {q:"Is reporting truly anonymous?",   a:"Correct. SAFUU never records your Telegram username, user ID, phone number, or real name. One-way SHA-256 — computationally irreversible. No administrator can reverse it. No court order can produce what does not exist."},
+  {q:"What happens after I submit?",    a:"Claude AI classifies corruption type and severity. Evidence is forensically authenticated. Case is algorithmically routed. When verified reports on a single official reach the threshold — name disclosed, case formally escalated."},
   {q:"How does name disclosure work?",  a:"Below threshold: only city and office shown — protecting against false accusations. At threshold: full name disclosed on the transparency wall and formally flagged."},
-  {q:"No smartphone — can I report?",  a:"SMS 21000. Format: SAFUU [Name] | [Office] | [What happened]. Any mobile phone. No internet needed. Same AI pipeline as Telegram."},
+  {q:"No smartphone — can I report?",  a:"SMS shortcode 21000. Format: SAFUU [Name] | [Office] | [Description]. Any mobile carrier in Ethiopia. No data connection required. Processed by the same AI forensic pipeline."},
   {q:"Which languages are supported?",  a:"Amharic, Oromiffa, Tigrinya, Somali, Afar, Sidama, Wolaytta, Hadiyya, Dawro, Gamo, Bench, and English. Voice auto-transcribed by Whisper."},
 ];
 
@@ -420,7 +420,7 @@ export default function Safuu() {
             <h1 style={{fontFamily:"var(--font-display,serif)",fontSize:"clamp(42px,5.5vw,76px)",
               fontWeight:"900",lineHeight:1.1,letterSpacing:"-0.02em",marginBottom:"28px"}}>
               <span style={{display:"block",color:"rgba(240,236,224,0.95)",marginBottom:"2px"}}>Corruption ends</span>
-              <span style={{display:"block",color:G,fontStyle:"italic",marginBottom:"2px"}}>when people</span>
+              <span style={{display:"block",color:G,fontStyle:"italic",marginBottom:"2px",letterSpacing:"-0.01em"}}>when people</span>
               <span style={{display:"block",color:"rgba(240,236,224,0.95)"}}>refuse to be silent.</span>
             </h1>
 
@@ -429,17 +429,17 @@ export default function Safuu() {
               padding:"10px 16px",background:"rgba(184,32,32,0.06)",
               borderLeft:`2px solid ${R}`,borderBottom:`1px solid rgba(184,32,32,0.2)`}}>
               <span style={{fontSize:"9px",color:"rgba(200,80,80,0.7)",fontFamily:"'Courier New',monospace",
-                letterSpacing:"0.12em",flexShrink:0}}>FLAGGED:</span>
+                letterSpacing:"0.12em",flexShrink:0}}>ACTIVE_CASE:</span>
               <span style={{fontSize:"13px",color:"rgba(220,110,110,0.9)",fontFamily:"'Courier New',monospace",flex:1}}>
                 {typed}<span style={{animation:"cur 0.8s steps(1) infinite"}}>_</span>
               </span>
-              <span style={{fontSize:"8px",color:`rgba(0,212,255,0.5)`,fontFamily:"'Courier New',monospace",flexShrink:0}}>ACTIVE</span>
+              <span style={{fontSize:"8px",color:`rgba(0,212,255,0.5)`,fontFamily:"'Courier New',monospace",flexShrink:0,letterSpacing:"0.12em"}}>UNRESOLVED</span>
             </div>
 
-            <p style={{fontSize:"14px",color:"rgba(240,236,224,0.5)",lineHeight:"1.85",
+            <p style={{fontSize:"14px",color:"rgba(200,215,225,0.55)",lineHeight:"1.85",
               marginBottom:"36px",maxWidth:"460px"}}>
-              Anonymous tips verified by AI forensics. Every report sealed in a cryptographic ledger.
-              Names disclosed when evidence reaches the threshold. Collaborative intelligence for Ethiopia.
+              Every report enters a forensic pipeline. Evidence authenticated.
+              Chain of custody sealed to ledger. Officials named when the evidence record demands it.
             </p>
 
             <div style={{display:"flex",gap:"12px",flexWrap:"wrap",marginBottom:"24px"}}>
@@ -505,10 +505,10 @@ export default function Safuu() {
             {/* Terminal below network */}
             <div style={{marginTop:"16px",background:"rgba(0,0,0,0.7)",
               border:`1px solid rgba(201,168,76,0.15)`,padding:"16px 20px"}}>
-              <TLine text="$ safuu --mode=anonymous --encrypt=AES256 --lang=am" delay={400}/>
-              <TLine text="› Identity: NOT_STORED [ SHA-256 → irreversible ]" delay={1400}/>
+              <TLine text="$ safuu --mode=anonymous --encrypt=AES256-GCM --chain=sealed" delay={400}/>
+              <TLine text="› IDENTITY :: NULL // SHA-256 one-way hash — no reversal possible" delay={1400}/>
               <TLine text="› Ledger: SEALED ✓  Encryption: AES-256-GCM ✓"    delay={2200}/>
-              <TLine text="› ሙስናን ሪፖርት አድርጉ — Pipeline READY."              delay={3000} color="#4ade80"/>
+              <TLine text="› PIPELINE_STATUS :: READY // ሙስናን ሪፖርት አድርጉ"              delay={3000} color="#4ade80"/>
             </div>
           </div>
         </div>
@@ -559,7 +559,7 @@ export default function Safuu() {
             <div style={{flex:1,height:"1px",background:`rgba(0,212,255,0.15)`}}/>
             <h2 style={{fontSize:"clamp(26px,3.5vw,40px)",fontWeight:"900",
               fontFamily:"var(--font-display,serif)",color:"rgba(240,236,224,0.95)",
-              letterSpacing:"-0.01em",flexShrink:0}}>Four steps to accountability</h2>
+              letterSpacing:"-0.01em",flexShrink:0}}>The forensic pipeline.</h2>
           </div>
           );})()}
 
@@ -578,7 +578,7 @@ export default function Safuu() {
                 </div>
                 <div style={{fontSize:"11px",fontWeight:"700",color:CY,fontFamily:"'Courier New',monospace",
                   marginBottom:"14px",letterSpacing:"0.04em"}}>{s.title}</div>
-                <div style={{fontSize:"13px",color:"rgba(240,236,224,0.5)",lineHeight:"1.8"}}>{s.body}</div>
+                <div style={{fontSize:"13px",color:"rgba(180,205,220,0.55)",lineHeight:"1.8"}}>{s.body}</div>
               </div>
             );})}
           </div>
@@ -602,7 +602,7 @@ export default function Safuu() {
           </div>
           <p style={{fontSize:"clamp(20px,2.8vw,28px)",fontWeight:"700",
             fontFamily:"var(--font-display,serif)",fontStyle:"italic",
-            color:"rgba(240,236,224,0.9)",lineHeight:"1.55",marginBottom:"24px"}}>
+            color:"rgba(245,245,250,0.88)",lineHeight:"1.55",marginBottom:"24px"}}>
             Every birr stolen from public funds is a school unfunded,
             a hospital understaffed, a road unpaved.
           </p>
@@ -627,7 +627,7 @@ export default function Safuu() {
             <div style={{flex:1,height:"1px",background:`rgba(0,212,255,0.15)`}}/>
             <h2 style={{fontSize:"clamp(26px,3.5vw,40px)",fontWeight:"900",
               fontFamily:"var(--font-display,serif)",color:"rgba(240,236,224,0.95)",
-              letterSpacing:"-0.01em",flexShrink:0}}>Zero trust. Zero identity.</h2>
+              letterSpacing:"-0.01em",flexShrink:0}}>Zero trust. Zero identity. Zero exceptions.</h2>
           </div>
           );})()}
           <div className="shield-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:"10px"}}>
@@ -667,7 +667,7 @@ export default function Safuu() {
             <div style={{flex:1,height:"1px",background:`rgba(201,168,76,0.2)`}}/>
             <h2 style={{fontSize:"clamp(22px,3vw,36px)",fontWeight:"900",
               fontFamily:"var(--font-display,serif)",color:"rgba(240,236,224,0.95)",
-              letterSpacing:"-0.01em",flexShrink:0}}>Ethiopian accountability bodies</h2>
+              letterSpacing:"-0.01em",flexShrink:0}}>Authorised investigation bodies.</h2>
           </div>
           );})()}
           <div className="agency-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(185px,1fr))",gap:"10px"}}>
@@ -701,7 +701,7 @@ export default function Safuu() {
               <span style={{fontSize:"9px",color:CY,fontFamily:"'Courier New',monospace",letterSpacing:"0.25em"}}>FAQ.execute()</span>
             </div>
             <h2 style={{fontSize:"clamp(26px,3.5vw,38px)",fontWeight:"900",
-              fontFamily:"var(--font-display,serif)",color:"rgba(240,236,224,0.95)"}}>Your questions answered.</h2>
+              fontFamily:"var(--font-display,serif)",color:"rgba(240,236,224,0.95)"}}>Operational briefing.</h2>
           </div>
           );})()}
           <div style={{borderTop:`1px solid rgba(0,212,255,0.1)`}}>
@@ -712,7 +712,7 @@ export default function Safuu() {
                 transition:`all 0.5s ${i*0.07}s ease`}} onClick={()=>setFaq(faq===i?null:i)}>
                 <div style={{padding:"22px 4px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <span style={{fontSize:"clamp(14px,1.8vw,16px)",fontWeight:"700",
-                    color:faq===i?G:"rgba(240,236,224,0.88)",
+                    color:faq===i?G:"rgba(220,230,240,0.88)",
                     fontFamily:"var(--font-display,serif)",paddingRight:"20px",transition:"color 0.2s"}}>{f.q}</span>
                   <span style={{color:faq===i?CY:G,fontSize:"20px",flexShrink:0,
                     fontFamily:"var(--font-display,serif)",transition:"transform 0.25s",
@@ -746,22 +746,22 @@ export default function Safuu() {
             </div>
             <h2 style={{fontFamily:"var(--font-display,serif)",fontSize:"clamp(36px,6vw,68px)",
               fontWeight:"900",lineHeight:1.05,letterSpacing:"-0.02em",marginBottom:"16px"}}>
-              <span style={{color:"rgba(240,236,224,0.95)"}}>Silence protects</span>
-              <span style={{color:R,fontStyle:"italic",display:"block"}}>the corrupt.</span>
-              <span style={{color:G}}>Speak up.</span>
+              <span style={{color:"rgba(240,236,224,0.95)"}}>Accountability requires</span>
+              <span style={{color:R,fontStyle:"italic",display:"block"}}>documented evidence.</span>
+              <span style={{color:G}}>Provide it.</span>
             </h2>
             <div style={{display:"flex",alignItems:"center",gap:"16px",marginBottom:"28px"}}>
               <div style={{width:"40px",height:"1px",background:G}}/>
               <div style={{width:"20px",height:"1px",background:CY,opacity:0.5}}/>
             </div>
-            <p style={{fontSize:"13px",color:"rgba(240,236,224,0.4)",lineHeight:"1.9",
+            <p style={{fontSize:"13px",color:"rgba(160,195,215,0.45)",lineHeight:"1.9",
               marginBottom:"44px",fontFamily:"'Courier New',monospace"}}>
               ሙስናን ሪፖርት አድርጉ · Gabaasa malaanmmaltummaa<br/>
-              <span style={{color:`rgba(0,212,255,0.4)`}}>// anonymous · encrypted · verified · court-ready</span>
+              <span style={{color:`rgba(0,212,255,0.4)`}}>// sha-256 identity null · aes-256-gcm · hash-chain sealed · court-admissible</span>
             </p>
             <div style={{display:"flex",gap:"14px",flexWrap:"wrap"}}>
               <a href="/report" className="btn-gold" style={{fontSize:"13px",padding:"15px 40px"}}>
-                ⚖ Start Reporting Now
+                ⚖ OPEN CASE FILE
               </a>
               <a href="/transparency" className="btn-outline" style={{fontSize:"12px",padding:"14px 28px"}}>
                 View Transparency Wall
