@@ -1,0 +1,36 @@
+# ── Secrets ────────────────────────────────────────────────────────────────
+.env
+*.pem
+*.key
+*.crt
+
+# ── Data (never commit databases or logs) ──────────────────────────────────
+data/
+logs/
+*.db
+*.db-wal
+*.db-shm
+*.jsonl
+
+# ── Node ───────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.npm
+
+# ── OS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Build / cache ──────────────────────────────────────────────────────────
+dist/
+build/
+.cache/
+*.tsbuildinfo
+
+# ── Temp files ─────────────────────────────────────────────────────────────
+tmp_*.jpg
+tmp_*.ogg
+tmp_*.mp3
+tmp_*.wav
+safuu-export.json
