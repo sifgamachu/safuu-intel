@@ -82,22 +82,20 @@ function GeezMatrixRain() {
 // ── "NO TO CORRUPTION" floating words ─────────────────────────────────────────
 // 12 languages, Ethiopic script heavy
 const NO_CORRUPTION_PHRASES = [
-  { text:"ሙስና አይሆንም",      lang:"አማርኛ",      color:"rgba(255,60,60,0.7)"   }, // Amharic: Corruption won't happen
-  { text:"ሙስናን አንቀበልም",    lang:"አማርኛ",      color:"rgba(220,30,30,0.8)"   }, // Amharic: We won't accept corruption
-  { text:"ሙስና ጠላት ነው",     lang:"አማርኛ",      color:"rgba(255,80,40,0.75)"  }, // Amharic: Corruption is the enemy
-  { text:"ሙስና ይጥፋእ",       lang:"ትግርኛ",      color:"rgba(255,50,50,0.7)"   }, // Tigrinya: Down with corruption
-  { text:"ሙስና ዘቡ",          lang:"ትግርኛ",      color:"rgba(200,40,40,0.8)"   }, // Tigrinya
-  { text:"NO TO CORRUPTION",  lang:"English",   color:"rgba(255,30,30,0.85)"  },
-  { text:"CORRUPTION = THEFT",lang:"English",   color:"rgba(220,0,0,0.9)"     },
-  { text:"Malaanmmaltummaa Dhabamu", lang:"Oromiffa", color:"rgba(255,70,30,0.7)" }, // Oromiffa
-  { text:"Malaanmmaltummaaf Miti",   lang:"Oromiffa", color:"rgba(240,50,50,0.75)" },
-  { text:"لا للفساد",         lang:"Arabic",    color:"rgba(255,40,40,0.8)"   }, // Arabic: No to corruption
-  { text:"HAPANA UFISADI",    lang:"Swahili",   color:"rgba(220,30,30,0.75)"  },
-  { text:"NON À LA CORRUPTION",lang:"Français", color:"rgba(255,60,60,0.7)"   },
-  { text:"ሙስና ሃገርን ይበልዛል",  lang:"አማርኛ",     color:"rgba(200,20,20,0.85)"  }, // Corruption destroys the nation
-  { text:"ሙስናን ሪፖርት አድርጉ", lang:"አማርኛ",     color:"rgba(0,230,118,0.6)"   }, // Report corruption
-  { text:"Musuqmaasuqa Maya", lang:"Soomaali",  color:"rgba(255,50,50,0.7)"   }, // Somali: No corruption
-  { text:"ሙስና = ስርቆት",       lang:"አማርኛ",     color:"rgba(255,20,20,0.9)"   }, // Corruption = Theft
+  { text:"ሙስና አይሆንም",       color:"rgba(255,60,60,0.75)"  }, // Amharic: Corruption won't happen
+  { text:"ሙስናን አንቀበልም",     color:"rgba(220,30,30,0.85)"  }, // Amharic: We won't accept corruption
+  { text:"ሙስና ጠላት ነው",      color:"rgba(255,80,40,0.8)"   }, // Amharic: Corruption is the enemy
+  { text:"ሙስና ሃገርን ይበልዛል",  color:"rgba(200,20,20,0.9)"   }, // Amharic: Corruption destroys the nation
+  { text:"ሙስና = ስርቆት",       color:"rgba(255,20,20,0.9)"   }, // Amharic: Corruption = Theft
+  { text:"ሙስናን ሪፖርት አድርጉ",  color:"rgba(0,230,118,0.65)"  }, // Amharic: Report corruption
+  { text:"ሙስና ይጥፋእ",        color:"rgba(255,50,50,0.75)"  }, // Tigrinya: Down with corruption
+  { text:"ሙስና ዘቡ",           color:"rgba(200,40,40,0.85)"  }, // Tigrinya
+  { text:"Malaanmmaltummaa Dhabamu", color:"rgba(255,70,30,0.75)" }, // Oromiffa
+  { text:"Malaanmmaltummaaf Miti",   color:"rgba(240,50,50,0.8)"  }, // Oromiffa
+  { text:"Musuqmaasuqa Maya",  color:"rgba(255,50,50,0.75)"  }, // Somali
+  { text:"NO TO CORRUPTION",   color:"rgba(255,30,30,0.9)"   }, // English
+  { text:"CORRUPTION = THEFT", color:"rgba(220,0,0,0.95)"    }, // English
+  { text:"REPORT. EXPOSE. STOP.", color:"rgba(0,230,118,0.6)" }, // English
 ];
 
 function FloatingCorruptionWords() {
@@ -458,7 +456,7 @@ export default function SafuuLanding() {
                   "⬤ ሙስናን ሪፖርት አድርጉ — REPORT NOW",
                   "⬤ AES-256-GCM :: ACTIVE // LEDGER :: SEALED",
                   "⬤ Malaanmmaltummaa Dhabamu — OROMIFFA",
-                  "⬤ لا للفساد — NO TO CORRUPTION",
+                  "⬤ ሙስና ሃገርን ይበልዛል — CORRUPTION DESTROYS NATIONS",
                   `⬤ SAFUU.NET // ${dateStr}`,
                 ].map((t,j)=>(
                   <span key={j} style={{
@@ -795,7 +793,7 @@ export default function SafuuLanding() {
           </h2>
           {/* Multilingual "No to corruption" in Geez */}
           <div style={{ marginBottom:"24px", display:"flex", flexWrap:"wrap", justifyContent:"center", gap:"12px" }}>
-            {["ሙስና ይጥፋእ","ሙስናን አንቀበልም","لا للفساد","HAPANA UFISADI"].map((t,i)=>(
+            {["ሙስና ይጥፋእ","ሙስናን አንቀበልም","Malaanmmaltummaa Dhabamu","REPORT. EXPOSE. STOP."].map((t,i)=>(
               <span key={i} style={{ fontSize:"13px", color:i%2===0?"rgba(220,60,60,0.75)":"rgba(0,200,80,0.6)",
                 fontFamily:"'Noto Serif Ethiopic',serif", fontWeight:"700",
                 animation:`dangerPulse ${3+i*0.5}s ${i*0.3}s ease-in-out infinite` }}>{t}</span>
