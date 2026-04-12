@@ -1,10 +1,10 @@
-# ── Secrets ────────────────────────────────────────────────────────────────
+# Secrets
 .env
 *.pem
 *.key
 *.crt
 
-# ── Data (never commit databases or logs) ──────────────────────────────────
+# Data
 data/
 logs/
 *.db
@@ -12,23 +12,21 @@ logs/
 *.db-shm
 *.jsonl
 
-# ── Node ───────────────────────────────────────────────────────────────────
+# Node
 node_modules/
 npm-debug.log*
-yarn-error.log*
 .npm
 
-# ── OS ─────────────────────────────────────────────────────────────────────
+# Next.js
+.next/
+out/
+*.tsbuildinfo
+
+# OS
 .DS_Store
 Thumbs.db
 
-# ── Build / cache ──────────────────────────────────────────────────────────
-dist/
-build/
-.cache/
-*.tsbuildinfo
-
-# ── Temp files ─────────────────────────────────────────────────────────────
+# Temp
 tmp_*.jpg
 tmp_*.ogg
 tmp_*.mp3

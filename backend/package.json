@@ -1,0 +1,39 @@
+{
+  "name": "safuu-platform",
+  "version": "2.0.0",
+  "description": "SAFUU — ሳፉ | Ethiopian Anti-Corruption Intelligence Platform",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "bot":     "node safuu-bot.js",
+    "server":  "node safuu-server.js",
+    "sms":     "node safuu-sms.js",
+    "all":     "concurrently \"npm run bot\" \"npm run server\" \"npm run sms\"",
+    "dev":     "concurrently \"nodemon safuu-bot.js\" \"nodemon safuu-server.js\" \"nodemon safuu-sms.js\"",
+    "db:view": "node -e \"const db=require('better-sqlite3')('./data/safuu.db'); console.table(db.prepare('SELECT name,report_count,verified_count,rating,status FROM persons ORDER BY verified_count DESC').all())\"",
+    "db:export":"node -e \"const db=require('better-sqlite3')('./data/safuu.db');const fs=require('fs');fs.writeFileSync('safuu-export.json',JSON.stringify({persons:db.prepare('SELECT * FROM persons').all(),reports:db.prepare('SELECT tip_id,corruption_type,severity,incident_date,location,is_verified,ai_flagged FROM reports').all()},null,2))\""
+  },
+  "dependencies": {
+    "telegraf":          "^4.16.3",
+    "better-sqlite3":    "^9.4.3",
+    "anthropic":         "^0.24.3",
+    "openai":            "^4.47.1",
+    "express":           "^4.18.2",
+    "cors":              "^2.8.5",
+    "ws":                "^8.17.0",
+    "express-rate-limit":"^7.3.1",
+    "nodemailer":        "^6.9.13",
+    "africastalking":    "^0.5.3",
+    "axios":             "^1.7.2",
+    "form-data":         "^4.0.0",
+    "sharp":             "^0.33.4",
+    "uuid":              "^10.0.0",
+    "node-fetch":        "^2.7.0",
+    "dotenv":            "^16.4.5",
+    "concurrently":      "^8.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": { "node": ">=18.0.0" }
+}
