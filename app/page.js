@@ -139,6 +139,75 @@ function ParticleMesh() {
   return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.12, pointerEvents:"none" }}/>;
 }
 
+
+// ── Subtle anti-corruption words — max 3, slow, faint ─────────────────────────
+const PHRASES = [
+  "ሙስና አይሆንም",        // Amharic: Corruption won't happen
+  "ሙስናን አንቀበልም",      // Amharic: We won't accept corruption
+  "ሙስና ጠላት ነው",       // Amharic: Corruption is the enemy
+  "ሙስና ሃገርን ይበልዛል",   // Amharic: Corruption destroys the nation
+  "ሙስና = ስርቆት",        // Amharic: Corruption = Theft
+  "ሙስናን ሪፖርት አድርጉ",   // Amharic: Report corruption
+  "ሙስና ይጥፋእ",         // Tigrinya: Down with corruption
+  "Malaanmmaltummaa Dhabamu", // Oromiffa
+  "Musuqmaasuqa Maya",  // Somali
+  "NO TO CORRUPTION",
+];
+
+function SubtleWords() {
+  const [words, setWords] = useState([]);
+  const idRef = useRef(0);
+
+  useEffect(() => {
+    // Spawn ONE word at a time, with big gaps between spawns
+    // Use a set of fixed positions to avoid crowding
+    const POSITIONS = [
+      {x:8,  y:15}, {x:70, y:25}, {x:15, y:70},
+      {x:65, y:60}, {x:35, y:85}, {x:80, y:80},
+    ];
+    let posIdx = 0;
+
+    const spawn = () => {
+      const phrase = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+      const isEthiopic = /[\u1200-\u137F]/.test(phrase);
+      const pos = POSITIONS[posIdx % POSITIONS.length];
+      posIdx++;
+      const id = ++idRef.current;
+      setWords(prev => {
+        // Keep max 3 words
+        const alive = prev.slice(-2);
+        return [...alive, { id, text:phrase, isEthiopic, ...pos }];
+      });
+    };
+
+    spawn(); // first one immediately
+    const t = setInterval(spawn, 5000); // one every 5 seconds
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none", overflow:"hidden" }}>
+      {words.map(w => (
+        <div key={w.id} style={{
+          position:"absolute",
+          left:`${w.x}%`,
+          top:`${w.y}%`,
+          fontSize: w.isEthiopic ? "13px" : "11px",
+          color:"rgba(220,50,50,0.28)",
+          fontFamily: w.isEthiopic ? "serif" : "monospace",
+          fontWeight:"700",
+          letterSpacing: w.isEthiopic ? "0.02em" : "0.1em",
+          whiteSpace:"nowrap",
+          animation:"subtleWord 8000ms ease-in-out forwards",
+          userSelect:"none",
+        }}>
+          {w.text}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Glitch text ───────────────────────────────────────────────────────────────
 function GlitchText({ children, style = {} }) {
   return (
@@ -296,6 +365,12 @@ export default function SafuuLanding() {
           91%{clip-path:inset(20% 0 60% 0);transform:translate(-4px,0);color:#ff2020}
           93%{clip-path:inset(60% 0 20% 0);transform:translate(4px,0);color:#00e676}
           95%{clip-path:none;transform:none} }
+        @keyframes subtleWord {
+          0%  {opacity:0;transform:translateY(4px)}
+          10% {opacity:1}
+          80% {opacity:1}
+          100%{opacity:0;transform:translateY(-6px)}
+        }
         @keyframes wordFloat  {
           0%  {opacity:0;transform:scale(0.85) translateY(6px)}
           8%  {opacity:1;transform:scale(1) translateY(0)}
@@ -346,6 +421,7 @@ export default function SafuuLanding() {
       {/* ── BG Layers ── */}
       <GeezMatrixRain/>
       <ParticleMesh/>
+      <SubtleWords/>
 
       {/* Grid overlay */}
       <div style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none",
