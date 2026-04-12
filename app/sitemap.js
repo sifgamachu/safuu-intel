@@ -6,7 +6,6 @@ export default function sitemap() {
     ["/transparency",  "daily",   0.9 ],
     ["/report",        "weekly",  0.95],
     ["/analytics",     "daily",   0.8 ],
-    ["/faq",           "monthly", 0.78],
     ["/am",            "monthly", 0.75],
     ["/or",            "monthly", 0.75],
     ["/ti",            "monthly", 0.75],
@@ -15,6 +14,8 @@ export default function sitemap() {
     ["/partners",      "monthly", 0.6 ],
     ["/press",         "monthly", 0.6 ],
     ["/api-docs",      "monthly", 0.55],
+    ["/donate",        "monthly", 0.5 ],
+    ["/faq",           "monthly", 0.78],
     ["/changelog",     "weekly",  0.5 ],
     ["/privacy",       "yearly",  0.4 ],
   ];
