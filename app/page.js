@@ -140,49 +140,52 @@ function ParticleMesh() {
 }
 
 
-// ── Subtle anti-corruption words — max 3, slow, faint ─────────────────────────
+// ── Subtle anti-corruption words ─────────────────────────────────────────────
+// Sequential, never repeated, max 2 on screen, one every 7s
 const PHRASES = [
-  "ሙስና አይሆንም",        // Amharic: Corruption won't happen
-  "ሙስናን አንቀበልም",      // Amharic: We won't accept corruption
-  "ሙስና ጠላት ነው",       // Amharic: Corruption is the enemy
-  "ሙስና ሃገርን ይበልዛል",   // Amharic: Corruption destroys the nation
-  "ሙስና = ስርቆት",        // Amharic: Corruption = Theft
-  "ሙስናን ሪፖርት አድርጉ",   // Amharic: Report corruption
-  "ሙስና ይጥፋእ",         // Tigrinya: Down with corruption
-  "Malaanmmaltummaa Dhabamu", // Oromiffa
-  "Musuqmaasuqa Maya",  // Somali
+  "ሙስና አይሆንም",
   "NO TO CORRUPTION",
+  "ሙስና ጠላት ነው",
+  "Malaanmmaltummaa Dhabamu",
+  "ሙስና ይጥፋእ",
+  "Musuqmaasuqa Maya",
+  "ሙስናን ሪፖርት አድርጉ",
+  "ሙስና = ስርቆት",
+];
+
+// Fixed slots — well-separated, never overlap
+const SLOTS = [
+  {x:6,  y:18},
+  {x:72, y:22},
+  {x:10, y:72},
+  {x:68, y:68},
 ];
 
 function SubtleWords() {
   const [words, setWords] = useState([]);
-  const idRef = useRef(0);
+  const phraseIdx = useRef(0);
+  const slotIdx   = useRef(0);
+  const wordId    = useRef(0);
 
   useEffect(() => {
-    // Spawn ONE word at a time, with big gaps between spawns
-    // Use a set of fixed positions to avoid crowding
-    const POSITIONS = [
-      {x:8,  y:15}, {x:70, y:25}, {x:15, y:70},
-      {x:65, y:60}, {x:35, y:85}, {x:80, y:80},
-    ];
-    let posIdx = 0;
-
     const spawn = () => {
-      const phrase = PHRASES[Math.floor(Math.random() * PHRASES.length)];
-      const isEthiopic = /[\u1200-\u137F]/.test(phrase);
-      const pos = POSITIONS[posIdx % POSITIONS.length];
-      posIdx++;
-      const id = ++idRef.current;
-      setWords(prev => {
-        // Keep max 3 words
-        const alive = prev.slice(-2);
-        return [...alive, { id, text:phrase, isEthiopic, ...pos }];
-      });
+      const text = PHRASES[phraseIdx.current % PHRASES.length];
+      const slot = SLOTS[slotIdx.current % SLOTS.length];
+      phraseIdx.current++;
+      slotIdx.current++;
+      wordId.current++;
+      const id = wordId.current;
+      // Keep max 2 words — drop the oldest
+      setWords(prev => [...prev.slice(-1), { id, text, ...slot }]);
     };
 
-    spawn(); // first one immediately
-    const t = setInterval(spawn, 5000); // one every 5 seconds
-    return () => clearInterval(t);
+    const t = setTimeout(() => {
+      spawn();
+      const interval = setInterval(spawn, 7000);
+      return () => clearInterval(interval);
+    }, 2000);
+
+    return () => clearTimeout(t);
   }, []);
 
   return (
@@ -192,13 +195,13 @@ function SubtleWords() {
           position:"absolute",
           left:`${w.x}%`,
           top:`${w.y}%`,
-          fontSize: w.isEthiopic ? "13px" : "11px",
-          color:"rgba(220,50,50,0.28)",
-          fontFamily: w.isEthiopic ? "serif" : "monospace",
-          fontWeight:"700",
-          letterSpacing: w.isEthiopic ? "0.02em" : "0.1em",
+          fontSize:"12px",
+          color:"rgba(180,40,40,0.22)",
+          fontFamily:/[\u1200-\u137F]/.test(w.text) ? "serif" : "monospace",
+          fontWeight:"600",
+          letterSpacing:"0.04em",
           whiteSpace:"nowrap",
-          animation:"subtleWord 8000ms ease-in-out forwards",
+          animation:"subtleWord 9000ms ease-in-out forwards",
           userSelect:"none",
         }}>
           {w.text}
