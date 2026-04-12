@@ -407,11 +407,11 @@ export default function SafuuLanding() {
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontSize:"clamp(44px,8vw,96px)", fontWeight:"800", lineHeight:1.04,
-            letterSpacing:"-0.02em", marginBottom:"24px", animation:"flicker 8s infinite" }}>
-            <span style={{ color:"rgba(255,255,255,0.95)", display:"block" }}>Accountability ends</span>
+          <h1 style={{ fontSize:"clamp(44px,8vw,96px)", fontWeight:"900", lineHeight:1.04,
+            letterSpacing:"-0.02em", marginBottom:"24px", fontFamily:"'Georgia','Palatino Linotype',serif" }}>
+            <span style={{ color:"rgba(255,255,255,0.95)", display:"block" }}>Corruption ends</span>
             <span style={{ color:"#00e676", display:"block",
-              textShadow:"0 0 60px rgba(0,230,118,0.4), 0 0 120px rgba(0,230,118,0.15)" }}>when people speak.</span>
+              textShadow:"0 0 60px rgba(0,230,118,0.4), 0 0 120px rgba(0,230,118,0.15)" }}>when people refuse to be silent.</span>
           </h1>
 
           {/* Typewriter */}
@@ -501,7 +501,7 @@ export default function SafuuLanding() {
       <section id="how" style={{ position:"relative", zIndex:5, padding:"100px 40px", maxWidth:"1000px", margin:"0 auto" }}>
         <Reveal style={{ marginBottom:"60px" }}>
           <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.4)", fontFamily:"var(--font-mono,monospace)", letterSpacing:"0.28em", marginBottom:"14px" }}>▸ PROCESS_FLOW()</div>
-          <h2 style={{ fontSize:"clamp(28px,4vw,44px)", fontWeight:"800", color:"rgba(255,255,255,0.95)", lineHeight:1.15 }}>
+          <h2 style={{ fontSize:"clamp(28px,4vw,44px)", fontWeight:"800", color:"rgba(255,255,255,0.95)", lineHeight:1.15, fontFamily:"'Georgia','Palatino Linotype',serif" }}>
             From tip to investigation<br/>
             <span style={{ color:"#00e676", textShadow:"0 0 40px rgba(0,230,118,0.3)" }}>in four functions.</span>
           </h2>
