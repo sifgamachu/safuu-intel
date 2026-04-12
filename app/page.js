@@ -18,6 +18,55 @@ function useCountUp(target, active, duration = 2000) {
   return val;
 }
 
+
+// ── Official Ethiopian Flag SVG ────────────────────────────────────────────────
+// Green (top) · Yellow (middle) · Red (bottom) · Blue circle · Yellow star + rays
+function EthiopianFlag({ width = "100%", height = "100%", style = {} }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" width={width} height={height} style={style}>
+      {/* Three horizontal stripes */}
+      <rect width="900" height="150" fill="#078930"/>
+      <rect y="150" width="900" height="150" fill="#FCDD09"/>
+      <rect y="300" width="900" height="150" fill="#DA121A"/>
+      {/* Blue circle */}
+      <circle cx="450" cy="225" r="135" fill="#0F47AF"/>
+      {/* Star rays - 14 thin rays */}
+      {[...Array(14)].map((_,i) => {
+        const angle = (i * 360 / 14) * Math.PI / 180;
+        const x1 = 450 + 52 * Math.sin(angle);
+        const y1 = 225 - 52 * Math.cos(angle);
+        const x2 = 450 + 128 * Math.sin(angle);
+        const y2 = 225 - 128 * Math.cos(angle);
+        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FCDD09" strokeWidth="6" />;
+      })}
+      {/* 5-pointed star */}
+      <polygon
+        points={
+          [0,1,2,3,4].map(i => {
+            const outer = ((i*72) - 90) * Math.PI/180;
+            const inner = ((i*72+36) - 90) * Math.PI/180;
+            const ox = 450 + 54*Math.cos(outer);
+            const oy = 225 + 54*Math.sin(outer);
+            const ix = 450 + 22*Math.cos(inner);
+            const iy = 225 + 22*Math.sin(inner);
+            return ox+","+oy+" "+ix+","+iy;
+          }).join(" ")
+        }
+        fill="#FCDD09"
+      />
+    </svg>
+  );
+}
+
+// Flag bar strip (thin, for header/footer)
+function FlagStrip({ height = 4 }) {
+  return (
+    <div style={{ position:"relative", height, overflow:"hidden" }}>
+      <EthiopianFlag height="100%" style={{ position:"absolute", top:0, left:0, width:"100%", height:"100%", objectFit:"cover" }}/>
+    </div>
+  );
+}
+
 const CORRUPTION_TYPES = ["Land fraud","Procurement bribery","Customs extortion","Court corruption","Tax evasion","Nepotism","Embezzlement","Police extortion","Healthcare theft","Education bribery"];
 
 const IMPACT_STATS = [
@@ -101,6 +150,9 @@ export default function SafuuLanding() {
         @media(max-width:640px){.hide-mob{display:none!important}}
       `}</style>
 
+      {/* Official Ethiopian Flag Strip - top */}
+      <FlagStrip height={6}/>
+
       {/* Scanlines */}
       <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:999,backgroundImage:"repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px)"}}/>
 
@@ -122,7 +174,7 @@ export default function SafuuLanding() {
       {/* NAV */}
       <nav style={{position:"sticky",top:0,zIndex:100,background:"rgba(8,9,13,0.96)",backdropFilter:"blur(16px)",borderBottom:"1px solid rgba(232,200,75,0.1)",padding:"0 32px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"56px"}}>
         <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-          <div style={{width:"34px",height:"34px",background:"rgba(232,200,75,0.1)",border:"1px solid rgba(232,200,75,0.3)",borderRadius:"7px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"18px"}}>⚖️</div>
+          <div style={{width:"52px",height:"32px",borderRadius:"4px",overflow:"hidden",border:"1px solid rgba(255,255,255,0.15)",flexShrink:0}}><EthiopianFlag width="52" height="32"/></div>
           <div>
             <div style={{fontSize:"15px",fontWeight:"900",color:C.gold,letterSpacing:"0.15em",fontFamily:"monospace",lineHeight:1}}>SAFUU</div>
             <div style={{fontSize:"7px",color:"rgba(232,200,75,0.4)",letterSpacing:"0.2em",fontFamily:"monospace"}}>ANTI-CORRUPTION INTEL</div>
@@ -342,6 +394,9 @@ export default function SafuuLanding() {
           </div>
         </div>
       </section>
+
+      {/* Official Ethiopian Flag Strip - bottom */}
+      <FlagStrip height={5}/>
 
       {/* FOOTER */}
       <footer style={{borderTop:"1px solid rgba(232,200,75,0.1)",padding:"32px 32px 24px",background:"#06070b"}}>
