@@ -83,6 +83,8 @@ const REGIONS = [
   {label:"Tigray",      val:21, color:"#4ade80"},
   {label:"Dire Dawa",   val:12, color:"#fb923c"},
   {label:"Somali",      val:8,  color:"#60a5fa"},
+  {label:"Afar",        val:5,  color:"#f0abfc"},
+  {label:"Benishangul", val:3,  color:"#a3e635"},
 ];
 
 const TYPES = [
