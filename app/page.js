@@ -417,10 +417,11 @@ export default function Safuu() {
             </div>
 
             {/* Headline */}
-            <h1 style={{fontFamily:"var(--font-display,serif)",fontSize:"clamp(42px,5.5vw,76px)",
-              fontWeight:"900",lineHeight:1.1,letterSpacing:"-0.02em",marginBottom:"28px"}}>
-              <span style={{display:"block",color:"rgba(240,236,224,0.95)",marginBottom:"2px"}}>Corruption ends</span>
-              <span style={{display:"block",color:G,fontStyle:"italic",marginBottom:"2px",letterSpacing:"-0.01em"}}>when people</span>
+            <h1 style={{fontFamily:"var(--font-headline,'Barlow Condensed',sans-serif)",fontSize:"clamp(52px,7vw,96px)",
+              fontWeight:"900",lineHeight:0.95,letterSpacing:"0.01em",marginBottom:"32px",
+              textTransform:"uppercase"}}>
+              <span style={{display:"block",color:"rgba(240,236,224,0.95)",marginBottom:"6px"}}>Corruption ends</span>
+              <span style={{display:"block",color:G,fontStyle:"italic",marginBottom:"6px",letterSpacing:"0.02em"}}>when people</span>
               <span style={{display:"block",color:"rgba(240,236,224,0.95)"}}>refuse to be silent.</span>
             </h1>
 
