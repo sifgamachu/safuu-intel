@@ -6,7 +6,7 @@ export default function sitemap() {
     ["/am",         "monthly",0.75],["/or",         "monthly",0.75],["/ti",       "monthly",0.75],
     ["/so",         "monthly",0.72],["/af",         "monthly",0.70],["/about",    "monthly",0.7 ],
     ["/sms",        "monthly",0.65],["/partners",   "monthly",0.6 ],["/press",    "monthly",0.6 ],
-    ["/api-docs",   "monthly",0.55],["/donate",     "monthly",0.5 ],["/changelog","weekly", 0.5 ],
-    ["/privacy",    "yearly", 0.4 ],
+    ["/api-docs",   "monthly",0.55],["/donate",     "monthly",0.5 ],["/status",   "daily",  0.5 ],
+    ["/changelog",  "weekly", 0.5 ],["/privacy",    "yearly", 0.4 ],
   ].map(([url,freq,pri])=>({url:`${base}${url}`,lastModified:now,changeFrequency:freq,priority:pri}));
 }
