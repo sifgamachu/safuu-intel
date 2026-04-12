@@ -140,76 +140,7 @@ function ParticleMesh() {
 }
 
 
-// ── Subtle anti-corruption words ─────────────────────────────────────────────
-// Sequential, never repeated, max 2 on screen, one every 7s
-const PHRASES = [
-  "ሙስና አይሆንም",
-  "NO TO CORRUPTION",
-  "ሙስና ጠላት ነው",
-  "Malaanmmaltummaa Dhabamu",
-  "ሙስና ይጥፋእ",
-  "Musuqmaasuqa Maya",
-  "ሙስናን ሪፖርት አድርጉ",
-  "ሙስና = ስርቆት",
-];
 
-// Fixed slots — well-separated, never overlap
-const SLOTS = [
-  {x:6,  y:18},
-  {x:72, y:22},
-  {x:10, y:72},
-  {x:68, y:68},
-];
-
-function SubtleWords() {
-  const [words, setWords] = useState([]);
-  const phraseIdx = useRef(0);
-  const slotIdx   = useRef(0);
-  const wordId    = useRef(0);
-
-  useEffect(() => {
-    const spawn = () => {
-      const text = PHRASES[phraseIdx.current % PHRASES.length];
-      const slot = SLOTS[slotIdx.current % SLOTS.length];
-      phraseIdx.current++;
-      slotIdx.current++;
-      wordId.current++;
-      const id = wordId.current;
-      // Keep max 2 words — drop the oldest
-      setWords(prev => [...prev.slice(-1), { id, text, ...slot }]);
-    };
-
-    const t = setTimeout(() => {
-      spawn();
-      const interval = setInterval(spawn, 7000);
-      return () => clearInterval(interval);
-    }, 2000);
-
-    return () => clearTimeout(t);
-  }, []);
-
-  return (
-    <div style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none", overflow:"hidden" }}>
-      {words.map(w => (
-        <div key={w.id} style={{
-          position:"absolute",
-          left:`${w.x}%`,
-          top:`${w.y}%`,
-          fontSize:"12px",
-          color:"rgba(180,40,40,0.22)",
-          fontFamily:/[\u1200-\u137F]/.test(w.text) ? "serif" : "monospace",
-          fontWeight:"600",
-          letterSpacing:"0.04em",
-          whiteSpace:"nowrap",
-          animation:"subtleWord 9000ms ease-in-out forwards",
-          userSelect:"none",
-        }}>
-          {w.text}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 // ── Glitch text ───────────────────────────────────────────────────────────────
 function GlitchText({ children, style = {} }) {
@@ -368,8 +299,7 @@ export default function SafuuLanding() {
           91%{clip-path:inset(20% 0 60% 0);transform:translate(-4px,0);color:#ff2020}
           93%{clip-path:inset(60% 0 20% 0);transform:translate(4px,0);color:#00e676}
           95%{clip-path:none;transform:none} }
-        @keyframes subtleWord {
-          0%  {opacity:0;transform:translateY(4px)}
+        
           10% {opacity:1}
           80% {opacity:1}
           100%{opacity:0;transform:translateY(-6px)}
@@ -424,7 +354,6 @@ export default function SafuuLanding() {
       {/* ── BG Layers ── */}
       <GeezMatrixRain/>
       <ParticleMesh/>
-      <SubtleWords/>
 
       {/* Grid overlay */}
       <div style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none",
