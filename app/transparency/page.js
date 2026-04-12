@@ -189,10 +189,10 @@ export default function TransparencyWall() {
         {filtered.map((o,i)=>{
           const [ref,vis]=useReveal();
           return(
-          <div key={o.id} ref={ref} className="row"
+          <a key={o.id} ref={ref} href={`/transparency/${o.id}`} className="row"
             style={{display:"grid",gridTemplateColumns:"80px 1fr 160px 110px 100px 120px 100px",gap:"0",
               padding:"18px 20px",borderBottom:`1px solid rgba(0,212,255,0.06)`,
-              alignItems:"center",cursor:"default",transition:"background 0.15s",
+              alignItems:"center",cursor:"pointer",transition:"background 0.15s",textDecoration:"none",color:"inherit",
               opacity:vis?1:0,transform:vis?"none":"translateY(10px)",
               transition:`all 0.4s ${i*0.06}s ease, background 0.15s`}}>
 
@@ -237,7 +237,7 @@ export default function TransparencyWall() {
 
             {/* Agency */}
             <div style={{fontSize:"10px",color:"rgba(240,236,224,0.4)",fontFamily:"'Courier New',monospace"}}>{o.status}</div>
-          </div>
+          </a>
         );})}
 
         {filtered.length===0&&(
