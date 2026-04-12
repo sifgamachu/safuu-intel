@@ -39,7 +39,7 @@ function GeezMatrixRain() {
     let animId;
     const draw = () => {
       // Deep red-black fade for danger feel
-      ctx.fillStyle = "rgba(4,0,0,0.07)";
+      ctx.fillStyle = "rgba(4,0,0,0.14)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       drops.forEach((drop, i) => {
@@ -76,26 +76,26 @@ function GeezMatrixRain() {
     window.addEventListener("resize", resize);
     return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
   }, []);
-  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.22, pointerEvents:"none" }}/>;
+  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.09, pointerEvents:"none" }}/>;
 }
 
 // ── "NO TO CORRUPTION" floating words ─────────────────────────────────────────
 // 12 languages, Ethiopic script heavy
 const NO_CORRUPTION_PHRASES = [
-  { text:"ሙስና አይሆንም",       color:"rgba(255,60,60,0.75)"  }, // Amharic: Corruption won't happen
-  { text:"ሙስናን አንቀበልም",     color:"rgba(220,30,30,0.85)"  }, // Amharic: We won't accept corruption
-  { text:"ሙስና ጠላት ነው",      color:"rgba(255,80,40,0.8)"   }, // Amharic: Corruption is the enemy
-  { text:"ሙስና ሃገርን ይበልዛል",  color:"rgba(200,20,20,0.9)"   }, // Amharic: Corruption destroys the nation
-  { text:"ሙስና = ስርቆት",       color:"rgba(255,20,20,0.9)"   }, // Amharic: Corruption = Theft
-  { text:"ሙስናን ሪፖርት አድርጉ",  color:"rgba(0,230,118,0.65)"  }, // Amharic: Report corruption
-  { text:"ሙስና ይጥፋእ",        color:"rgba(255,50,50,0.75)"  }, // Tigrinya: Down with corruption
-  { text:"ሙስና ዘቡ",           color:"rgba(200,40,40,0.85)"  }, // Tigrinya
-  { text:"Malaanmmaltummaa Dhabamu", color:"rgba(255,70,30,0.75)" }, // Oromiffa
-  { text:"Malaanmmaltummaaf Miti",   color:"rgba(240,50,50,0.8)"  }, // Oromiffa
-  { text:"Musuqmaasuqa Maya",  color:"rgba(255,50,50,0.75)"  }, // Somali
-  { text:"NO TO CORRUPTION",   color:"rgba(255,30,30,0.9)"   }, // English
-  { text:"CORRUPTION = THEFT", color:"rgba(220,0,0,0.95)"    }, // English
-  { text:"REPORT. EXPOSE. STOP.", color:"rgba(0,230,118,0.6)" }, // English
+  { text:"ሙስና አይሆንም",       color:"rgba(255,60,60,0.34)"  }, // Amharic: Corruption won't happen
+  { text:"ሙስናን አንቀበልም",     color:"rgba(220,30,30,0.38)"  }, // Amharic: We won't accept corruption
+  { text:"ሙስና ጠላት ነው",      color:"rgba(255,80,40,0.36)"   }, // Amharic: Corruption is the enemy
+  { text:"ሙስና ሃገርን ይበልዛል",  color:"rgba(200,20,20,0.41)"   }, // Amharic: Corruption destroys the nation
+  { text:"ሙስና = ስርቆት",       color:"rgba(255,20,20,0.41)"   }, // Amharic: Corruption = Theft
+  { text:"ሙስናን ሪፖርት አድርጉ",  color:"rgba(0,230,118,0.29)"  }, // Amharic: Report corruption
+  { text:"ሙስና ይጥፋእ",        color:"rgba(255,50,50,0.34)"  }, // Tigrinya: Down with corruption
+  { text:"ሙስና ዘቡ",           color:"rgba(200,40,40,0.38)"  }, // Tigrinya
+  { text:"Malaanmmaltummaa Dhabamu", color:"rgba(255,70,30,0.34)" }, // Oromiffa
+  { text:"Malaanmmaltummaaf Miti",   color:"rgba(240,50,50,0.36)"  }, // Oromiffa
+  { text:"Musuqmaasuqa Maya",  color:"rgba(255,50,50,0.34)"  }, // Somali
+  { text:"NO TO CORRUPTION",   color:"rgba(255,30,30,0.41)"   }, // English
+  { text:"CORRUPTION = THEFT", color:"rgba(220,0,0,0.43)"    }, // English
+  { text:"REPORT. EXPOSE. STOP.", color:"rgba(0,230,118,0.27)" }, // English
 ];
 
 function FloatingCorruptionWords() {
@@ -112,7 +112,7 @@ function FloatingCorruptionWords() {
       x: 5 + Math.random() * 85,       // % from left
       y: 10 + Math.random() * 75,       // % from top
       size: isGeez ? 11 + Math.random() * 14 : 10 + Math.random() * 10,
-      duration: 4000 + Math.random() * 5000,
+      duration: 6000 + Math.random() * 6000,
       isGeez,
       born: Date.now(),
     };
@@ -120,17 +120,17 @@ function FloatingCorruptionWords() {
 
   useEffect(() => {
     // Initial burst
-    setWords(Array.from({ length: 12 }, () => spawnWord()));
+    setWords(Array.from({ length: 5 }, () => spawnWord()));
 
     const interval = setInterval(() => {
       setWords(prev => {
         const now = Date.now();
         const alive = prev.filter(w => now - w.born < w.duration + 1000);
         // Always keep 8-14 words on screen
-        const toAdd = Math.max(0, 10 - alive.length);
-        return [...alive, ...Array.from({ length: toAdd + Math.floor(Math.random()*2) }, () => spawnWord())];
+        const toAdd = Math.max(0, 5 - alive.length);
+        return [...alive, ...Array.from({ length: toAdd }, () => spawnWord())];
       });
-    }, 1200);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 
@@ -210,7 +210,7 @@ function ParticleMesh() {
     draw();
     return () => cancelAnimationFrame(animId);
   }, []);
-  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.6, pointerEvents:"none" }}/>;
+  return <canvas ref={canvasRef} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.2, pointerEvents:"none" }}/>;
 }
 
 // ── Glitch text ───────────────────────────────────────────────────────────────
@@ -234,7 +234,7 @@ function TerminalLine({ prefix = ">", text, delay = 0, color = "#00e676" }) {
   }, [active, shown, text]);
   return (
     <div style={{ fontFamily:"monospace", fontSize:"11px", color, lineHeight:"2", opacity:active?1:0, transition:"opacity 0.3s" }}>
-      <span style={{ color:"rgba(0,230,118,0.35)", marginRight:"8px" }}>{prefix}</span>
+      <span style={{ color:"rgba(0,230,118,0.16)", marginRight:"8px" }}>{prefix}</span>
       {shown}
       {shown.length < text.length && <span style={{ animation:"blink 0.7s infinite", marginLeft:"1px" }}>█</span>}
     </div>
@@ -247,14 +247,14 @@ function HexStat({ val, suffix, label, sub, active }) {
   return (
     <div style={{ padding:"28px 20px", borderRight:"1px solid rgba(0,230,118,0.07)", textAlign:"center", position:"relative", overflow:"hidden" }}>
       <div style={{ position:"absolute", top:0, left:0, right:0, height:"1px", background:"linear-gradient(90deg,transparent,#dc2020,#00e676,transparent)", opacity:0.6 }}/>
-      <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.4)", fontFamily:"monospace", letterSpacing:"0.15em", marginBottom:"5px" }}>
+      <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.18)", fontFamily:"monospace", letterSpacing:"0.15em", marginBottom:"5px" }}>
         0x{n.toString(16).toUpperCase().padStart(4,"0")}
       </div>
       <div style={{ fontSize:"clamp(32px,4vw,52px)", fontWeight:"900", color:"#00e676", fontFamily:"monospace", lineHeight:1, marginBottom:"6px", textShadow:"0 0 30px rgba(0,230,118,0.7), 0 0 60px rgba(0,230,118,0.2)" }}>
         {n.toLocaleString()}{suffix}
       </div>
-      <div style={{ fontSize:"11px", color:"rgba(255,255,255,0.6)", marginBottom:"3px", fontWeight:"600" }}>{label}</div>
-      <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.4)", fontFamily:"monospace" }}>{sub}</div>
+      <div style={{ fontSize:"11px", color:"rgba(255,255,255,0.27)", marginBottom:"3px", fontWeight:"600" }}>{label}</div>
+      <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.18)", fontFamily:"monospace" }}>{sub}</div>
     </div>
   );
 }
@@ -353,7 +353,7 @@ export default function SafuuLanding() {
   const dateStr = new Date().toISOString().slice(0,10);
 
   return (
-    <div style={{ background:"#020408", color:"rgba(255,255,255,0.85)", fontFamily:"'Georgia','Palatino',serif", overflowX:"hidden", position:"relative", minHeight:"100vh" }}>
+    <div style={{ background:"#020408", color:"rgba(255,255,255,0.38)", fontFamily:"'Georgia','Palatino',serif", overflowX:"hidden", position:"relative", minHeight:"100vh" }}>
       <style>{`
         *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
         a { color:inherit; text-decoration:none; }
@@ -424,12 +424,12 @@ export default function SafuuLanding() {
 
       {/* Grid overlay */}
       <div style={{ position:"fixed", inset:0, zIndex:1, pointerEvents:"none",
-        backgroundImage:"linear-gradient(rgba(0,180,60,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,60,0.02) 1px,transparent 1px)",
+        backgroundImage:"linear-gradient(rgba(0,180,60,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,60,0.012) 1px,transparent 1px)",
         backgroundSize:"48px 48px" }}/>
 
       {/* Scanline */}
       <div style={{ position:"fixed", left:0, right:0, height:"3px", zIndex:2, pointerEvents:"none",
-        background:"linear-gradient(transparent,rgba(220,30,30,0.06),rgba(0,230,118,0.05),transparent)",
+        background:"linear-gradient(transparent,rgba(220,30,30,0.03),rgba(0,230,118,0.025),transparent)",
         animation:"scanline 9s linear infinite" }}/>
 
       {/* Vignette */}
@@ -488,7 +488,7 @@ export default function SafuuLanding() {
             <div style={{ fontSize:"16px", fontWeight:"900", color:"#00e676",
               letterSpacing:"0.18em", fontFamily:"monospace", lineHeight:1,
               textShadow:"0 0 20px rgba(0,230,118,0.6)" }}>SAFUU</div>
-            <div style={{ fontSize:"7px", color:"rgba(0,230,118,0.4)", letterSpacing:"0.22em", fontFamily:"monospace" }}>
+            <div style={{ fontSize:"7px", color:"rgba(0,230,118,0.18)", letterSpacing:"0.22em", fontFamily:"monospace" }}>
               INTEL v2.0 :: SAFUU.NET
             </div>
           </div>
@@ -497,7 +497,7 @@ export default function SafuuLanding() {
         <div className="hide-mob" style={{ display:"flex", gap:"24px", alignItems:"center" }}>
           {[["#how","HOW_IT_WORKS"],["#impact","IMPACT"],["#agencies","AGENCIES"],["#faq","FAQ"]].map(([h,l])=>(
             <a key={l} href={h} className="nav-a"
-              style={{ fontSize:"10px", color:"rgba(0,230,118,0.4)", fontFamily:"monospace",
+              style={{ fontSize:"10px", color:"rgba(0,230,118,0.18)", fontFamily:"monospace",
                 letterSpacing:"0.12em", transition:"color 0.2s" }}>{l}</a>
           ))}
         </div>
@@ -526,7 +526,7 @@ export default function SafuuLanding() {
             animation:"borderGlow 3s ease-in-out infinite" }}>
             <span style={{ width:"8px", height:"8px", borderRadius:"50%", background:"#dc1e1e",
               animation:"pulse-red 1.8s infinite", display:"inline-block" }}/>
-            <span style={{ fontSize:"10px", color:"rgba(220,80,80,0.9)", fontFamily:"monospace", letterSpacing:"0.2em" }}>
+            <span style={{ fontSize:"10px", color:"rgba(220,80,80,0.41)", fontFamily:"monospace", letterSpacing:"0.2em" }}>
               SYSTEM :: ONLINE // ሙስና ጠላት ነው — CORRUPTION IS THE ENEMY
             </span>
           </div>
@@ -547,7 +547,7 @@ export default function SafuuLanding() {
             marginBottom:"36px", background:"rgba(0,0,0,0.7)",
             border:"1px solid rgba(220,30,30,0.2)", borderRadius:"2px",
             padding:"0 24px", maxWidth:"520px", margin:"0 auto 36px" }}>
-            <span style={{ fontSize:"11px", color:"rgba(220,80,80,0.7)", fontFamily:"monospace", marginRight:"10px" }}>
+            <span style={{ fontSize:"11px", color:"rgba(220,80,80,0.32)", fontFamily:"monospace", marginRight:"10px" }}>
               CASE_TYPE:
             </span>
             <span style={{ fontSize:"14px", color:"#ff6060", fontFamily:"monospace", flex:1, textAlign:"left",
@@ -565,7 +565,7 @@ export default function SafuuLanding() {
               <span style={{ width:"10px",height:"10px",borderRadius:"50%",background:"#ff5f57" }}/>
               <span style={{ width:"10px",height:"10px",borderRadius:"50%",background:"#ffbd2e" }}/>
               <span style={{ width:"10px",height:"10px",borderRadius:"50%",background:"#28c840" }}/>
-              <span style={{ fontSize:"9px", color:"rgba(0,230,118,0.3)", fontFamily:"monospace", marginLeft:"8px" }}>
+              <span style={{ fontSize:"9px", color:"rgba(0,230,118,0.14)", fontFamily:"monospace", marginLeft:"8px" }}>
                 safuu-intel // secure-pipeline
               </span>
             </div>
@@ -591,7 +591,7 @@ export default function SafuuLanding() {
             </a>
             <a href="#how" className="btn-ghost"
               style={{ display:"flex", alignItems:"center", gap:"10px",
-                background:"transparent", color:"rgba(255,255,255,0.55)",
+                background:"transparent", color:"rgba(255,255,255,0.25)",
                 padding:"16px 32px", borderRadius:"3px",
                 border:"1px solid rgba(255,255,255,0.1)",
                 fontFamily:"monospace", fontSize:"12px",
@@ -611,8 +611,8 @@ export default function SafuuLanding() {
             ].map(([k,v],i)=>(
               <div key={i} style={{ flex:"1 1 180px", padding:"12px 14px",
                 borderRight:i<2?"1px solid rgba(0,230,118,0.07)":"none" }}>
-                <div style={{ fontSize:"8px", color:"rgba(0,230,118,0.35)", fontFamily:"monospace", letterSpacing:"0.18em", marginBottom:"2px" }}>{k}</div>
-                <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.75)", fontFamily:"monospace" }}>{v}</div>
+                <div style={{ fontSize:"8px", color:"rgba(0,230,118,0.16)", fontFamily:"monospace", letterSpacing:"0.18em", marginBottom:"2px" }}>{k}</div>
+                <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.34)", fontFamily:"monospace" }}>{v}</div>
               </div>
             ))}
           </div>
@@ -625,7 +625,7 @@ export default function SafuuLanding() {
         background:"rgba(0,0,0,0.8)" }}>
         <div style={{ maxWidth:"1000px", margin:"0 auto" }}>
           <div style={{ textAlign:"center", padding:"44px 32px 24px" }}>
-            <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.45)", fontFamily:"monospace", letterSpacing:"0.25em" }}>▸ PLATFORM_METRICS :: LIVE</div>
+            <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.2)", fontFamily:"monospace", letterSpacing:"0.25em" }}>▸ PLATFORM_METRICS :: LIVE</div>
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))" }}>
             {STATS.map((s,i)=><HexStat key={i} {...s} active={statsActive}/>)}
@@ -636,7 +636,7 @@ export default function SafuuLanding() {
       {/* ══════════════ HOW ══════════════ */}
       <section id="how" style={{ position:"relative", zIndex:5, padding:"100px 32px", maxWidth:"1000px", margin:"0 auto" }}>
         <div style={{ marginBottom:"52px" }}>
-          <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.45)", fontFamily:"monospace", letterSpacing:"0.25em", marginBottom:"12px" }}>▸ PROCESS_FLOW()</div>
+          <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.2)", fontFamily:"monospace", letterSpacing:"0.25em", marginBottom:"12px" }}>▸ PROCESS_FLOW()</div>
           <h2 style={{ fontSize:"clamp(26px,4vw,38px)", fontWeight:"800", color:"#fff", lineHeight:1.2 }}>
             From tip to investigation<br/>
             <span style={{ color:"#00e676", textShadow:"0 0 30px rgba(0,230,118,0.4)" }}>in four functions.</span>
@@ -646,10 +646,10 @@ export default function SafuuLanding() {
           {PROCESS.map((s,i)=>(
             <HoloCard key={i} style={{ padding:"28px 24px", transition:"all 0.2s" }}>
               <div className="card-h">
-                <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.35)", fontFamily:"monospace", letterSpacing:"0.18em", marginBottom:"14px" }}>{s.id}/04</div>
+                <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.16)", fontFamily:"monospace", letterSpacing:"0.18em", marginBottom:"14px" }}>{s.id}/04</div>
                 <div style={{ fontSize:"24px", marginBottom:"12px" }}>{s.icon}</div>
                 <div style={{ fontSize:"11px", fontWeight:"700", color:"#00e676", fontFamily:"monospace", marginBottom:"12px", letterSpacing:"0.04em" }}>{s.fn}</div>
-                <div style={{ fontSize:"12px", color:"rgba(255,255,255,0.4)", lineHeight:"1.8" }}>{s.body}</div>
+                <div style={{ fontSize:"12px", color:"rgba(255,255,255,0.18)", lineHeight:"1.8" }}>{s.body}</div>
               </div>
             </HoloCard>
           ))}
@@ -666,13 +666,13 @@ export default function SafuuLanding() {
           backgroundImage:"repeating-linear-gradient(45deg,rgba(220,30,30,0.02) 0px,rgba(220,30,30,0.02) 1px,transparent 1px,transparent 10px)",
           pointerEvents:"none" }}/>
         <div style={{ position:"relative", maxWidth:"700px", margin:"0 auto" }}>
-          <div style={{ fontSize:"64px", color:"rgba(220,30,30,0.15)", fontFamily:"serif", lineHeight:0.8, marginBottom:"20px" }}>"</div>
+          <div style={{ fontSize:"64px", color:"rgba(220,30,30,0.07)", fontFamily:"serif", lineHeight:0.8, marginBottom:"20px" }}>"</div>
           <p style={{ fontSize:"clamp(18px,2.5vw,25px)", fontWeight:"700", color:"#f0e8e8",
             lineHeight:"1.6", marginBottom:"16px", fontStyle:"italic" }}>
             Every birr stolen from public funds is a school unfunded,
             a hospital understaffed, a road unpaved.
           </p>
-          <div style={{ fontSize:"10px", color:"rgba(220,80,80,0.6)", fontFamily:"monospace", letterSpacing:"0.2em",
+          <div style={{ fontSize:"10px", color:"rgba(220,80,80,0.27)", fontFamily:"monospace", letterSpacing:"0.2em",
             animation:"dangerPulse 3s ease-in-out infinite" }}>
             // ሙስና = ስርቆት — CORRUPTION = THEFT — Malaanmmaltummaa = Hatuu
           </div>
@@ -682,7 +682,7 @@ export default function SafuuLanding() {
       {/* ══════════════ SHIELD ══════════════ */}
       <section style={{ position:"relative", zIndex:5, padding:"100px 32px", maxWidth:"1000px", margin:"0 auto" }}>
         <div style={{ marginBottom:"52px" }}>
-          <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.45)", fontFamily:"monospace", letterSpacing:"0.25em", marginBottom:"12px" }}>▸ SECURITY_SPECS()</div>
+          <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.2)", fontFamily:"monospace", letterSpacing:"0.25em", marginBottom:"12px" }}>▸ SECURITY_SPECS()</div>
           <h2 style={{ fontSize:"clamp(26px,4vw,38px)", fontWeight:"800", color:"#fff", lineHeight:1.2 }}>
             Protection by design.<br/>
             <span style={{ color:"#00e676" }}>Zero trust. Zero identity.</span>
@@ -700,9 +700,9 @@ export default function SafuuLanding() {
                   display:"flex", alignItems:"center", justifyContent:"center",
                   fontSize:"16px", flexShrink:0 }}>{s.icon}</div>
                 <div>
-                  <div style={{ fontSize:"8px", color:"rgba(0,230,118,0.45)", fontFamily:"monospace", letterSpacing:"0.15em", marginBottom:"3px" }}>[{s.code}]</div>
+                  <div style={{ fontSize:"8px", color:"rgba(0,230,118,0.2)", fontFamily:"monospace", letterSpacing:"0.15em", marginBottom:"3px" }}>[{s.code}]</div>
                   <div style={{ fontSize:"13px", fontWeight:"700", color:"#00e676", marginBottom:"3px" }}>{s.val}</div>
-                  <div style={{ fontSize:"10px", color:"rgba(255,255,255,0.3)", fontFamily:"monospace" }}>{s.label}</div>
+                  <div style={{ fontSize:"10px", color:"rgba(255,255,255,0.14)", fontFamily:"monospace" }}>{s.label}</div>
                 </div>
               </div>
             </div>
@@ -715,9 +715,9 @@ export default function SafuuLanding() {
         background:"rgba(0,0,0,0.7)", borderTop:"1px solid rgba(0,230,118,0.08)", padding:"80px 32px" }}>
         <div style={{ maxWidth:"960px", margin:"0 auto" }}>
           <div style={{ marginBottom:"44px" }}>
-            <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.45)", fontFamily:"monospace", letterSpacing:"0.25em", marginBottom:"12px" }}>▸ ROUTE_TABLE()</div>
+            <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.2)", fontFamily:"monospace", letterSpacing:"0.25em", marginBottom:"12px" }}>▸ ROUTE_TABLE()</div>
             <h2 style={{ fontSize:"clamp(22px,3vw,32px)", fontWeight:"800", color:"#fff" }}>Ethiopian accountability bodies</h2>
-            <p style={{ fontSize:"11px", color:"rgba(0,230,118,0.4)", fontFamily:"monospace", marginTop:"8px" }}>
+            <p style={{ fontSize:"11px", color:"rgba(0,230,118,0.18)", fontFamily:"monospace", marginTop:"8px" }}>
               // auto-matched by AI — no manual routing
             </p>
           </div>
@@ -733,10 +733,10 @@ export default function SafuuLanding() {
                 style={{ background:"rgba(0,0,0,0.8)", borderRadius:"3px", padding:"18px",
                   borderLeft:`2px solid ${a.color}`,
                   border:`1px solid rgba(255,255,255,0.04)`, transition:"all 0.2s" }}>
-                <div style={{ fontSize:"8px", color:"rgba(0,230,118,0.3)", fontFamily:"monospace", letterSpacing:"0.1em", marginBottom:"5px" }}>AGENCY::{a.name}</div>
+                <div style={{ fontSize:"8px", color:"rgba(0,230,118,0.14)", fontFamily:"monospace", letterSpacing:"0.1em", marginBottom:"5px" }}>AGENCY::{a.name}</div>
                 <div style={{ fontSize:"13px", fontWeight:"700", color:"#fff", marginBottom:"2px" }}>{a.name}</div>
-                <div style={{ fontSize:"10px", color:"rgba(255,255,255,0.35)", fontFamily:"monospace", marginBottom:"8px" }}>{a.am}</div>
-                <div style={{ fontSize:"9px", color:"rgba(255,255,255,0.2)", marginBottom:"10px", fontFamily:"monospace" }}>{a.type}</div>
+                <div style={{ fontSize:"10px", color:"rgba(255,255,255,0.16)", fontFamily:"monospace", marginBottom:"8px" }}>{a.am}</div>
+                <div style={{ fontSize:"9px", color:"rgba(255,255,255,0.09)", marginBottom:"10px", fontFamily:"monospace" }}>{a.type}</div>
                 <div style={{ fontSize:"20px", fontWeight:"900", color:a.color, fontFamily:"monospace",
                   textShadow:`0 0 12px ${a.color}88` }}>
                   {a.phone!=="•••"?`📞 ${a.phone}`:"✉ Email"}
@@ -750,7 +750,7 @@ export default function SafuuLanding() {
       {/* ══════════════ FAQ ══════════════ */}
       <section id="faq" style={{ position:"relative", zIndex:5, padding:"100px 32px", maxWidth:"760px", margin:"0 auto" }}>
         <div style={{ marginBottom:"52px" }}>
-          <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.45)", fontFamily:"monospace", letterSpacing:"0.25em", marginBottom:"12px" }}>▸ FAQ.execute()</div>
+          <div style={{ fontSize:"9px", color:"rgba(0,230,118,0.2)", fontFamily:"monospace", letterSpacing:"0.25em", marginBottom:"12px" }}>▸ FAQ.execute()</div>
           <h2 style={{ fontSize:"clamp(24px,3.5vw,34px)", fontWeight:"800", color:"#fff" }}>Your questions, answered.</h2>
         </div>
         <div style={{ display:"flex", flexDirection:"column", gap:"4px" }}>
@@ -766,7 +766,7 @@ export default function SafuuLanding() {
               </div>
               {openFaq===i && (
                 <div style={{ padding:"0 20px 18px", animation:"fadeIn 0.2s ease-out" }}>
-                  <p style={{ fontSize:"13px", color:"rgba(255,255,255,0.45)", lineHeight:"1.85" }}>{f.a}</p>
+                  <p style={{ fontSize:"13px", color:"rgba(255,255,255,0.2)", lineHeight:"1.85" }}>{f.a}</p>
                 </div>
               )}
             </div>
@@ -799,10 +799,10 @@ export default function SafuuLanding() {
                 animation:`dangerPulse ${3+i*0.5}s ${i*0.3}s ease-in-out infinite` }}>{t}</span>
             ))}
           </div>
-          <p style={{ fontSize:"13px", color:"rgba(255,255,255,0.35)", lineHeight:"1.85",
+          <p style={{ fontSize:"13px", color:"rgba(255,255,255,0.16)", lineHeight:"1.85",
             marginBottom:"40px", fontFamily:"monospace" }}>
             ሙስናን ሪፖርት አድርጉ · Report corruption · Gabaasa malaanmmaltummaa<br/>
-            <span style={{ color:"rgba(0,230,118,0.45)" }}>// anonymous · encrypted · verified · court-ready</span>
+            <span style={{ color:"rgba(0,230,118,0.2)" }}>// anonymous · encrypted · verified · court-ready</span>
           </p>
           <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-cyber"
             style={{ display:"inline-flex", alignItems:"center", gap:"12px",
@@ -813,8 +813,8 @@ export default function SafuuLanding() {
               transition:"all 0.2s", boxShadow:"0 0 30px rgba(0,230,118,0.15)" }}>
             <span style={{ animation:"blink 1s infinite" }}>█</span> START_REPORTING_NOW()
           </a>
-          <div style={{ marginTop:"16px", fontSize:"10px", color:"rgba(0,230,118,0.3)", fontFamily:"monospace" }}>
-            // no smartphone? → SMS <strong style={{ color:"rgba(0,230,118,0.5)" }}>21000</strong>
+          <div style={{ marginTop:"16px", fontSize:"10px", color:"rgba(0,230,118,0.14)", fontFamily:"monospace" }}>
+            // no smartphone? → SMS <strong style={{ color:"rgba(0,230,118,0.23)" }}>21000</strong>
           </div>
         </div>
       </section>
@@ -831,13 +831,13 @@ export default function SafuuLanding() {
                 <div style={{ fontSize:"13px", fontWeight:"900", color:"#00e676",
                   fontFamily:"monospace", letterSpacing:"0.15em",
                   textShadow:"0 0 16px rgba(0,230,118,0.5)" }}>SAFUU INTEL</div>
-                <div style={{ fontSize:"8px", color:"rgba(0,230,118,0.3)", fontFamily:"monospace" }}>ሳፉ // MORAL ORDER // ANTI-CORRUPTION PLATFORM</div>
+                <div style={{ fontSize:"8px", color:"rgba(0,230,118,0.14)", fontFamily:"monospace" }}>ሳፉ // MORAL ORDER // ANTI-CORRUPTION PLATFORM</div>
               </div>
             </div>
             <div style={{ display:"flex", gap:"24px", flexWrap:"wrap" }}>
               {[["/transparency","transparency_wall"],["https://github.com/sifgamachu/safuu-intel","github"],["https://t.me/SafuuEthBot","telegram_bot"]].map(([href,label])=>(
                 <a key={label} href={href} target={href.startsWith("http")?"_blank":"_self"} rel="noreferrer"
-                  className="nav-a" style={{ fontSize:"10px", color:"rgba(0,230,118,0.3)",
+                  className="nav-a" style={{ fontSize:"10px", color:"rgba(0,230,118,0.14)",
                     fontFamily:"monospace", letterSpacing:"0.08em", transition:"color 0.2s" }}>
                   ./{label} →
                 </a>
@@ -846,10 +846,10 @@ export default function SafuuLanding() {
           </div>
           <div style={{ borderTop:"1px solid rgba(0,230,118,0.05)", paddingTop:"16px",
             display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:"8px" }}>
-            <span style={{ fontSize:"9px", color:"rgba(0,230,118,0.18)", fontFamily:"monospace" }}>
+            <span style={{ fontSize:"9px", color:"rgba(0,230,118,0.08)", fontFamily:"monospace" }}>
               © 2026 SAFUU_INTEL :: FEACC:959 :: EHRC:1488 :: POLICE:911
             </span>
-            <span style={{ fontSize:"9px", color:"rgba(0,230,118,0.18)", fontFamily:"monospace" }}>
+            <span style={{ fontSize:"9px", color:"rgba(0,230,118,0.08)", fontFamily:"monospace" }}>
               {dateStr} // safuu.net
             </span>
           </div>
