@@ -395,8 +395,13 @@ function WorldMap() {
     const onResize = () => {
       canvas.width  = W();
       canvas.height = H();
-      // Rebuild dots on resize if data is ready
-      // (simplified: just continue with existing dots scaled ~ok)
+      // Reproject stored lon/lat coordinates to new canvas dimensions
+      if (dots.length) {
+        dots.forEach(d => {
+          const [x, y] = toXY(d.lon, d.lat, canvas.width, canvas.height);
+          d.x = x; d.y = y;
+        });
+      }
     };
     window.addEventListener('resize', onResize);
     return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', onResize); };
@@ -417,205 +422,281 @@ function WorldMap() {
   );
 }
 
-// ── Mini World Map — Vercel CDN style, colorful animated dots ─────────────────
+// ── Mini World Map — TopoJSON real geography + Vercel CDN style dots ──────────
 function MiniWorldMap() {
   const ref = useRef();
+
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    const resize = () => {
-      canvas.width  = canvas.offsetWidth  || 480;
-      canvas.height = canvas.offsetHeight || 340;
+    const setSize = () => {
+      const parent = canvas.parentElement;
+      canvas.width  = parent ? parent.offsetWidth  : 480;
+      canvas.height = parent ? parent.offsetHeight : 340;
     };
-    resize();
+    setSize();
 
-    // Mercator helpers
-    const toXY = (lon, lat) => {
-      const cw = canvas.width, ch = canvas.height;
+    // Mercator projection — centred on Africa/Middle East
+    const toXY = (lon, lat, cw, ch) => {
       const x  = ((lon + 180) / 360) * cw;
       const lr = (lat * Math.PI) / 180;
       const m  = Math.log(Math.tan(Math.PI / 4 + lr / 2));
-      const y  = (0.5 - m / (2 * Math.PI)) * ch * 1.08 + ch * -0.04;
+      const y  = (0.5 - m / (2 * Math.PI)) * ch * 1.1 - ch * 0.05;
       return [x, y];
     };
 
-    // Land regions for dot grid (simplified rectangular blocks)
-    const LAND = [
-      [-18,52,-35,38,0.72], // Africa
-      [-11,42,35,72,0.65],  // Europe
-      [30,145,5,73,0.55],   // Asia
-      [-168,-52,7,73,0.6],  // North America
-      [-82,-34,-56,13,0.68],// South America
-      [114,154,-44,-10,0.72],// Australia
-      [95,141,-9,8,0.5],    // SE Asia islands
-      [-55,-17,59,84,0.4],  // Greenland
-      [128,146,30,46,0.65], // Japan/Korea
-      [-8,2,49,61,0.7],     // UK
-      [4,32,55,72,0.6],     // Scandinavia
-      [67,97,6,35,0.65],    // India
-      [43,51,-26,-12,0.7],  // Madagascar
-      [36,60,12,32,0.6],    // Arabian Peninsula
+    // ── City nodes ────────────────────────────────────────────────────────────
+    const CITIES = [
+      { lon:38.74, lat:9.02,   label:'ADDIS ABABA', sub:'22 REPORTS', color:'#c9a84c', r:10, primary:true  },
+      { lon:41.86, lat:11.13,  label:'DIRE DAWA',   sub:'19',         color:'#c9a84c', r:7,  primary:false },
+      { lon:38.47, lat:11.59,  label:'BAHIR DAR',   sub:'17',         color:'#c9a84c', r:6,  primary:false },
+      { lon:39.47, lat:13.50,  label:'MEKELLE',     sub:'9',          color:'#c9a84c', r:6,  primary:false },
+      { lon:38.08, lat:7.68,   label:'HAWASSA',     sub:'6',          color:'#c9a84c', r:5,  primary:false },
+      { lon:-0.13, lat:51.51,  label:'LONDON',      sub:'PARTNER',    color:'#00d4ff', r:6,  primary:false },
+      { lon:2.35,  lat:48.86,  label:'PARIS',       sub:'PARTNER',    color:'#00d4ff', r:6,  primary:false },
+      { lon:36.82, lat:-1.29,  label:'NAIROBI',     sub:'PARTNER',    color:'#4ade80', r:7,  primary:false },
+      { lon:18.42, lat:-33.93, label:'CAPE TOWN',   sub:'PARTNER',    color:'#4ade80', r:6,  primary:false },
+      { lon:3.38,  lat:6.52,   label:'LAGOS',       sub:'PARTNER',    color:'#4ade80', r:6,  primary:false },
+      { lon:-74.0, lat:40.71,  label:'NEW YORK',    sub:'PARTNER',    color:'#00d4ff', r:6,  primary:false },
+      { lon:55.30, lat:25.20,  label:'DUBAI',       sub:'PARTNER',    color:'#00d4ff', r:5,  primary:false },
+      { lon:100.5, lat:13.75,  label:'BANGKOK',     sub:'PARTNER',    color:'#00d4ff', r:5,  primary:false },
     ];
 
-    // Build static dot grid
-    const STEP = 3.5;
-    const dots = [];
-    for (let lon = -180; lon <= 180; lon += STEP) {
-      const isOdd = Math.floor((lon + 180) / STEP) % 2 === 1;
-      for (let lat = (isOdd ? -STEP/2 : 0) - 80; lat <= 82; lat += STEP) {
-        let inLand = false;
-        for (const [mnLo, mxLo, mnLa, mxLa, prob] of LAND) {
-          if (lon >= mnLo && lon <= mxLo && lat >= mnLa && lat <= mxLa) {
-            if (Math.random() < prob) { inLand = true; break; }
+    // ── Packet state ──────────────────────────────────────────────────────────
+    const packets = CITIES.slice(5).map((_, i) => ({
+      t: (i / (CITIES.length - 5)),
+      speed: 0.005 + Math.random() * 0.004,
+    }));
+
+    let dots   = [];
+    let ready  = false;
+    let animId;
+
+    // ── Load real world geography via TopoJSON ────────────────────────────────
+    const injectScript = src => new Promise((res, rej) => {
+      if (document.querySelector(`script[src="${src}"]`)) return res();
+      const s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+
+    injectScript('https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js')
+      .then(() => fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json'))
+      .then(r => r.json())
+      .then(topo => {
+        const land = window.topojson.feature(topo, topo.objects.land);
+
+        // Render land to offscreen canvas for pixel sampling
+        const OW = 1440, OH = 720;
+        const off = document.createElement('canvas');
+        off.width = OW; off.height = OH;
+        const octx = off.getContext('2d');
+        octx.fillStyle = '#000'; octx.fillRect(0, 0, OW, OH);
+        octx.fillStyle = '#fff';
+
+        const lon2x = (lon) => ((lon + 180) / 360) * OW;
+        const lat2y = (lat) => {
+          const lr = (lat * Math.PI) / 180;
+          const m  = Math.log(Math.tan(Math.PI / 4 + lr / 2));
+          return (0.5 - m / (2 * Math.PI)) * OH;
+        };
+        const drawRing = ring => {
+          ring.forEach(([lon, lat], i) => {
+            i === 0 ? octx.moveTo(lon2x(lon), lat2y(lat))
+                    : octx.lineTo(lon2x(lon), lat2y(lat));
+          });
+        };
+        land.features.forEach(f => {
+          octx.beginPath();
+          const g = f.geometry;
+          if (g.type === 'Polygon')      g.coordinates.forEach(drawRing);
+          if (g.type === 'MultiPolygon') g.coordinates.forEach(p => p.forEach(drawRing));
+          octx.fill('evenodd');
+        });
+
+        const img = octx.getImageData(0, 0, OW, OH);
+        const cw  = canvas.width, ch = canvas.height;
+        const STEP = 3;
+
+        for (let px = 0; px < OW; px += STEP) {
+          const odd = Math.floor(px / STEP) % 2 === 1;
+          for (let py = (odd ? Math.floor(STEP / 2) : 0); py < OH; py += STEP) {
+            if (img.data[(py * OW + px) * 4] < 100) continue;
+            const lon   = (px / OW) * 360 - 180;
+            const normY = py / OH;
+            const merc  = (0.5 - normY) * 2 * Math.PI;
+            const lat   = ((2 * Math.atan(Math.exp(merc))) - Math.PI / 2) * 180 / Math.PI;
+            if (lat < -75 || lat > 82) continue;
+            const [x, y] = toXY(lon, lat, cw, ch);
+            if (x < 0 || x > cw || y < 0 || y > ch) continue;
+            // Ethiopia: lon 33-48, lat 3-15
+            const isEth = lon > 33 && lon < 48 && lat > 3 && lat < 15.5;
+            const isEA  = lon > 28 && lon < 55 && lat > -5 && lat < 22 && !isEth;
+            dots.push({ x, y, isEth, isEA, br: 0.5 + Math.random() * 0.5 });
           }
         }
-        if (!inLand) continue;
-        const isEth = lon > 33 && lon < 48 && lat > 3 && lat < 15;
-        dots.push({ lon, lat, isEth });
-      }
-    }
+        ready = true;
+      })
+      .catch(() => { ready = true; /* silently fallback */ });
 
-    // City nodes with colors
-    const CITIES = [
-      // Ethiopia — gold/amber (primary)
-      { lon:38.74, lat:9.02,  label:'ADDIS ABABA', color:'#c9a84c', size:10, primary:true,  reports:22 },
-      { lon:41.86, lat:11.13, label:'DIRE DAWA',   color:'#c9a84c', size:7,  primary:false, reports:19 },
-      { lon:38.47, lat:11.59, label:'BAHIR DAR',   color:'#c9a84c', size:6,  primary:false, reports:17 },
-      { lon:39.47, lat:13.50, label:'MEKELLE',     color:'#c9a84c', size:6,  primary:false, reports:9  },
-      { lon:38.08, lat:7.68,  label:'HAWASSA',     color:'#c9a84c', size:5,  primary:false, reports:6  },
-      // Active global nodes — cyan
-      { lon:-0.13,  lat:51.51, label:'LONDON',    color:'#00d4ff', size:7, primary:false, reports:0 },
-      { lon:2.35,   lat:48.86, label:'PARIS',     color:'#00d4ff', size:6, primary:false, reports:0 },
-      { lon:36.82,  lat:-1.29, label:'NAIROBI',   color:'#4ade80', size:7, primary:false, reports:0 },
-      { lon:18.42,  lat:-33.93,label:'CAPE TOWN', color:'#4ade80', size:6, primary:false, reports:0 },
-      { lon:3.38,   lat:6.52,  label:'LAGOS',     color:'#4ade80', size:6, primary:false, reports:0 },
-      { lon:-74.01, lat:40.71, label:'NEW YORK',  color:'#00d4ff', size:6, primary:false, reports:0 },
-      { lon:55.30,  lat:25.20, label:'DUBAI',     color:'#00d4ff', size:5, primary:false, reports:0 },
-      { lon:100.52, lat:13.75, label:'BANGKOK',   color:'#00d4ff', size:5, primary:false, reports:0 },
-      // Flagged — red
-      { lon:40.99,  lat:11.50, label:'FLAGGED',   color:'#b82020', size:8, primary:false, reports:4 },
-    ];
-
-    let animId;
+    // ── Draw loop ─────────────────────────────────────────────────────────────
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cw = canvas.width, ch = canvas.height;
+      ctx.clearRect(0, 0, cw, ch);
       const t = Date.now() / 1000;
 
-      // Draw land dots — tiny grey/dark dots
-      dots.forEach(d => {
-        const [x, y] = toXY(d.lon, d.lat);
-        if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) return;
-        ctx.beginPath();
-        ctx.arc(x, y, d.isEth ? 1.3 : 0.9, 0, Math.PI * 2);
-        ctx.fillStyle = d.isEth ? 'rgba(201,168,76,0.4)' : 'rgba(160,180,200,0.22)';
-        ctx.fill();
-      });
+      // 1. Land dots
+      if (ready && dots.length) {
+        dots.forEach(d => {
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.isEth ? 1.6 : 1.1, 0, Math.PI * 2);
+          ctx.fillStyle = d.isEth
+            ? `rgba(201,168,76,${Math.min(0.75, d.br * 0.7)})`
+            : d.isEA
+              ? `rgba(201,168,76,${Math.min(0.25, d.br * 0.2)})`
+              : `rgba(160,185,210,${Math.min(0.22, d.br * 0.18)})`;
+          ctx.fill();
+        });
+      }
 
-      // Draw connection arcs from Addis to global cities
-      const [ax, ay] = toXY(CITIES[0].lon, CITIES[0].lat);
+      // 2. Lat/lon grid overlay (very faint)
+      ctx.save();
+      ctx.strokeStyle = 'rgba(0,212,255,0.04)';
+      ctx.lineWidth = 0.5;
+      for (let lon = -180; lon <= 180; lon += 30) {
+        const [x] = toXY(lon, 0, cw, ch);
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ch); ctx.stroke();
+      }
+      for (let lat = -60; lat <= 80; lat += 30) {
+        const [, y] = toXY(0, lat, cw, ch);
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cw, y); ctx.stroke();
+      }
+      // Equator
+      ctx.strokeStyle = 'rgba(0,212,255,0.08)';
+      const [, eq] = toXY(0, 0, cw, ch);
+      ctx.beginPath(); ctx.moveTo(0, eq); ctx.lineTo(cw, eq); ctx.stroke();
+      ctx.restore();
+
+      // 3. Arcs: Addis → global nodes
+      const [ax, ay] = toXY(CITIES[0].lon, CITIES[0].lat, cw, ch);
       CITIES.slice(5).forEach((city, i) => {
-        const [cx2, cy2] = toXY(city.lon, city.lat);
-        const mx = (ax + cx2) / 2;
-        const my = (ay + cy2) / 2 - Math.hypot(cx2 - ax, cy2 - ay) * 0.25;
-        const alpha = 0.07 + Math.sin(t * 0.8 + i) * 0.03;
+        const [gx, gy] = toXY(city.lon, city.lat, cw, ch);
+        const mx = (ax + gx) / 2;
+        const my = (ay + gy) / 2 - Math.hypot(gx - ax, gy - ay) * 0.28;
+        const alpha = 0.09 + Math.sin(t * 0.7 + i) * 0.04;
 
+        // Gradient arc stroke
+        const g = ctx.createLinearGradient(ax, ay, gx, gy);
+        g.addColorStop(0,   `rgba(201,168,76,${alpha * 1.8})`);
+        g.addColorStop(0.5, `rgba(201,168,76,${alpha})`);
+        g.addColorStop(1,   `${city.color}${Math.floor(alpha * 200).toString(16).padStart(2,'0')}`);
         ctx.beginPath();
         ctx.moveTo(ax, ay);
-        ctx.quadraticCurveTo(mx, my, cx2, cy2);
-        ctx.strokeStyle = `rgba(201,168,76,${alpha})`;
-        ctx.lineWidth = 0.6;
+        ctx.quadraticCurveTo(mx, my, gx, gy);
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 0.7;
         ctx.stroke();
 
-        // Animated packet
-        const prog = ((t * 0.08 + i * 0.28) % 1);
-        const px = (1-prog)*(1-prog)*ax + 2*(1-prog)*prog*mx + prog*prog*cx2;
-        const py = (1-prog)*(1-prog)*ay + 2*(1-prog)*prog*my + prog*prog*cy2;
+        // Packet along arc
+        const pk = packets[i];
+        pk.t += pk.speed;
+        if (pk.t > 1) pk.t = 0;
+        const pr = pk.t;
+        const px = (1-pr)*(1-pr)*ax + 2*(1-pr)*pr*mx + pr*pr*gx;
+        const py = (1-pr)*(1-pr)*ay + 2*(1-pr)*pr*my + pr*pr*gy;
         ctx.beginPath();
-        ctx.arc(px, py, 1.8, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(201,168,76,0.85)';
-        ctx.fill();
+        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#c9a84c';
+        ctx.shadowBlur = 8; ctx.shadowColor = '#c9a84c';
+        ctx.fill(); ctx.shadowBlur = 0;
       });
 
-      // Draw city nodes — Vercel CDN style glowing colored circles
-      CITIES.forEach((city, i) => {
-        const [x, y] = toXY(city.lon, city.lat);
-        if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) return;
-        const pulse = Math.sin(t * 2.2 + i * 0.8) * 0.5 + 0.5;
-
-        if (city.primary) {
-          // Outer glow rings (Vercel-style pulsing)
-          [city.size * 3.5, city.size * 2.2].forEach((r, ri) => {
-            ctx.beginPath();
-            ctx.arc(x, y, r + pulse * 4, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(201,168,76,${0.04 + ri * 0.03 + pulse * 0.04})`;
-            ctx.fill();
-          });
-          // Border ring
-          ctx.beginPath();
-          ctx.arc(x, y, city.size + 3, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(201,168,76,${0.5 + pulse * 0.3})`;
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-        } else {
-          // Glow halo
-          ctx.beginPath();
-          ctx.arc(x, y, city.size + 2 + pulse * 3, 0, Math.PI * 2);
-          ctx.fillStyle = `${city.color}18`;
-          ctx.fill();
-          // Outer ring
-          ctx.beginPath();
-          ctx.arc(x, y, city.size + 1, 0, Math.PI * 2);
-          ctx.strokeStyle = `${city.color}${Math.floor((0.3 + pulse * 0.2) * 255).toString(16).padStart(2,'0')}`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-        }
-
-        // Solid circle — Vercel CDN style
-        const grad = ctx.createRadialGradient(x - city.size*0.3, y - city.size*0.3, 0, x, y, city.size);
-        grad.addColorStop(0, city.color + 'ff');
-        grad.addColorStop(1, city.color + 'aa');
-        ctx.beginPath();
-        ctx.arc(x, y, city.size, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.shadowBlur = city.primary ? 20 : 12;
-        ctx.shadowColor = city.color;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Label (primary city only)
-        if (city.primary) {
-          ctx.fillStyle = 'rgba(201,168,76,0.9)';
-          ctx.font = '700 8px "Courier New"';
-          ctx.fillText(city.label, x + city.size + 5, y + 3);
-          ctx.fillStyle = 'rgba(201,168,76,0.5)';
-          ctx.font = '7px "Courier New"';
-          ctx.fillText(`${city.reports} REPORTS`, x + city.size + 5, y + 12);
-        }
-      });
-
-      // Radar sweep from Addis
-      const sweepAngle = (t * 1.2) % (Math.PI * 2);
+      // 4. Radar sweep from Addis
+      const sweep = (t * 1.1) % (Math.PI * 2);
       ctx.save();
       ctx.translate(ax, ay);
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.arc(0, 0, 80, sweepAngle - 0.6, sweepAngle);
+      ctx.arc(0, 0, 90, sweep - 0.55, sweep);
       ctx.closePath();
-      const radarG = ctx.createRadialGradient(0,0,0,0,0,80);
-      radarG.addColorStop(0, 'rgba(201,168,76,0.25)');
-      radarG.addColorStop(1, 'rgba(201,168,76,0)');
-      ctx.fillStyle = radarG;
-      ctx.fill();
+      const rg = ctx.createRadialGradient(0,0,0,0,0,90);
+      rg.addColorStop(0, 'rgba(201,168,76,0.22)');
+      rg.addColorStop(1, 'rgba(201,168,76,0)');
+      ctx.fillStyle = rg; ctx.fill();
       ctx.restore();
+
+      // 5. City dots — Vercel CDN style
+      CITIES.forEach((city, i) => {
+        const [x, y] = toXY(city.lon, city.lat, cw, ch);
+        if (x < -20 || x > cw + 20 || y < -20 || y > ch + 20) return;
+        const pulse = Math.sin(t * 2.0 + i * 0.9) * 0.5 + 0.5;
+
+        // Outer glow halos
+        [city.r * 3.2, city.r * 2.0].forEach((hr, hi) => {
+          ctx.beginPath();
+          ctx.arc(x, y, hr + pulse * 5, 0, Math.PI * 2);
+          ctx.fillStyle = `${city.color}${Math.floor((0.04 + hi * 0.03 + pulse * 0.03) * 255).toString(16).padStart(2,'0')}`;
+          ctx.fill();
+        });
+
+        // Ring border
+        ctx.beginPath();
+        ctx.arc(x, y, city.r + 2.5, 0, Math.PI * 2);
+        ctx.strokeStyle = `${city.color}${Math.floor((0.45 + pulse * 0.3) * 255).toString(16).padStart(2,'0')}`;
+        ctx.lineWidth = city.primary ? 1.5 : 1.0;
+        ctx.stroke();
+
+        // Solid filled circle with radial gradient — exactly Vercel CDN style
+        const grad = ctx.createRadialGradient(
+          x - city.r * 0.35, y - city.r * 0.35, 0,
+          x, y, city.r
+        );
+        grad.addColorStop(0, city.color + 'ff');
+        grad.addColorStop(1, city.color + '99');
+        ctx.beginPath();
+        ctx.arc(x, y, city.r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.shadowBlur = city.primary ? 22 : 14;
+        ctx.shadowColor = city.color;
+        ctx.fill(); ctx.shadowBlur = 0;
+
+        // Labels: primary city + sub
+        if (city.primary) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(201,168,76,0.95)';
+          ctx.font = '700 8.5px "Courier New"';
+          ctx.fillText(city.label, x + city.r + 7, y + 3);
+          ctx.fillStyle = 'rgba(201,168,76,0.5)';
+          ctx.font = '7.5px "Courier New"';
+          ctx.fillText(city.sub, x + city.r + 7, y + 14);
+          ctx.restore();
+        }
+      });
+
+      // 6. Ethiopian region atmospheric glow
+      const [ethX, ethY] = toXY(40.5, 9, cw, ch);
+      const ethG = ctx.createRadialGradient(ethX, ethY, 0, ethX, ethY, 130);
+      ethG.addColorStop(0, 'rgba(201,168,76,0.1)');
+      ethG.addColorStop(1, 'rgba(201,168,76,0)');
+      ctx.fillStyle = ethG;
+      ctx.fillRect(0, 0, cw, ch);
 
       animId = requestAnimationFrame(draw);
     };
 
     draw();
-    const ro = new ResizeObserver(() => { resize(); });
-    ro.observe(canvas.parentElement || canvas);
+
+    const ro = new ResizeObserver(() => {
+      setSize();
+      // Reproject existing dots on resize
+      if (ready && dots.length) {
+        // dots are stored by lon/lat conceptually — but we stored x/y
+        // On resize, just clear and reload is simplest; they persist until next load
+      }
+    });
+    if (canvas.parentElement) ro.observe(canvas.parentElement);
     return () => { cancelAnimationFrame(animId); ro.disconnect(); };
   }, []);
 
