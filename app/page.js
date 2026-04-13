@@ -33,6 +33,227 @@ function GeezRain() {
   return <canvas ref={ref} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.09, pointerEvents:"none" }}/>;
 }
 
+// ── World map dot-matrix background ──────────────────────────────────────────
+function WorldMap() {
+  const ref = useRef();
+  useEffect(() => {
+    const canvas = ref.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    // Simplified world landmass dot coordinates (Mercator projection, normalized 0-1)
+    // Each entry: [lon, lat] in degrees — converted to canvas x,y
+    const LAND_DOTS = [];
+
+    // Generate dot-grid world map from region bounding boxes
+    // Continental regions defined as [minLon, maxLon, minLat, maxLat, density]
+    const REGIONS = [
+      // Africa (Ethiopia highlighted)
+      [-18,52,-35,37,0.55],
+      // Europe
+      [-10,40,36,72,0.5],
+      // Asia
+      [25,145,-10,72,0.45],
+      // North America
+      [-168,-52,7,72,0.45],
+      // South America
+      [-82,-34,-56,13,0.5],
+      // Australia
+      [113,154,-44,-10,0.5],
+      // Greenland
+      [-54,-17,59,84,0.35],
+      // Southeast Asia islands
+      [95,141,-10,20,0.4],
+      // Japan/Korea
+      [128,146,30,46,0.5],
+      // UK/Ireland
+      [-10,2,50,61,0.6],
+      // Scandinavia
+      [4,32,55,71,0.55],
+      // Indonesia
+      [95,141,-8,6,0.45],
+      // Madagascar
+      [43,51,-26,-11,0.55],
+      // New Zealand
+      [166,178,-47,-34,0.55],
+      // Alaska
+      [-168,-130,55,72,0.4],
+      // Arabian Peninsula
+      [36,60,12,32,0.5],
+      // Indian subcontinent
+      [67,97,6,35,0.5],
+    ];
+
+    // Simple land mask — use a rough outline approach with random dots
+    // For each region, scatter dots at the density level
+    const GRID_RES = 1.8; // degrees per dot
+    for (let lon = -180; lon <= 180; lon += GRID_RES) {
+      for (let lat = -85; lat <= 85; lat += GRID_RES) {
+        // Check if in any region
+        let inLand = false;
+        for (const [minLon, maxLon, minLat, maxLat, den] of REGIONS) {
+          if (lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat) {
+            // Add some noise for organic shape
+            if (Math.random() < den) { inLand = true; break; }
+          }
+        }
+        // Ocean scatter (very sparse) — remove oceans
+        if (inLand) {
+          LAND_DOTS.push([lon, lat]);
+        }
+      }
+    }
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+
+    // Mercator projection helpers
+    const toXY = (lon, lat) => {
+      const x = ((lon + 180) / 360) * canvas.width;
+      // Mercator lat
+      const latR = lat * Math.PI / 180;
+      const merc = Math.log(Math.tan(Math.PI / 4 + latR / 2));
+      const y = (1 - (merc + Math.PI) / (2 * Math.PI)) * canvas.height * 0.85 + canvas.height * 0.08;
+      return [x, y];
+    };
+
+    // Key intelligence nodes — cities with corruption reports
+    const NODES = [
+      { lon:38.7468, lat:9.0250,  label:"ADDIS ABABA",  primary:true,  pulse:true  }, // Ethiopia capital
+      { lon:40.9983, lat:8.5594,  label:"DIRE DAWA",    primary:false, pulse:true  },
+      { lon:37.3980, lat:11.5946, label:"BAHIR DAR",    primary:false, pulse:false },
+      { lon:36.5693, lat:14.5595, label:"MEKELLE",      primary:false, pulse:true  },
+      { lon:37.9026, lat:7.6679,  label:"HAWASSA",      primary:false, pulse:false },
+      // Global anti-corruption nodes (other IACCC cities)
+      { lon:-0.1278, lat:51.5074, label:"LONDON",       primary:false, pulse:false },
+      { lon:2.3522,  lat:48.8566, label:"PARIS",        primary:false, pulse:false },
+      { lon:11.5720, lat:3.8480,  label:"YAOUNDE",      primary:false, pulse:false },
+      { lon:36.8219, lat:-1.2921, label:"NAIROBI",      primary:false, pulse:false },
+      { lon:18.4233, lat:-33.9249,label:"CAPE TOWN",    primary:false, pulse:false },
+      { lon:3.3792,  lat:6.5244,  label:"LAGOS",        primary:false, pulse:false },
+      { lon:-74.006, lat:40.7128, label:"NEW YORK",     primary:false, pulse:false },
+    ];
+
+    let id;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const t = Date.now() / 1000;
+
+      // Draw land dots
+      LAND_DOTS.forEach(([lon, lat]) => {
+        const [x, y] = toXY(lon, lat);
+        if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) return;
+        // Ethiopia region highlight — warmer gold
+        const isEth = lon > 33 && lon < 48 && lat > 3 && lat < 15;
+        ctx.beginPath();
+        ctx.arc(x, y, 1.1, 0, Math.PI * 2);
+        ctx.fillStyle = isEth
+          ? `rgba(201,168,76,0.35)`
+          : `rgba(0,212,255,0.09)`;
+        ctx.fill();
+      });
+
+      // Draw connection lines between Ethiopian cities and global nodes
+      NODES.filter(n => !n.primary).forEach(n => {
+        const eth = NODES[0];
+        const [x1, y1] = toXY(eth.lon, eth.lat);
+        const [x2, y2] = toXY(n.lon, n.lat);
+        // Animated packet along line
+        const progress = ((t * 0.12 + NODES.indexOf(n) * 0.3) % 1);
+        const px = x1 + (x2 - x1) * progress;
+        const py = y1 + (y2 - y1) * progress;
+
+        const alpha = 0.06 + Math.sin(t * 0.5 + NODES.indexOf(n)) * 0.03;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        // Curved arc
+        const mx = (x1 + x2) / 2;
+        const my = (y1 + y2) / 2 - Math.hypot(x2 - x1, y2 - y1) * 0.15;
+        ctx.quadraticCurveTo(mx, my, x2, y2);
+        ctx.strokeStyle = `rgba(201,168,76,${alpha})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+
+        // Data packet
+        ctx.beginPath();
+        ctx.arc(px, py, 2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(201,168,76,0.7)`;
+        ctx.fill();
+      });
+
+      // Draw nodes
+      NODES.forEach((n, i) => {
+        const [x, y] = toXY(n.lon, n.lat);
+        const pulse = Math.sin(t * 2 + i) * 0.5 + 0.5;
+
+        if (n.primary) {
+          // Primary: Addis Ababa — main hub with strong glow
+          // Outer ring pulse
+          ctx.beginPath();
+          ctx.arc(x, y, 8 + pulse * 8, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(201,168,76,${0.05 + pulse * 0.1})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(x, y, 4 + pulse * 3, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(201,168,76,${0.15 + pulse * 0.2})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          // Core
+          ctx.beginPath();
+          ctx.arc(x, y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = "#c9a84c";
+          ctx.fill();
+          // Label
+          ctx.fillStyle = "rgba(201,168,76,0.8)";
+          ctx.font = "bold 8px 'Courier New'";
+          ctx.fillText(n.label, x + 8, y - 4);
+        } else if (n.pulse) {
+          // Secondary Ethiopian cities — cyan pulse
+          ctx.beginPath();
+          ctx.arc(x, y, 3 + pulse * 4, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(0,212,255,${0.08 + pulse * 0.12})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,212,255,0.6)`;
+          ctx.fill();
+        } else {
+          // Global nodes — small dim dots
+          ctx.beginPath();
+          ctx.arc(x, y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,212,255,0.2)`;
+          ctx.fill();
+        }
+      });
+
+      // Ethiopia border highlight — very subtle box glow
+      const [ethX, ethY] = toXY(41, 9);
+      const [ethX2, ethY2] = toXY(34, 15);
+      const grd = ctx.createRadialGradient(ethX, ethY, 0, ethX, ethY, 120);
+      grd.addColorStop(0, "rgba(201,168,76,0.06)");
+      grd.addColorStop(1, "rgba(201,168,76,0)");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      id = requestAnimationFrame(draw);
+    };
+    draw();
+    window.addEventListener("resize", resize);
+    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", resize); };
+  }, []);
+
+  return (
+    <canvas ref={ref} style={{
+      position:"absolute", inset:0, width:"100%", height:"100%",
+      zIndex:1, pointerEvents:"none", opacity:0.9,
+    }}/>
+  );
+}
+
 // ── Network node visualization (collaborative reporting) ──────────────────────
 function NetworkCanvas() {
   const ref = useRef();
