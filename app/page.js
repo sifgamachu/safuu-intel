@@ -422,7 +422,7 @@ function WorldMap() {
   );
 }
 
-// ── ENHANCED Mini World Map — countries, fills, borders, particles ─────────────
+// ── WORLD-CLASS Intelligence Map ─────────────────────────────────────────────
 function MiniWorldMap() {
   const ref = useRef();
 
@@ -434,11 +434,11 @@ function MiniWorldMap() {
     const setSize = () => {
       const p = canvas.parentElement;
       canvas.width  = p ? p.offsetWidth  : 520;
-      canvas.height = p ? p.offsetHeight : 360;
+      canvas.height = p ? p.offsetHeight : 380;
     };
     setSize();
 
-    // ── Mercator ──────────────────────────────────────────────────────────────
+    // Mercator
     const toXY = (lon, lat, cw, ch) => {
       const x  = ((lon + 180) / 360) * cw;
       const lr = (lat * Math.PI) / 180;
@@ -447,422 +447,484 @@ function MiniWorldMap() {
       return [x, y];
     };
 
-    // ── City data ─────────────────────────────────────────────────────────────
+    // City nodes
     const CITIES = [
-      { lon:38.74,  lat:9.02,   label:'ADDIS ABABA', sub:'22 REPORTS · FEACC',    color:'#c9a84c', r:11, primary:true  },
-      { lon:41.86,  lat:11.13,  label:'DIRE DAWA',   sub:'19 REPORTS',             color:'#f59e0b', r:7.5,primary:false },
-      { lon:38.47,  lat:11.59,  label:'BAHIR DAR',   sub:'17 REPORTS',             color:'#f59e0b', r:7,  primary:false },
-      { lon:39.47,  lat:13.50,  label:'MEKELLE',     sub:'9 REPORTS',              color:'#f59e0b', r:6,  primary:false },
-      { lon:38.08,  lat:7.68,   label:'HAWASSA',     sub:'6 REPORTS',              color:'#f59e0b', r:5.5,primary:false },
-      { lon:34.87,  lat:9.60,   label:'GAMBELA',     sub:'4 REPORTS',              color:'#f59e0b', r:4.5,primary:false },
-      { lon:-0.13,  lat:51.51,  label:'LONDON',      sub:'PARTNER NODE',           color:'#38bdf8', r:6.5,primary:false },
-      { lon:2.35,   lat:48.86,  label:'PARIS',       sub:'PARTNER NODE',           color:'#38bdf8', r:6,  primary:false },
-      { lon:36.82,  lat:-1.29,  label:'NAIROBI',     sub:'PARTNER NODE',           color:'#34d399', r:7,  primary:false },
-      { lon:18.42,  lat:-33.93, label:'CAPE TOWN',   sub:'PARTNER NODE',           color:'#34d399', r:6,  primary:false },
-      { lon:3.38,   lat:6.52,   label:'LAGOS',       sub:'PARTNER NODE',           color:'#34d399', r:6.5,primary:false },
-      { lon:-74.0,  lat:40.71,  label:'NEW YORK',    sub:'PARTNER NODE',           color:'#38bdf8', r:6,  primary:false },
-      { lon:55.30,  lat:25.20,  label:'DUBAI',       sub:'PARTNER NODE',           color:'#38bdf8', r:5.5,primary:false },
-      { lon:100.52, lat:13.75,  label:'BANGKOK',     sub:'PARTNER NODE',           color:'#38bdf8', r:5,  primary:false },
-      { lon:37.62,  lat:55.75,  label:'MOSCOW',      sub:'PARTNER NODE',           color:'#38bdf8', r:5.5,primary:false },
+      { lon:38.74,  lat:9.02,   label:'ADDIS ABABA', sub:'22 CASES · FEACC',  color:'#f59e0b', size:11, tier:0 },
+      { lon:41.86,  lat:11.13,  label:'DIRE DAWA',   sub:'19 REPORTS',         color:'#fbbf24', size:7,  tier:1 },
+      { lon:38.47,  lat:11.59,  label:'BAHIR DAR',   sub:'17 REPORTS',         color:'#fbbf24', size:6.5,tier:1 },
+      { lon:39.47,  lat:13.50,  label:'MEKELLE',     sub:'9 REPORTS',          color:'#fbbf24', size:6,  tier:1 },
+      { lon:38.08,  lat:7.68,   label:'HAWASSA',     sub:'6 REPORTS',          color:'#fbbf24', size:5.5,tier:1 },
+      { lon:36.82,  lat:-1.29,  label:'NAIROBI',     sub:'PARTNER',            color:'#34d399', size:6.5,tier:2 },
+      { lon:3.38,   lat:6.52,   label:'LAGOS',       sub:'PARTNER',            color:'#34d399', size:6,  tier:2 },
+      { lon:18.42,  lat:-33.93, label:'CAPE TOWN',   sub:'PARTNER',            color:'#34d399', size:5.5,tier:2 },
+      { lon:-0.13,  lat:51.51,  label:'LONDON',      sub:'PARTNER',            color:'#38bdf8', size:6,  tier:2 },
+      { lon:2.35,   lat:48.86,  label:'PARIS',       sub:'PARTNER',            color:'#38bdf8', size:5.5,tier:2 },
+      { lon:-74.0,  lat:40.71,  label:'NEW YORK',    sub:'PARTNER',            color:'#38bdf8', size:6,  tier:2 },
+      { lon:55.30,  lat:25.20,  label:'DUBAI',       sub:'PARTNER',            color:'#a78bfa', size:5.5,tier:2 },
+      { lon:100.52, lat:13.75,  label:'BANGKOK',     sub:'PARTNER',            color:'#a78bfa', size:5,  tier:2 },
+      { lon:37.62,  lat:55.75,  label:'MOSCOW',      sub:'PARTNER',            color:'#38bdf8', size:5,  tier:2 },
     ];
 
-    // ── Particle trail system ─────────────────────────────────────────────────
-    const ARCS = CITIES.slice(6).map((city, i) => ({
+    // Arc particle system — 3 particles per arc in trailing comet formation
+    const ARCS = CITIES.slice(5).map((city, i) => ({
       city,
-      particles: Array.from({length: 4}, (_, pi) => ({
-        t: (pi / 4) + (i * 0.18),
-        speed: 0.004 + Math.random() * 0.003,
-        size: 1.5 + Math.random() * 1.5,
-        alpha: 0.4 + Math.random() * 0.5,
+      particles: Array.from({length:5}, (_, pi) => ({
+        t: (i * 0.22 + pi * 0.08) % 1,
+        speed: 0.0045 + pi * 0.0008,
+        r: 2.8 - pi * 0.4,
+        a: 0.9 - pi * 0.15,
       })),
     }));
 
-    // ── State ─────────────────────────────────────────────────────────────────
-    let landDots     = [];   // {x,y,lon,lat,isEth,isEA,br}
-    let countryPaths = [];   // [{path2d, isEth, isSub}] — for fills + borders
+    // State
+    let landDots     = [];
+    let ethDots      = [];   // separate for glow pass
+    let countryPaths = [];
+    let ethPath      = null; // Ethiopia specific
     let ready        = false;
     let animId;
+    let scanY        = 0;
 
-    // ── Load data ─────────────────────────────────────────────────────────────
-    const injectScript = src => new Promise((res, rej) => {
+    const inject = src => new Promise((res,rej) => {
       if (document.querySelector(`script[src="${src}"]`)) return res();
       const s = document.createElement('script');
-      s.src = src; s.onload = res; s.onerror = rej;
+      s.src=src; s.onload=res; s.onerror=rej;
       document.head.appendChild(s);
     });
 
-    injectScript('https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js')
-      .then(() => Promise.all([
-        fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(r => r.json()),
-      ]))
-      .then(([topo]) => {
-        const cw = canvas.width, ch = canvas.height;
+    inject('https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js')
+      .then(() => fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(r=>r.json()))
+      .then(topo => {
         const countries = window.topojson.feature(topo, topo.objects.countries);
+        const cw = canvas.width, ch = canvas.height;
 
-        // ── Build country Path2D objects + fills ─────────────────────────────
-        const buildPath = (coords) => {
-          const path = new Path2D();
-          coords.forEach((ring) => {
-            ring.forEach(([lon, lat], i) => {
-              const [x, y] = toXY(lon, lat, cw, ch);
-              i === 0 ? path.moveTo(x, y) : path.lineTo(x, y);
-            });
-            path.closePath();
-          });
-          return path;
-        };
-
-        // Ethiopia ISO numeric code is 231
-        countries.features.forEach(f => {
-          const id = parseInt(f.id);
-          const g  = f.geometry;
-          const isEth = id === 231;
-          // East Africa neighbors
-          const isNeighbor = [706,728,646,404,800,276,729,288].includes(id);
-          let path2d = null;
-          try {
-            if (g.type === 'Polygon')      path2d = buildPath(g.coordinates);
-            else if (g.type === 'MultiPolygon') {
-              path2d = new Path2D();
-              g.coordinates.forEach(poly => {
-                const p = buildPath(poly);
-                path2d.addPath(p);
-              });
-            }
-          } catch(e) {}
-          if (path2d) countryPaths.push({ path2d, isEth, isNeighbor });
-        });
-
-        // ── Build dot grid via pixel sampling ────────────────────────────────
-        const OW = 1440, OH = 720;
-        const off = document.createElement('canvas');
-        off.width = OW; off.height = OH;
-        const octx = off.getContext('2d');
-        octx.fillStyle = '#000'; octx.fillRect(0, 0, OW, OH);
-        octx.fillStyle = '#fff';
-
-        const lon2x = lon => ((lon + 180) / 360) * OW;
+        // Geometry helpers
+        const lon2x = lon => ((lon+180)/360)*1440;
         const lat2y = lat => {
-          const lr = (lat * Math.PI) / 180;
-          const m  = Math.log(Math.tan(Math.PI / 4 + lr / 2));
-          return (0.5 - m / (2 * Math.PI)) * OH;
+          const lr=(lat*Math.PI)/180;
+          const m=Math.log(Math.tan(Math.PI/4+lr/2));
+          return (0.5-m/(2*Math.PI))*720;
         };
-        const drawRing = (ring, octx) => {
-          ring.forEach(([lon, lat], i) => {
-            i === 0 ? octx.moveTo(lon2x(lon), lat2y(lat))
-                    : octx.lineTo(lon2x(lon), lat2y(lat));
+        const drawRing = (ring, c) => {
+          ring.forEach(([lon,lat],i) => {
+            const [x,y]=toXY(lon,lat,cw,ch);
+            i===0?c.moveTo(x,y):c.lineTo(x,y);
+          });
+        };
+        const offRing = (ring, c) => {
+          ring.forEach(([lon,lat],i) => {
+            i===0?c.moveTo(lon2x(lon),lat2y(lat)):c.lineTo(lon2x(lon),lat2y(lat));
           });
         };
 
+        // Country paths for rendering
+        const NEIGHBORS = [706,728,646,404,800,276,729];
         countries.features.forEach(f => {
-          octx.beginPath();
-          const g = f.geometry;
-          if (g.type === 'Polygon')      g.coordinates.forEach(r => drawRing(r, octx));
-          if (g.type === 'MultiPolygon') g.coordinates.forEach(p => p.forEach(r => drawRing(r, octx)));
-          octx.fill('evenodd');
+          const id=parseInt(f.id);
+          const g=f.geometry;
+          const isEth=id===231;
+          const isNeigh=NEIGHBORS.includes(id);
+          let path=new Path2D();
+          const go=(g)=>{
+            if(g.type==='Polygon') g.coordinates.forEach(r=>{path.moveTo(0,0);drawRing(r,path);path.closePath();});
+            else if(g.type==='MultiPolygon') g.coordinates.forEach(p=>p.forEach(r=>{path.moveTo(0,0);drawRing(r,path);path.closePath();}));
+          };
+          try{ go(g); }catch(e){}
+          if(isEth) ethPath=path;
+          countryPaths.push({path,isEth,isNeigh});
         });
 
-        const img  = octx.getImageData(0, 0, OW, OH);
-        const STEP = 3;
-        for (let px = 0; px < OW; px += STEP) {
-          const odd = Math.floor(px / STEP) % 2 === 1;
-          for (let py = (odd ? Math.floor(STEP/2) : 0); py < OH; py += STEP) {
-            if (img.data[(py * OW + px) * 4] < 100) continue;
-            const lon   = (px / OW) * 360 - 180;
-            const normY = py / OH;
-            const merc  = (0.5 - normY) * 2 * Math.PI;
-            const lat   = ((2 * Math.atan(Math.exp(merc))) - Math.PI/2) * 180/Math.PI;
-            if (lat < -75 || lat > 82) continue;
-            const [x, y] = toXY(lon, lat, cw, ch);
-            if (x < 0 || x > cw || y < 0 || y > ch) continue;
-            const isEth = lon > 33 && lon < 48 && lat > 3 && lat < 15.5;
-            const isEA  = lon > 24 && lon < 55 && lat > -8 && lat < 23 && !isEth;
-            landDots.push({ x, y, lon, lat, isEth, isEA, br: 0.5 + Math.random()*0.5 });
+        // Offscreen pixel sampling
+        const OW=1440, OH=720;
+        const off=document.createElement('canvas');
+        off.width=OW; off.height=OH;
+        const oc=off.getContext('2d');
+        oc.fillStyle='#000'; oc.fillRect(0,0,OW,OH);
+        oc.fillStyle='#fff';
+        countries.features.forEach(f=>{
+          oc.beginPath();
+          const g=f.geometry;
+          const dr=(g,oc)=>{
+            if(g.type==='Polygon') g.coordinates.forEach(r=>offRing(r,oc));
+            else if(g.type==='MultiPolygon') g.coordinates.forEach(p=>p.forEach(r=>offRing(r,oc)));
+          };
+          try{dr(g,oc);}catch(e){}
+          oc.fill('evenodd');
+        });
+
+        const img=oc.getImageData(0,0,OW,OH);
+        const STEP=3;
+        for(let px=0;px<OW;px+=STEP){
+          const odd=Math.floor(px/STEP)%2===1;
+          for(let py=(odd?Math.floor(STEP/2):0);py<OH;py+=STEP){
+            if(img.data[(py*OW+px)*4]<100) continue;
+            const lon=(px/OW)*360-180;
+            const normY=py/OH;
+            const merc=(0.5-normY)*2*Math.PI;
+            const lat=((2*Math.atan(Math.exp(merc)))-Math.PI/2)*180/Math.PI;
+            if(lat<-75||lat>82) continue;
+            const [x,y]=toXY(lon,lat,cw,ch);
+            if(x<0||x>cw||y<0||y>ch) continue;
+            const isEth=lon>33&&lon<48&&lat>3&&lat<15.5;
+            const isEA=lon>25&&lon<55&&lat>-8&&lat<23&&!isEth;
+            const d={x,y,lon,lat,isEth,isEA,br:0.5+Math.random()*0.5};
+            landDots.push(d);
+            if(isEth) ethDots.push(d);
           }
         }
-        ready = true;
-      })
-      .catch(() => { ready = true; });
+        ready=true;
+      }).catch(()=>{ready=true;});
 
-    // ── Draw loop ─────────────────────────────────────────────────────────────
     const draw = () => {
-      const cw = canvas.width, ch = canvas.height;
-      ctx.clearRect(0, 0, cw, ch);
-      const t = Date.now() / 1000;
+      const cw=canvas.width, ch=canvas.height;
+      ctx.clearRect(0,0,cw,ch);
+      const t=Date.now()/1000;
 
-      // 1. Country fills (very subtle)
-      if (ready && countryPaths.length) {
-        countryPaths.forEach(({ path2d, isEth, isNeighbor }) => {
-          if (isEth) {
-            // Ethiopia: golden fill
-            ctx.fillStyle = 'rgba(201,168,76,0.10)';
-            ctx.fill(path2d, 'evenodd');
-            // Gold border
-            ctx.strokeStyle = 'rgba(201,168,76,0.55)';
-            ctx.lineWidth   = 1.2;
-            ctx.stroke(path2d);
-          } else if (isNeighbor) {
-            // Neighbors: slight warm tint
-            ctx.fillStyle   = 'rgba(201,168,76,0.03)';
-            ctx.fill(path2d, 'evenodd');
-            ctx.strokeStyle = 'rgba(201,168,76,0.15)';
-            ctx.lineWidth   = 0.5;
-            ctx.stroke(path2d);
-          } else {
-            // World: very faint borders
-            ctx.strokeStyle = 'rgba(100,160,200,0.06)';
-            ctx.lineWidth   = 0.4;
-            ctx.stroke(path2d);
+      // ── 0. Deep ocean gradient background ──────────────────────────────────
+      const bg=ctx.createLinearGradient(0,0,0,ch);
+      bg.addColorStop(0,'#010810');
+      bg.addColorStop(0.5,'#020c14');
+      bg.addColorStop(1,'#010608');
+      ctx.fillStyle=bg; ctx.fillRect(0,0,cw,ch);
+
+      // ── 1. Country fills ───────────────────────────────────────────────────
+      if(ready && countryPaths.length){
+        // All countries — very subtle fill
+        countryPaths.forEach(({path,isEth,isNeigh})=>{
+          if(!isEth&&!isNeigh){
+            ctx.fillStyle='rgba(20,50,80,0.35)';
+            ctx.fill(path,'evenodd');
+            ctx.strokeStyle='rgba(0,180,220,0.08)';
+            ctx.lineWidth=0.4;
+            ctx.stroke(path);
           }
         });
+        // Neighbors warm
+        countryPaths.filter(c=>c.isNeigh).forEach(({path})=>{
+          ctx.fillStyle='rgba(201,168,76,0.05)';
+          ctx.fill(path,'evenodd');
+          ctx.strokeStyle='rgba(201,168,76,0.18)';
+          ctx.lineWidth=0.6;
+          ctx.stroke(path);
+        });
+        // Ethiopia — GOLD FILL
+        if(ethPath){
+          // Animated shimmer fill
+          const shimmer=(Math.sin(t*0.8)*0.5+0.5)*0.06+0.08;
+          ctx.fillStyle=`rgba(201,168,76,${shimmer})`;
+          ctx.fill(ethPath,'evenodd');
+          // Glowing border
+          for(let blur=0;blur<3;blur++){
+            ctx.save();
+            ctx.shadowBlur=12+blur*8;
+            ctx.shadowColor='rgba(201,168,76,0.9)';
+            ctx.strokeStyle=`rgba(201,168,76,${0.6-blur*0.15})`;
+            ctx.lineWidth=1.5-blur*0.3;
+            ctx.stroke(ethPath);
+            ctx.restore();
+          }
+        }
       }
 
-      // 2. Land dots — hex grid
-      if (ready && landDots.length) {
-        landDots.forEach(d => {
-          const flicker = d.br + Math.sin(t * 1.4 + d.x * 0.05) * 0.06;
+      // ── 2. Land dots ───────────────────────────────────────────────────────
+      if(ready&&landDots.length){
+        // World dots
+        landDots.forEach(d=>{
+          if(d.isEth||d.isEA) return;
           ctx.beginPath();
-          ctx.arc(d.x, d.y, d.isEth ? 1.7 : 1.1, 0, Math.PI*2);
-          ctx.fillStyle = d.isEth
-            ? `rgba(201,168,76,${Math.min(0.85, flicker * 0.82)})`
-            : d.isEA
-              ? `rgba(201,168,76,${Math.min(0.30, flicker * 0.22)})`
-              : `rgba(155,185,210,${Math.min(0.20, flicker * 0.17)})`;
+          ctx.arc(d.x,d.y,0.85,0,Math.PI*2);
+          ctx.fillStyle=`rgba(40,120,180,${0.12+d.br*0.06})`;
+          ctx.fill();
+        });
+        // East Africa warm
+        landDots.forEach(d=>{
+          if(!d.isEA) return;
+          ctx.beginPath();
+          ctx.arc(d.x,d.y,1.0,0,Math.PI*2);
+          ctx.fillStyle=`rgba(201,168,76,${0.18+d.br*0.1})`;
+          ctx.fill();
+        });
+        // Ethiopia — gold, bright, with flicker
+        ethDots.forEach(d=>{
+          const fl=d.br+Math.sin(t*2+d.x*0.04)*0.1;
+          ctx.beginPath();
+          ctx.arc(d.x,d.y,1.4,0,Math.PI*2);
+          ctx.fillStyle=`rgba(251,191,36,${Math.min(0.85,fl*0.75)})`;
           ctx.fill();
         });
       }
 
-      // 3. Lat/lon grid
+      // ── 3. Lat/lon dashed grid ─────────────────────────────────────────────
       ctx.save();
-      ctx.setLineDash([2, 6]);
-      ctx.strokeStyle = 'rgba(0,212,255,0.05)';
-      ctx.lineWidth = 0.5;
-      for (let lon = -150; lon <= 180; lon += 30) {
-        const [x] = toXY(lon, 0, cw, ch);
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ch); ctx.stroke();
+      ctx.setLineDash([1,8]);
+      ctx.strokeStyle='rgba(0,200,255,0.04)';
+      ctx.lineWidth=0.5;
+      for(let lon=-150;lon<=180;lon+=30){
+        const [x]=toXY(lon,0,cw,ch);
+        ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,ch);ctx.stroke();
       }
-      for (let lat = -60; lat <= 80; lat += 30) {
-        const [, y] = toXY(0, lat, cw, ch);
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cw, y); ctx.stroke();
+      for(let lat=-60;lat<=80;lat+=30){
+        const [,y]=toXY(0,lat,cw,ch);
+        ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cw,y);ctx.stroke();
       }
       ctx.setLineDash([]);
-      // Equator solid
-      ctx.strokeStyle = 'rgba(0,212,255,0.10)';
-      ctx.lineWidth = 0.6;
-      const [, eqY] = toXY(0, 0, cw, ch);
-      ctx.beginPath(); ctx.moveTo(0, eqY); ctx.lineTo(cw, eqY); ctx.stroke();
+      // Equator
+      ctx.strokeStyle='rgba(0,212,255,0.12)';ctx.lineWidth=0.6;
+      const [,eqY]=toXY(0,0,cw,ch);
+      ctx.beginPath();ctx.moveTo(0,eqY);ctx.lineTo(cw,eqY);ctx.stroke();
       // Tropic of Cancer
-      ctx.strokeStyle = 'rgba(201,168,76,0.08)';
-      const [, tropY] = toXY(0, 23.5, cw, ch);
-      ctx.beginPath(); ctx.moveTo(0, tropY); ctx.lineTo(cw, tropY); ctx.stroke();
+      ctx.strokeStyle='rgba(201,168,76,0.10)';
+      const [,trocY]=toXY(0,23.5,cw,ch);
+      ctx.beginPath();ctx.moveTo(0,trocY);ctx.lineTo(cw,trocY);ctx.stroke();
       ctx.restore();
 
-      // 4. Arc particle trails
-      const [ax, ay] = toXY(CITIES[0].lon, CITIES[0].lat, cw, ch);
-      ARCS.forEach(({ city, particles }, ai) => {
-        const [gx, gy] = toXY(city.lon, city.lat, cw, ch);
-        const mx = (ax + gx) / 2;
-        const my = (ay + gy) / 2 - Math.hypot(gx - ax, gy - ay) * 0.30;
-        const baseAlpha = 0.07 + Math.sin(t * 0.6 + ai) * 0.03;
+      // ── 4. Arcs + particle trails ──────────────────────────────────────────
+      const [ax,ay]=toXY(CITIES[0].lon,CITIES[0].lat,cw,ch);
+      ARCS.forEach(({city,particles})=>{
+        const [gx,gy]=toXY(city.lon,city.lat,cw,ch);
+        const mx=(ax+gx)/2, my=(ay+gy)/2-Math.hypot(gx-ax,gy-ay)*0.30;
 
-        // Arc line with gradient
-        const g = ctx.createLinearGradient(ax, ay, gx, gy);
-        g.addColorStop(0,   `rgba(201,168,76,${baseAlpha * 2.2})`);
-        g.addColorStop(0.45,`rgba(201,168,76,${baseAlpha})`);
-        g.addColorStop(1,   `${city.color}${Math.floor(baseAlpha * 220).toString(16).padStart(2,'0')}`);
-        ctx.beginPath();
-        ctx.moveTo(ax, ay);
-        ctx.quadraticCurveTo(mx, my, gx, gy);
-        ctx.strokeStyle = g;
-        ctx.lineWidth   = 0.8;
-        ctx.stroke();
+        // Arc line
+        const ag=ctx.createLinearGradient(ax,ay,gx,gy);
+        const base=0.06+Math.sin(t*0.7+ARCS.indexOf(arguments))*0.02;
+        ag.addColorStop(0,`rgba(251,191,36,0.22)`);
+        ag.addColorStop(0.4,`rgba(201,168,76,0.10)`);
+        ag.addColorStop(1,`${city.color}18`);
+        ctx.beginPath();ctx.moveTo(ax,ay);
+        ctx.quadraticCurveTo(mx,my,gx,gy);
+        ctx.strokeStyle=ag;ctx.lineWidth=0.7;ctx.stroke();
 
-        // Multiple particles per arc — creates trail effect
-        particles.forEach(pk => {
-          pk.t += pk.speed;
-          if (pk.t > 1) pk.t = 0;
-          const pr = pk.t;
-          const px = (1-pr)*(1-pr)*ax + 2*(1-pr)*pr*mx + pr*pr*gx;
-          const py = (1-pr)*(1-pr)*ay + 2*(1-pr)*pr*my + pr*pr*gy;
-          ctx.beginPath();
-          ctx.arc(px, py, pk.size, 0, Math.PI*2);
-          ctx.fillStyle = `rgba(201,168,76,${pk.alpha * (0.5 + (1-pr) * 0.5)})`;
-          ctx.shadowBlur  = 6;
-          ctx.shadowColor = '#c9a84c';
-          ctx.fill();
-          ctx.shadowBlur = 0;
+        // Comet particles
+        particles.forEach((pk,pi)=>{
+          pk.t+=pk.speed;
+          if(pk.t>1) pk.t=0;
+          const pr=pk.t;
+          const px=(1-pr)*(1-pr)*ax+2*(1-pr)*pr*mx+pr*pr*gx;
+          const py=(1-pr)*(1-pr)*ay+2*(1-pr)*pr*my+pr*pr*gy;
+          const fade=1-pr*0.4; // brighter near origin
+          ctx.beginPath();ctx.arc(px,py,pk.r*fade,0,Math.PI*2);
+          ctx.fillStyle=`rgba(251,191,36,${pk.a*fade})`;
+          if(pi===0){ctx.shadowBlur=10;ctx.shadowColor='#fbbf24';}
+          ctx.fill();ctx.shadowBlur=0;
         });
       });
 
-      // 5. Radar from Addis
-      const sweep = (t * 1.0) % (Math.PI * 2);
-      ctx.save();
-      ctx.translate(ax, ay);
-      // Outer circle
-      ctx.beginPath();
-      ctx.arc(0, 0, 100, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(201,168,76,0.08)';
-      ctx.lineWidth = 0.7;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(0, 0, 60, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(201,168,76,0.10)';
-      ctx.lineWidth = 0.6;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(0, 0, 30, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(201,168,76,0.14)';
-      ctx.lineWidth = 0.6;
-      ctx.stroke();
+      // ── 5. Radar from Addis ────────────────────────────────────────────────
+      const sweep=(t*0.9)%(Math.PI*2);
+      ctx.save();ctx.translate(ax,ay);
+      // Concentric rings
+      [28,55,90,130].forEach((r,ri)=>{
+        ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);
+        ctx.strokeStyle=`rgba(201,168,76,${0.12-ri*0.02})`;
+        ctx.lineWidth=0.6;ctx.stroke();
+      });
+      // Cross hairs
+      ctx.strokeStyle='rgba(201,168,76,0.12)';ctx.lineWidth=0.5;
+      ctx.beginPath();ctx.moveTo(-130,0);ctx.lineTo(130,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,-130);ctx.lineTo(0,130);ctx.stroke();
       // Sweep wedge
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.arc(0, 0, 100, sweep - 0.65, sweep);
-      ctx.closePath();
-      const rg = ctx.createRadialGradient(0,0,0,0,0,100);
-      rg.addColorStop(0, 'rgba(201,168,76,0.30)');
-      rg.addColorStop(0.6,'rgba(201,168,76,0.08)');
-      rg.addColorStop(1, 'rgba(201,168,76,0)');
-      ctx.fillStyle = rg; ctx.fill();
-      // Sweep line
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(Math.cos(sweep) * 100, Math.sin(sweep) * 100);
-      ctx.strokeStyle = 'rgba(201,168,76,0.5)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,0);
+      ctx.arc(0,0,130,sweep-0.5,sweep);ctx.closePath();
+      const rg=ctx.createRadialGradient(0,0,0,0,0,130);
+      rg.addColorStop(0,'rgba(201,168,76,0.35)');
+      rg.addColorStop(0.5,'rgba(201,168,76,0.12)');
+      rg.addColorStop(1,'rgba(201,168,76,0)');
+      ctx.fillStyle=rg;ctx.fill();
+      // Sweep leading line
+      ctx.beginPath();ctx.moveTo(0,0);
+      ctx.lineTo(Math.cos(sweep)*130,Math.sin(sweep)*130);
+      ctx.strokeStyle='rgba(201,168,76,0.55)';ctx.lineWidth=1.2;ctx.stroke();
       ctx.restore();
 
-      // 6. City dots — Vercel CDN style + enhanced
-      CITIES.forEach((city, i) => {
-        const [x, y] = toXY(city.lon, city.lat, cw, ch);
-        if (x < -30 || x > cw + 30 || y < -30 || y > ch + 30) return;
-        const pulse  = Math.sin(t * 1.8 + i * 1.1) * 0.5 + 0.5;
-        const hex    = city.color;
+      // ── 6. City markers ────────────────────────────────────────────────────
+      CITIES.forEach((city,i)=>{
+        const [x,y]=toXY(city.lon,city.lat,cw,ch);
+        if(x<-40||x>cw+40||y<-40||y>ch+40) return;
+        const pulse=Math.sin(t*1.8+i*1.2)*0.5+0.5;
+        const hex=city.color;
 
-        // Outer atmosphere halos
-        [city.r * 3.8, city.r * 2.5, city.r * 1.7].forEach((hr, hi) => {
-          ctx.beginPath();
-          ctx.arc(x, y, hr + pulse * (5 - hi), 0, Math.PI*2);
-          ctx.fillStyle = `${hex}${Math.floor((0.025 + hi * 0.02 + pulse * 0.02) * 255).toString(16).padStart(2,'0')}`;
-          ctx.fill();
-        });
+        if(city.tier===0){
+          // PRIMARY — Addis Ababa — full treatment
+          // Atmosphere rings
+          [city.size*5,city.size*3.5,city.size*2.2].forEach((hr,hi)=>{
+            ctx.beginPath();ctx.arc(x,y,hr+pulse*6,0,Math.PI*2);
+            const a=0.03+hi*0.02+pulse*0.02;
+            ctx.fillStyle=`rgba(251,191,36,${a})`;ctx.fill();
+          });
+          // Animated border ring
+          ctx.beginPath();ctx.arc(x,y,city.size+4+pulse*3,0,Math.PI*2);
+          ctx.strokeStyle=`rgba(251,191,36,${0.4+pulse*0.3})`;
+          ctx.lineWidth=1.5;ctx.stroke();
 
-        // Animated ring
-        ctx.beginPath();
-        ctx.arc(x, y, city.r + 3 + pulse * 3, 0, Math.PI*2);
-        ctx.strokeStyle = `${hex}${Math.floor((0.3 + pulse * 0.25) * 255).toString(16).padStart(2,'0')}`;
-        ctx.lineWidth   = city.primary ? 1.5 : 1.0;
-        ctx.stroke();
+          // Inner filled circle — bright gold sphere
+          const gr=ctx.createRadialGradient(x-city.size*0.35,y-city.size*0.35,0,x,y,city.size);
+          gr.addColorStop(0,'#fffbeb');gr.addColorStop(0.4,'#fbbf24');gr.addColorStop(1,'#92400e');
+          ctx.beginPath();ctx.arc(x,y,city.size,0,Math.PI*2);
+          ctx.fillStyle=gr;
+          ctx.shadowBlur=30;ctx.shadowColor='#f59e0b';
+          ctx.fill();ctx.shadowBlur=0;
 
-        // Solid dot — radial gradient (Vercel CDN style)
-        const gr = ctx.createRadialGradient(
-          x - city.r * 0.3, y - city.r * 0.3, 0,
-          x, y, city.r
-        );
-        gr.addColorStop(0, hex + 'ff');
-        gr.addColorStop(0.6, hex + 'dd');
-        gr.addColorStop(1, hex + '88');
-        ctx.beginPath();
-        ctx.arc(x, y, city.r, 0, Math.PI*2);
-        ctx.fillStyle   = gr;
-        ctx.shadowBlur  = city.primary ? 28 : 16;
-        ctx.shadowColor = hex;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Crosshair on primary
-        if (city.primary) {
-          const ch2 = 18;
+          // Crosshair marks
+          const arm=20;
           ctx.save();
-          ctx.strokeStyle = `rgba(201,168,76,0.6)`;
-          ctx.lineWidth   = 0.8;
-          ctx.beginPath(); ctx.moveTo(x - ch2, y); ctx.lineTo(x - city.r - 2, y); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(x + city.r + 2, y); ctx.lineTo(x + ch2, y); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(x, y - ch2); ctx.lineTo(x, y - city.r - 2); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(x, y + city.r + 2); ctx.lineTo(x, y + ch2); ctx.stroke();
+          ctx.strokeStyle='rgba(251,191,36,0.6)';ctx.lineWidth=0.8;
+          [[-(arm),0,-(city.size+3),0],[city.size+3,0,arm,0],[0,-(arm),0,-(city.size+3)],[0,city.size+3,0,arm]].forEach(([x1,y1,x2,y2])=>{
+            ctx.beginPath();ctx.moveTo(x+x1,y+y1);ctx.lineTo(x+x2,y+y2);ctx.stroke();
+          });
           ctx.restore();
-        }
 
-        // Labels
-        const labelX = x + city.r + 8;
-        if (city.primary) {
+          // Label callout box
           ctx.save();
-          // Background pill
-          const tw = ctx.measureText(city.label).width + 8;
-          ctx.fillStyle = 'rgba(0,0,0,0.55)';
-          ctx.beginPath();
-          ctx.roundRect?.(labelX - 2, y - 11, tw + 4, 26, 2) ||
-            ctx.rect(labelX - 2, y - 11, tw + 4, 26);
-          ctx.fill();
-          ctx.fillStyle = 'rgba(201,168,76,1)';
-          ctx.font      = '700 9px "Courier New"';
-          ctx.fillText(city.label, labelX, y + 2);
-          ctx.fillStyle = 'rgba(201,168,76,0.55)';
-          ctx.font      = '7px "Courier New"';
-          ctx.fillText(city.sub, labelX, y + 12);
+          const lx=x+city.size+12, ly=y-12;
+          const tw1=ctx.measureText(city.label).width+8;
+          const tw2=ctx.measureText(city.sub).width+8;
+          const bw=Math.max(tw1,tw2)+4;
+          // Line to box
+          ctx.strokeStyle='rgba(251,191,36,0.4)';ctx.lineWidth=0.8;
+          ctx.beginPath();ctx.moveTo(x+city.size+3,y);ctx.lineTo(lx-2,y);ctx.stroke();
+          // Box bg
+          ctx.fillStyle='rgba(0,0,0,0.72)';
+          ctx.strokeStyle='rgba(251,191,36,0.35)';ctx.lineWidth=0.7;
+          ctx.beginPath();ctx.roundRect(lx,ly,bw,28,2);
+          ctx.fill();ctx.stroke();
+          // Text
+          ctx.fillStyle='rgba(251,191,36,1)';ctx.font='700 8.5px "Courier New"';
+          ctx.fillText(city.label,lx+4,ly+11);
+          ctx.fillStyle='rgba(251,191,36,0.55)';ctx.font='7px "Courier New"';
+          ctx.fillText(city.sub,lx+4,ly+22);
           ctx.restore();
-        } else if (city.r >= 6 && x > 30 && x < cw - 40) {
+
+        } else if(city.tier===1){
+          // ETHIOPIAN CITIES
+          ctx.beginPath();ctx.arc(x,y,city.size+3+pulse*3,0,Math.PI*2);
+          ctx.fillStyle=`rgba(251,191,36,${0.05+pulse*0.05})`;ctx.fill();
+          ctx.beginPath();ctx.arc(x,y,city.size+1,0,Math.PI*2);
+          ctx.strokeStyle=`rgba(251,191,36,${0.35+pulse*0.25})`;
+          ctx.lineWidth=1;ctx.stroke();
+          const gr=ctx.createRadialGradient(x-city.size*0.3,y-city.size*0.3,0,x,y,city.size);
+          gr.addColorStop(0,'#fef3c7');gr.addColorStop(1,'#d97706');
+          ctx.beginPath();ctx.arc(x,y,city.size,0,Math.PI*2);
+          ctx.fillStyle=gr;ctx.shadowBlur=14;ctx.shadowColor='#f59e0b';
+          ctx.fill();ctx.shadowBlur=0;
+          // Small label
           ctx.save();
-          ctx.fillStyle = `${hex}cc`;
-          ctx.font      = '7px "Courier New"';
-          ctx.fillText(city.label, labelX, y + 3);
+          ctx.fillStyle='rgba(251,191,36,0.85)';ctx.font='700 7px "Courier New"';
+          ctx.fillText(city.label,x+city.size+5,y+2.5);
           ctx.restore();
+
+        } else {
+          // GLOBAL PARTNER NODES
+          ctx.beginPath();ctx.arc(x,y,city.size+2+pulse*2.5,0,Math.PI*2);
+          ctx.fillStyle=`${hex}12`;ctx.fill();
+          ctx.beginPath();ctx.arc(x,y,city.size+1,0,Math.PI*2);
+          ctx.strokeStyle=`${hex}${Math.floor((0.3+pulse*0.2)*255).toString(16).padStart(2,'0')}`;
+          ctx.lineWidth=0.9;ctx.stroke();
+          const gr2=ctx.createRadialGradient(x-city.size*0.3,y-city.size*0.3,0,x,y,city.size);
+          gr2.addColorStop(0,hex+'ff');gr2.addColorStop(1,hex+'88');
+          ctx.beginPath();ctx.arc(x,y,city.size,0,Math.PI*2);
+          ctx.fillStyle=gr2;ctx.shadowBlur=12;ctx.shadowColor=hex;
+          ctx.fill();ctx.shadowBlur=0;
+          // Small label
+          if(x>20&&x<cw-20){
+            ctx.save();
+            ctx.fillStyle=`${hex}cc`;ctx.font='6.5px "Courier New"';
+            ctx.fillText(city.label,x+city.size+4,y+2.5);
+            ctx.restore();
+          }
         }
       });
 
-      // 7. Ethiopian glow
-      const [ethX, ethY] = toXY(40.5, 9, cw, ch);
-      const eg = ctx.createRadialGradient(ethX, ethY, 0, ethX, ethY, 150);
-      eg.addColorStop(0, 'rgba(201,168,76,0.12)');
-      eg.addColorStop(0.5,'rgba(201,168,76,0.04)');
-      eg.addColorStop(1, 'rgba(201,168,76,0)');
-      ctx.fillStyle = eg; ctx.fillRect(0, 0, cw, ch);
+      // ── 7. Ethiopia atmospheric glow ───────────────────────────────────────
+      const [ethX,ethY]=toXY(40.5,9,cw,ch);
+      const ethPulse=Math.sin(t*0.6)*0.3+0.7;
+      const eg=ctx.createRadialGradient(ethX,ethY,0,ethX,ethY,160);
+      eg.addColorStop(0,`rgba(201,168,76,${0.14*ethPulse})`);
+      eg.addColorStop(0.4,`rgba(201,168,76,${0.05*ethPulse})`);
+      eg.addColorStop(1,'rgba(201,168,76,0)');
+      ctx.fillStyle=eg;ctx.fillRect(0,0,cw,ch);
 
-      // 8. Bottom data strip
+      // ── 8. Horizontal scanner ──────────────────────────────────────────────
+      scanY=(scanY+0.25)%ch;
+      const sg=ctx.createLinearGradient(0,scanY-20,0,scanY+3);
+      sg.addColorStop(0,'rgba(0,212,255,0)');
+      sg.addColorStop(0.6,'rgba(0,212,255,0.025)');
+      sg.addColorStop(1,'rgba(0,212,255,0.10)');
+      ctx.fillStyle=sg;ctx.fillRect(0,scanY-20,cw,23);
+      ctx.beginPath();ctx.moveTo(0,scanY);ctx.lineTo(cw,scanY);
+      ctx.strokeStyle='rgba(0,212,255,0.18)';ctx.lineWidth=0.7;ctx.stroke();
+
+      // ── 9. HUD corners ─────────────────────────────────────────────────────
+      const now=new Date();
+      const ts=now.toTimeString().slice(0,8);
       ctx.save();
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      ctx.fillRect(0, ch - 28, cw, 28);
-      ctx.fillStyle = 'rgba(201,168,76,0.6)';
-      ctx.font = '700 8px "Courier New"';
-      const now = new Date();
-      ctx.fillText(`ADDIS ABABA HUB · ${now.toTimeString().slice(0,8)} · ${CITIES.length} NODES ACTIVE`, 10, ch - 11);
-      // Right side
-      ctx.fillStyle = 'rgba(0,212,255,0.5)';
-      const rs = '● PIPELINE ONLINE';
-      ctx.fillText(rs, cw - ctx.measureText(rs).width - 10, ch - 11);
+      // TL bracket
+      ctx.strokeStyle='rgba(201,168,76,0.35)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(8,24);ctx.lineTo(8,8);ctx.lineTo(24,8);ctx.stroke();
+      ctx.fillStyle='rgba(201,168,76,0.7)';ctx.font='700 7.5px "Courier New"';
+      ctx.fillText('SAFUU INTEL',11,20);
+      // BR bracket
+      ctx.beginPath();ctx.moveTo(cw-8,ch-24);ctx.lineTo(cw-8,ch-8);ctx.lineTo(cw-24,ch-8);ctx.stroke();
+      ctx.fillStyle='rgba(0,212,255,0.5)';ctx.font='7px "Courier New"';
+      const tsr=`UTC ${ts}`;
+      ctx.fillText(tsr,cw-ctx.measureText(tsr).width-11,ch-12);
+      // TR
+      ctx.fillStyle='rgba(201,168,76,0.4)';ctx.font='7px "Courier New"';
+      const nodeStr=`${CITIES.length} NODES`;
+      ctx.fillText(nodeStr,cw-ctx.measureText(nodeStr).width-10,20);
       ctx.restore();
 
-      // 9. Vignette
-      const vg = ctx.createRadialGradient(cw/2, ch/2, cw*0.28, cw/2, ch/2, cw*0.72);
-      vg.addColorStop(0, 'rgba(0,0,0,0)');
-      vg.addColorStop(1, 'rgba(0,0,0,0.55)');
-      ctx.fillStyle = vg; ctx.fillRect(0, 0, cw, ch);
+      // ── 10. Bottom stats strip ─────────────────────────────────────────────
+      ctx.save();
+      const stripH=24;
+      ctx.fillStyle='rgba(1,8,16,0.88)';
+      ctx.fillRect(0,ch-stripH,cw,stripH);
+      ctx.strokeStyle='rgba(201,168,76,0.25)';ctx.lineWidth=0.5;
+      ctx.beginPath();ctx.moveTo(0,ch-stripH);ctx.lineTo(cw,ch-stripH);ctx.stroke();
 
-      animId = requestAnimationFrame(draw);
+      const STATS=[
+        {label:'TIPS',val:'233+',color:'#fbbf24'},
+        {label:'VERIFIED',val:'139',color:'#34d399'},
+        {label:'DISCLOSED',val:'3',color:'#f87171'},
+        {label:'REGIONS',val:'6',color:'#38bdf8'},
+      ];
+      const segW=cw/STATS.length;
+      STATS.forEach((s,i)=>{
+        const sx=i*segW;
+        if(i>0){
+          ctx.strokeStyle='rgba(201,168,76,0.12)';ctx.lineWidth=0.5;
+          ctx.beginPath();ctx.moveTo(sx,ch-stripH);ctx.lineTo(sx,ch);ctx.stroke();
+        }
+        ctx.fillStyle=`${s.color}99`;ctx.font='6px "Courier New"';
+        ctx.fillText(s.label,sx+6,ch-stripH+8);
+        ctx.fillStyle=s.color;ctx.font='700 9px "Courier New"';
+        ctx.fillText(s.val,sx+6,ch-stripH+18);
+      });
+      ctx.restore();
+
+      // ── 11. Edge vignette ──────────────────────────────────────────────────
+      const vg=ctx.createRadialGradient(cw/2,ch/2,Math.min(cw,ch)*0.25,cw/2,ch/2,Math.max(cw,ch)*0.72);
+      vg.addColorStop(0,'rgba(0,0,0,0)');
+      vg.addColorStop(1,'rgba(0,0,0,0.65)');
+      ctx.fillStyle=vg;ctx.fillRect(0,0,cw,ch);
+
+      animId=requestAnimationFrame(draw);
     };
 
     draw();
 
-    const ro = new ResizeObserver(() => {
+    const ro=new ResizeObserver(()=>{
       setSize();
-      if (landDots.length) {
-        const cw = canvas.width, ch = canvas.height;
-        landDots.forEach(d => {
-          const [x, y] = toXY(d.lon, d.lat, cw, ch);
-          d.x = x; d.y = y;
-        });
-        // Reproject country paths too
-        if (countryPaths.length && window.topojson) {
-          countryPaths.length = 0; // force rebuild on next frame via ready flag — simplest approach
-        }
+      if(landDots.length){
+        const cw=canvas.width,ch=canvas.height;
+        landDots.forEach(d=>{const [x,y]=toXY(d.lon,d.lat,cw,ch);d.x=x;d.y=y;});
+        ethDots.forEach(d=>{const [x,y]=toXY(d.lon,d.lat,cw,ch);d.x=x;d.y=y;});
       }
     });
-    if (canvas.parentElement) ro.observe(canvas.parentElement);
-    return () => { cancelAnimationFrame(animId); ro.disconnect(); };
-  }, []);
+    if(canvas.parentElement) ro.observe(canvas.parentElement);
+    return()=>{cancelAnimationFrame(animId);ro.disconnect();};
+  },[]);
 
-  return <canvas ref={ref} style={{ width:'100%', height:'100%', display:'block' }}/>;
+  return <canvas ref={ref} style={{width:'100%',height:'100%',display:'block'}}/>;
 }
 
 
