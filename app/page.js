@@ -422,7 +422,7 @@ function WorldMap() {
   );
 }
 
-// ── Mini World Map — TopoJSON real geography + Vercel CDN style dots ──────────
+// ── ENHANCED Mini World Map — countries, fills, borders, particles ─────────────
 function MiniWorldMap() {
   const ref = useRef();
 
@@ -432,49 +432,58 @@ function MiniWorldMap() {
     const ctx = canvas.getContext('2d');
 
     const setSize = () => {
-      const parent = canvas.parentElement;
-      canvas.width  = parent ? parent.offsetWidth  : 480;
-      canvas.height = parent ? parent.offsetHeight : 340;
+      const p = canvas.parentElement;
+      canvas.width  = p ? p.offsetWidth  : 520;
+      canvas.height = p ? p.offsetHeight : 360;
     };
     setSize();
 
-    // Mercator projection — centred on Africa/Middle East
+    // ── Mercator ──────────────────────────────────────────────────────────────
     const toXY = (lon, lat, cw, ch) => {
       const x  = ((lon + 180) / 360) * cw;
       const lr = (lat * Math.PI) / 180;
       const m  = Math.log(Math.tan(Math.PI / 4 + lr / 2));
-      const y  = (0.5 - m / (2 * Math.PI)) * ch * 1.1 - ch * 0.05;
+      const y  = (0.5 - m / (2 * Math.PI)) * ch * 1.12 - ch * 0.06;
       return [x, y];
     };
 
-    // ── City nodes ────────────────────────────────────────────────────────────
+    // ── City data ─────────────────────────────────────────────────────────────
     const CITIES = [
-      { lon:38.74, lat:9.02,   label:'ADDIS ABABA', sub:'22 REPORTS', color:'#c9a84c', r:10, primary:true  },
-      { lon:41.86, lat:11.13,  label:'DIRE DAWA',   sub:'19',         color:'#c9a84c', r:7,  primary:false },
-      { lon:38.47, lat:11.59,  label:'BAHIR DAR',   sub:'17',         color:'#c9a84c', r:6,  primary:false },
-      { lon:39.47, lat:13.50,  label:'MEKELLE',     sub:'9',          color:'#c9a84c', r:6,  primary:false },
-      { lon:38.08, lat:7.68,   label:'HAWASSA',     sub:'6',          color:'#c9a84c', r:5,  primary:false },
-      { lon:-0.13, lat:51.51,  label:'LONDON',      sub:'PARTNER',    color:'#00d4ff', r:6,  primary:false },
-      { lon:2.35,  lat:48.86,  label:'PARIS',       sub:'PARTNER',    color:'#00d4ff', r:6,  primary:false },
-      { lon:36.82, lat:-1.29,  label:'NAIROBI',     sub:'PARTNER',    color:'#4ade80', r:7,  primary:false },
-      { lon:18.42, lat:-33.93, label:'CAPE TOWN',   sub:'PARTNER',    color:'#4ade80', r:6,  primary:false },
-      { lon:3.38,  lat:6.52,   label:'LAGOS',       sub:'PARTNER',    color:'#4ade80', r:6,  primary:false },
-      { lon:-74.0, lat:40.71,  label:'NEW YORK',    sub:'PARTNER',    color:'#00d4ff', r:6,  primary:false },
-      { lon:55.30, lat:25.20,  label:'DUBAI',       sub:'PARTNER',    color:'#00d4ff', r:5,  primary:false },
-      { lon:100.5, lat:13.75,  label:'BANGKOK',     sub:'PARTNER',    color:'#00d4ff', r:5,  primary:false },
+      { lon:38.74,  lat:9.02,   label:'ADDIS ABABA', sub:'22 REPORTS · FEACC',    color:'#c9a84c', r:11, primary:true  },
+      { lon:41.86,  lat:11.13,  label:'DIRE DAWA',   sub:'19 REPORTS',             color:'#f59e0b', r:7.5,primary:false },
+      { lon:38.47,  lat:11.59,  label:'BAHIR DAR',   sub:'17 REPORTS',             color:'#f59e0b', r:7,  primary:false },
+      { lon:39.47,  lat:13.50,  label:'MEKELLE',     sub:'9 REPORTS',              color:'#f59e0b', r:6,  primary:false },
+      { lon:38.08,  lat:7.68,   label:'HAWASSA',     sub:'6 REPORTS',              color:'#f59e0b', r:5.5,primary:false },
+      { lon:34.87,  lat:9.60,   label:'GAMBELA',     sub:'4 REPORTS',              color:'#f59e0b', r:4.5,primary:false },
+      { lon:-0.13,  lat:51.51,  label:'LONDON',      sub:'PARTNER NODE',           color:'#38bdf8', r:6.5,primary:false },
+      { lon:2.35,   lat:48.86,  label:'PARIS',       sub:'PARTNER NODE',           color:'#38bdf8', r:6,  primary:false },
+      { lon:36.82,  lat:-1.29,  label:'NAIROBI',     sub:'PARTNER NODE',           color:'#34d399', r:7,  primary:false },
+      { lon:18.42,  lat:-33.93, label:'CAPE TOWN',   sub:'PARTNER NODE',           color:'#34d399', r:6,  primary:false },
+      { lon:3.38,   lat:6.52,   label:'LAGOS',       sub:'PARTNER NODE',           color:'#34d399', r:6.5,primary:false },
+      { lon:-74.0,  lat:40.71,  label:'NEW YORK',    sub:'PARTNER NODE',           color:'#38bdf8', r:6,  primary:false },
+      { lon:55.30,  lat:25.20,  label:'DUBAI',       sub:'PARTNER NODE',           color:'#38bdf8', r:5.5,primary:false },
+      { lon:100.52, lat:13.75,  label:'BANGKOK',     sub:'PARTNER NODE',           color:'#38bdf8', r:5,  primary:false },
+      { lon:37.62,  lat:55.75,  label:'MOSCOW',      sub:'PARTNER NODE',           color:'#38bdf8', r:5.5,primary:false },
     ];
 
-    // ── Packet state ──────────────────────────────────────────────────────────
-    const packets = CITIES.slice(5).map((_, i) => ({
-      t: (i / (CITIES.length - 5)),
-      speed: 0.005 + Math.random() * 0.004,
+    // ── Particle trail system ─────────────────────────────────────────────────
+    const ARCS = CITIES.slice(6).map((city, i) => ({
+      city,
+      particles: Array.from({length: 4}, (_, pi) => ({
+        t: (pi / 4) + (i * 0.18),
+        speed: 0.004 + Math.random() * 0.003,
+        size: 1.5 + Math.random() * 1.5,
+        alpha: 0.4 + Math.random() * 0.5,
+      })),
     }));
 
-    let dots   = [];
-    let ready  = false;
+    // ── State ─────────────────────────────────────────────────────────────────
+    let landDots     = [];   // {x,y,lon,lat,isEth,isEA,br}
+    let countryPaths = [];   // [{path2d, isEth, isSub}] — for fills + borders
+    let ready        = false;
     let animId;
 
-    // ── Load real world geography via TopoJSON ────────────────────────────────
+    // ── Load data ─────────────────────────────────────────────────────────────
     const injectScript = src => new Promise((res, rej) => {
       if (document.querySelector(`script[src="${src}"]`)) return res();
       const s = document.createElement('script');
@@ -483,12 +492,48 @@ function MiniWorldMap() {
     });
 
     injectScript('https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js')
-      .then(() => fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json'))
-      .then(r => r.json())
-      .then(topo => {
-        const land = window.topojson.feature(topo, topo.objects.land);
+      .then(() => Promise.all([
+        fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(r => r.json()),
+      ]))
+      .then(([topo]) => {
+        const cw = canvas.width, ch = canvas.height;
+        const countries = window.topojson.feature(topo, topo.objects.countries);
 
-        // Render land to offscreen canvas for pixel sampling
+        // ── Build country Path2D objects + fills ─────────────────────────────
+        const buildPath = (coords) => {
+          const path = new Path2D();
+          coords.forEach((ring) => {
+            ring.forEach(([lon, lat], i) => {
+              const [x, y] = toXY(lon, lat, cw, ch);
+              i === 0 ? path.moveTo(x, y) : path.lineTo(x, y);
+            });
+            path.closePath();
+          });
+          return path;
+        };
+
+        // Ethiopia ISO numeric code is 231
+        countries.features.forEach(f => {
+          const id = parseInt(f.id);
+          const g  = f.geometry;
+          const isEth = id === 231;
+          // East Africa neighbors
+          const isNeighbor = [706,728,646,404,800,276,729,288].includes(id);
+          let path2d = null;
+          try {
+            if (g.type === 'Polygon')      path2d = buildPath(g.coordinates);
+            else if (g.type === 'MultiPolygon') {
+              path2d = new Path2D();
+              g.coordinates.forEach(poly => {
+                const p = buildPath(poly);
+                path2d.addPath(p);
+              });
+            }
+          } catch(e) {}
+          if (path2d) countryPaths.push({ path2d, isEth, isNeighbor });
+        });
+
+        // ── Build dot grid via pixel sampling ────────────────────────────────
         const OW = 1440, OH = 720;
         const off = document.createElement('canvas');
         off.width = OW; off.height = OH;
@@ -496,50 +541,48 @@ function MiniWorldMap() {
         octx.fillStyle = '#000'; octx.fillRect(0, 0, OW, OH);
         octx.fillStyle = '#fff';
 
-        const lon2x = (lon) => ((lon + 180) / 360) * OW;
-        const lat2y = (lat) => {
+        const lon2x = lon => ((lon + 180) / 360) * OW;
+        const lat2y = lat => {
           const lr = (lat * Math.PI) / 180;
           const m  = Math.log(Math.tan(Math.PI / 4 + lr / 2));
           return (0.5 - m / (2 * Math.PI)) * OH;
         };
-        const drawRing = ring => {
+        const drawRing = (ring, octx) => {
           ring.forEach(([lon, lat], i) => {
             i === 0 ? octx.moveTo(lon2x(lon), lat2y(lat))
                     : octx.lineTo(lon2x(lon), lat2y(lat));
           });
         };
-        land.features.forEach(f => {
+
+        countries.features.forEach(f => {
           octx.beginPath();
           const g = f.geometry;
-          if (g.type === 'Polygon')      g.coordinates.forEach(drawRing);
-          if (g.type === 'MultiPolygon') g.coordinates.forEach(p => p.forEach(drawRing));
+          if (g.type === 'Polygon')      g.coordinates.forEach(r => drawRing(r, octx));
+          if (g.type === 'MultiPolygon') g.coordinates.forEach(p => p.forEach(r => drawRing(r, octx)));
           octx.fill('evenodd');
         });
 
-        const img = octx.getImageData(0, 0, OW, OH);
-        const cw  = canvas.width, ch = canvas.height;
+        const img  = octx.getImageData(0, 0, OW, OH);
         const STEP = 3;
-
         for (let px = 0; px < OW; px += STEP) {
           const odd = Math.floor(px / STEP) % 2 === 1;
-          for (let py = (odd ? Math.floor(STEP / 2) : 0); py < OH; py += STEP) {
+          for (let py = (odd ? Math.floor(STEP/2) : 0); py < OH; py += STEP) {
             if (img.data[(py * OW + px) * 4] < 100) continue;
             const lon   = (px / OW) * 360 - 180;
             const normY = py / OH;
             const merc  = (0.5 - normY) * 2 * Math.PI;
-            const lat   = ((2 * Math.atan(Math.exp(merc))) - Math.PI / 2) * 180 / Math.PI;
+            const lat   = ((2 * Math.atan(Math.exp(merc))) - Math.PI/2) * 180/Math.PI;
             if (lat < -75 || lat > 82) continue;
             const [x, y] = toXY(lon, lat, cw, ch);
             if (x < 0 || x > cw || y < 0 || y > ch) continue;
-            // Ethiopia: lon 33-48, lat 3-15
             const isEth = lon > 33 && lon < 48 && lat > 3 && lat < 15.5;
-            const isEA  = lon > 28 && lon < 55 && lat > -5 && lat < 22 && !isEth;
-            dots.push({ x, y, isEth, isEA, br: 0.5 + Math.random() * 0.5 });
+            const isEA  = lon > 24 && lon < 55 && lat > -8 && lat < 23 && !isEth;
+            landDots.push({ x, y, lon, lat, isEth, isEA, br: 0.5 + Math.random()*0.5 });
           }
         }
         ready = true;
       })
-      .catch(() => { ready = true; /* silently fallback */ });
+      .catch(() => { ready = true; });
 
     // ── Draw loop ─────────────────────────────────────────────────────────────
     const draw = () => {
@@ -547,25 +590,54 @@ function MiniWorldMap() {
       ctx.clearRect(0, 0, cw, ch);
       const t = Date.now() / 1000;
 
-      // 1. Land dots
-      if (ready && dots.length) {
-        dots.forEach(d => {
+      // 1. Country fills (very subtle)
+      if (ready && countryPaths.length) {
+        countryPaths.forEach(({ path2d, isEth, isNeighbor }) => {
+          if (isEth) {
+            // Ethiopia: golden fill
+            ctx.fillStyle = 'rgba(201,168,76,0.10)';
+            ctx.fill(path2d, 'evenodd');
+            // Gold border
+            ctx.strokeStyle = 'rgba(201,168,76,0.55)';
+            ctx.lineWidth   = 1.2;
+            ctx.stroke(path2d);
+          } else if (isNeighbor) {
+            // Neighbors: slight warm tint
+            ctx.fillStyle   = 'rgba(201,168,76,0.03)';
+            ctx.fill(path2d, 'evenodd');
+            ctx.strokeStyle = 'rgba(201,168,76,0.15)';
+            ctx.lineWidth   = 0.5;
+            ctx.stroke(path2d);
+          } else {
+            // World: very faint borders
+            ctx.strokeStyle = 'rgba(100,160,200,0.06)';
+            ctx.lineWidth   = 0.4;
+            ctx.stroke(path2d);
+          }
+        });
+      }
+
+      // 2. Land dots — hex grid
+      if (ready && landDots.length) {
+        landDots.forEach(d => {
+          const flicker = d.br + Math.sin(t * 1.4 + d.x * 0.05) * 0.06;
           ctx.beginPath();
-          ctx.arc(d.x, d.y, d.isEth ? 1.6 : 1.1, 0, Math.PI * 2);
+          ctx.arc(d.x, d.y, d.isEth ? 1.7 : 1.1, 0, Math.PI*2);
           ctx.fillStyle = d.isEth
-            ? `rgba(201,168,76,${Math.min(0.75, d.br * 0.7)})`
+            ? `rgba(201,168,76,${Math.min(0.85, flicker * 0.82)})`
             : d.isEA
-              ? `rgba(201,168,76,${Math.min(0.25, d.br * 0.2)})`
-              : `rgba(160,185,210,${Math.min(0.22, d.br * 0.18)})`;
+              ? `rgba(201,168,76,${Math.min(0.30, flicker * 0.22)})`
+              : `rgba(155,185,210,${Math.min(0.20, flicker * 0.17)})`;
           ctx.fill();
         });
       }
 
-      // 2. Lat/lon grid overlay (very faint)
+      // 3. Lat/lon grid
       ctx.save();
-      ctx.strokeStyle = 'rgba(0,212,255,0.04)';
+      ctx.setLineDash([2, 6]);
+      ctx.strokeStyle = 'rgba(0,212,255,0.05)';
       ctx.lineWidth = 0.5;
-      for (let lon = -180; lon <= 180; lon += 30) {
+      for (let lon = -150; lon <= 180; lon += 30) {
         const [x] = toXY(lon, 0, cw, ch);
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ch); ctx.stroke();
       }
@@ -573,115 +645,199 @@ function MiniWorldMap() {
         const [, y] = toXY(0, lat, cw, ch);
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cw, y); ctx.stroke();
       }
-      // Equator
-      ctx.strokeStyle = 'rgba(0,212,255,0.08)';
-      const [, eq] = toXY(0, 0, cw, ch);
-      ctx.beginPath(); ctx.moveTo(0, eq); ctx.lineTo(cw, eq); ctx.stroke();
+      ctx.setLineDash([]);
+      // Equator solid
+      ctx.strokeStyle = 'rgba(0,212,255,0.10)';
+      ctx.lineWidth = 0.6;
+      const [, eqY] = toXY(0, 0, cw, ch);
+      ctx.beginPath(); ctx.moveTo(0, eqY); ctx.lineTo(cw, eqY); ctx.stroke();
+      // Tropic of Cancer
+      ctx.strokeStyle = 'rgba(201,168,76,0.08)';
+      const [, tropY] = toXY(0, 23.5, cw, ch);
+      ctx.beginPath(); ctx.moveTo(0, tropY); ctx.lineTo(cw, tropY); ctx.stroke();
       ctx.restore();
 
-      // 3. Arcs: Addis → global nodes
+      // 4. Arc particle trails
       const [ax, ay] = toXY(CITIES[0].lon, CITIES[0].lat, cw, ch);
-      CITIES.slice(5).forEach((city, i) => {
+      ARCS.forEach(({ city, particles }, ai) => {
         const [gx, gy] = toXY(city.lon, city.lat, cw, ch);
         const mx = (ax + gx) / 2;
-        const my = (ay + gy) / 2 - Math.hypot(gx - ax, gy - ay) * 0.28;
-        const alpha = 0.09 + Math.sin(t * 0.7 + i) * 0.04;
+        const my = (ay + gy) / 2 - Math.hypot(gx - ax, gy - ay) * 0.30;
+        const baseAlpha = 0.07 + Math.sin(t * 0.6 + ai) * 0.03;
 
-        // Gradient arc stroke
+        // Arc line with gradient
         const g = ctx.createLinearGradient(ax, ay, gx, gy);
-        g.addColorStop(0,   `rgba(201,168,76,${alpha * 1.8})`);
-        g.addColorStop(0.5, `rgba(201,168,76,${alpha})`);
-        g.addColorStop(1,   `${city.color}${Math.floor(alpha * 200).toString(16).padStart(2,'0')}`);
+        g.addColorStop(0,   `rgba(201,168,76,${baseAlpha * 2.2})`);
+        g.addColorStop(0.45,`rgba(201,168,76,${baseAlpha})`);
+        g.addColorStop(1,   `${city.color}${Math.floor(baseAlpha * 220).toString(16).padStart(2,'0')}`);
         ctx.beginPath();
         ctx.moveTo(ax, ay);
         ctx.quadraticCurveTo(mx, my, gx, gy);
         ctx.strokeStyle = g;
-        ctx.lineWidth = 0.7;
+        ctx.lineWidth   = 0.8;
         ctx.stroke();
 
-        // Packet along arc
-        const pk = packets[i];
-        pk.t += pk.speed;
-        if (pk.t > 1) pk.t = 0;
-        const pr = pk.t;
-        const px = (1-pr)*(1-pr)*ax + 2*(1-pr)*pr*mx + pr*pr*gx;
-        const py = (1-pr)*(1-pr)*ay + 2*(1-pr)*pr*my + pr*pr*gy;
-        ctx.beginPath();
-        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = '#c9a84c';
-        ctx.shadowBlur = 8; ctx.shadowColor = '#c9a84c';
-        ctx.fill(); ctx.shadowBlur = 0;
+        // Multiple particles per arc — creates trail effect
+        particles.forEach(pk => {
+          pk.t += pk.speed;
+          if (pk.t > 1) pk.t = 0;
+          const pr = pk.t;
+          const px = (1-pr)*(1-pr)*ax + 2*(1-pr)*pr*mx + pr*pr*gx;
+          const py = (1-pr)*(1-pr)*ay + 2*(1-pr)*pr*my + pr*pr*gy;
+          ctx.beginPath();
+          ctx.arc(px, py, pk.size, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(201,168,76,${pk.alpha * (0.5 + (1-pr) * 0.5)})`;
+          ctx.shadowBlur  = 6;
+          ctx.shadowColor = '#c9a84c';
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
       });
 
-      // 4. Radar sweep from Addis
-      const sweep = (t * 1.1) % (Math.PI * 2);
+      // 5. Radar from Addis
+      const sweep = (t * 1.0) % (Math.PI * 2);
       ctx.save();
       ctx.translate(ax, ay);
+      // Outer circle
+      ctx.beginPath();
+      ctx.arc(0, 0, 100, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(201,168,76,0.08)';
+      ctx.lineWidth = 0.7;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 0, 60, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(201,168,76,0.10)';
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 0, 30, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(201,168,76,0.14)';
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+      // Sweep wedge
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.arc(0, 0, 90, sweep - 0.55, sweep);
+      ctx.arc(0, 0, 100, sweep - 0.65, sweep);
       ctx.closePath();
-      const rg = ctx.createRadialGradient(0,0,0,0,0,90);
-      rg.addColorStop(0, 'rgba(201,168,76,0.22)');
+      const rg = ctx.createRadialGradient(0,0,0,0,0,100);
+      rg.addColorStop(0, 'rgba(201,168,76,0.30)');
+      rg.addColorStop(0.6,'rgba(201,168,76,0.08)');
       rg.addColorStop(1, 'rgba(201,168,76,0)');
       ctx.fillStyle = rg; ctx.fill();
+      // Sweep line
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(sweep) * 100, Math.sin(sweep) * 100);
+      ctx.strokeStyle = 'rgba(201,168,76,0.5)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
       ctx.restore();
 
-      // 5. City dots — Vercel CDN style
+      // 6. City dots — Vercel CDN style + enhanced
       CITIES.forEach((city, i) => {
         const [x, y] = toXY(city.lon, city.lat, cw, ch);
-        if (x < -20 || x > cw + 20 || y < -20 || y > ch + 20) return;
-        const pulse = Math.sin(t * 2.0 + i * 0.9) * 0.5 + 0.5;
+        if (x < -30 || x > cw + 30 || y < -30 || y > ch + 30) return;
+        const pulse  = Math.sin(t * 1.8 + i * 1.1) * 0.5 + 0.5;
+        const hex    = city.color;
 
-        // Outer glow halos
-        [city.r * 3.2, city.r * 2.0].forEach((hr, hi) => {
+        // Outer atmosphere halos
+        [city.r * 3.8, city.r * 2.5, city.r * 1.7].forEach((hr, hi) => {
           ctx.beginPath();
-          ctx.arc(x, y, hr + pulse * 5, 0, Math.PI * 2);
-          ctx.fillStyle = `${city.color}${Math.floor((0.04 + hi * 0.03 + pulse * 0.03) * 255).toString(16).padStart(2,'0')}`;
+          ctx.arc(x, y, hr + pulse * (5 - hi), 0, Math.PI*2);
+          ctx.fillStyle = `${hex}${Math.floor((0.025 + hi * 0.02 + pulse * 0.02) * 255).toString(16).padStart(2,'0')}`;
           ctx.fill();
         });
 
-        // Ring border
+        // Animated ring
         ctx.beginPath();
-        ctx.arc(x, y, city.r + 2.5, 0, Math.PI * 2);
-        ctx.strokeStyle = `${city.color}${Math.floor((0.45 + pulse * 0.3) * 255).toString(16).padStart(2,'0')}`;
-        ctx.lineWidth = city.primary ? 1.5 : 1.0;
+        ctx.arc(x, y, city.r + 3 + pulse * 3, 0, Math.PI*2);
+        ctx.strokeStyle = `${hex}${Math.floor((0.3 + pulse * 0.25) * 255).toString(16).padStart(2,'0')}`;
+        ctx.lineWidth   = city.primary ? 1.5 : 1.0;
         ctx.stroke();
 
-        // Solid filled circle with radial gradient — exactly Vercel CDN style
-        const grad = ctx.createRadialGradient(
-          x - city.r * 0.35, y - city.r * 0.35, 0,
+        // Solid dot — radial gradient (Vercel CDN style)
+        const gr = ctx.createRadialGradient(
+          x - city.r * 0.3, y - city.r * 0.3, 0,
           x, y, city.r
         );
-        grad.addColorStop(0, city.color + 'ff');
-        grad.addColorStop(1, city.color + '99');
+        gr.addColorStop(0, hex + 'ff');
+        gr.addColorStop(0.6, hex + 'dd');
+        gr.addColorStop(1, hex + '88');
         ctx.beginPath();
-        ctx.arc(x, y, city.r, 0, Math.PI * 2);
-        ctx.fillStyle = grad;
-        ctx.shadowBlur = city.primary ? 22 : 14;
-        ctx.shadowColor = city.color;
-        ctx.fill(); ctx.shadowBlur = 0;
+        ctx.arc(x, y, city.r, 0, Math.PI*2);
+        ctx.fillStyle   = gr;
+        ctx.shadowBlur  = city.primary ? 28 : 16;
+        ctx.shadowColor = hex;
+        ctx.fill();
+        ctx.shadowBlur = 0;
 
-        // Labels: primary city + sub
+        // Crosshair on primary
+        if (city.primary) {
+          const ch2 = 18;
+          ctx.save();
+          ctx.strokeStyle = `rgba(201,168,76,0.6)`;
+          ctx.lineWidth   = 0.8;
+          ctx.beginPath(); ctx.moveTo(x - ch2, y); ctx.lineTo(x - city.r - 2, y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x + city.r + 2, y); ctx.lineTo(x + ch2, y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x, y - ch2); ctx.lineTo(x, y - city.r - 2); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x, y + city.r + 2); ctx.lineTo(x, y + ch2); ctx.stroke();
+          ctx.restore();
+        }
+
+        // Labels
+        const labelX = x + city.r + 8;
         if (city.primary) {
           ctx.save();
-          ctx.fillStyle = 'rgba(201,168,76,0.95)';
-          ctx.font = '700 8.5px "Courier New"';
-          ctx.fillText(city.label, x + city.r + 7, y + 3);
-          ctx.fillStyle = 'rgba(201,168,76,0.5)';
-          ctx.font = '7.5px "Courier New"';
-          ctx.fillText(city.sub, x + city.r + 7, y + 14);
+          // Background pill
+          const tw = ctx.measureText(city.label).width + 8;
+          ctx.fillStyle = 'rgba(0,0,0,0.55)';
+          ctx.beginPath();
+          ctx.roundRect?.(labelX - 2, y - 11, tw + 4, 26, 2) ||
+            ctx.rect(labelX - 2, y - 11, tw + 4, 26);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(201,168,76,1)';
+          ctx.font      = '700 9px "Courier New"';
+          ctx.fillText(city.label, labelX, y + 2);
+          ctx.fillStyle = 'rgba(201,168,76,0.55)';
+          ctx.font      = '7px "Courier New"';
+          ctx.fillText(city.sub, labelX, y + 12);
+          ctx.restore();
+        } else if (city.r >= 6 && x > 30 && x < cw - 40) {
+          ctx.save();
+          ctx.fillStyle = `${hex}cc`;
+          ctx.font      = '7px "Courier New"';
+          ctx.fillText(city.label, labelX, y + 3);
           ctx.restore();
         }
       });
 
-      // 6. Ethiopian region atmospheric glow
+      // 7. Ethiopian glow
       const [ethX, ethY] = toXY(40.5, 9, cw, ch);
-      const ethG = ctx.createRadialGradient(ethX, ethY, 0, ethX, ethY, 130);
-      ethG.addColorStop(0, 'rgba(201,168,76,0.1)');
-      ethG.addColorStop(1, 'rgba(201,168,76,0)');
-      ctx.fillStyle = ethG;
-      ctx.fillRect(0, 0, cw, ch);
+      const eg = ctx.createRadialGradient(ethX, ethY, 0, ethX, ethY, 150);
+      eg.addColorStop(0, 'rgba(201,168,76,0.12)');
+      eg.addColorStop(0.5,'rgba(201,168,76,0.04)');
+      eg.addColorStop(1, 'rgba(201,168,76,0)');
+      ctx.fillStyle = eg; ctx.fillRect(0, 0, cw, ch);
+
+      // 8. Bottom data strip
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillRect(0, ch - 28, cw, 28);
+      ctx.fillStyle = 'rgba(201,168,76,0.6)';
+      ctx.font = '700 8px "Courier New"';
+      const now = new Date();
+      ctx.fillText(`ADDIS ABABA HUB · ${now.toTimeString().slice(0,8)} · ${CITIES.length} NODES ACTIVE`, 10, ch - 11);
+      // Right side
+      ctx.fillStyle = 'rgba(0,212,255,0.5)';
+      const rs = '● PIPELINE ONLINE';
+      ctx.fillText(rs, cw - ctx.measureText(rs).width - 10, ch - 11);
+      ctx.restore();
+
+      // 9. Vignette
+      const vg = ctx.createRadialGradient(cw/2, ch/2, cw*0.28, cw/2, ch/2, cw*0.72);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+      ctx.fillStyle = vg; ctx.fillRect(0, 0, cw, ch);
 
       animId = requestAnimationFrame(draw);
     };
@@ -690,10 +846,16 @@ function MiniWorldMap() {
 
     const ro = new ResizeObserver(() => {
       setSize();
-      // Reproject existing dots on resize
-      if (ready && dots.length) {
-        // dots are stored by lon/lat conceptually — but we stored x/y
-        // On resize, just clear and reload is simplest; they persist until next load
+      if (landDots.length) {
+        const cw = canvas.width, ch = canvas.height;
+        landDots.forEach(d => {
+          const [x, y] = toXY(d.lon, d.lat, cw, ch);
+          d.x = x; d.y = y;
+        });
+        // Reproject country paths too
+        if (countryPaths.length && window.topojson) {
+          countryPaths.length = 0; // force rebuild on next frame via ready flag — simplest approach
+        }
       }
     });
     if (canvas.parentElement) ro.observe(canvas.parentElement);
