@@ -417,111 +417,211 @@ function WorldMap() {
   );
 }
 
-// ── Network node visualization (collaborative reporting) ──────────────────────// ── Network node visualization (collaborative reporting) ──────────────────────// ── Network node visualization (collaborative reporting) ──────────────────────
-function NetworkCanvas() {
+// ── Mini World Map — Vercel CDN style, colorful animated dots ─────────────────
+function MiniWorldMap() {
   const ref = useRef();
   useEffect(() => {
-    const c = ref.current; if (!c) return;
-    const ctx = c.getContext("2d");
-    c.width = c.offsetWidth; c.height = c.offsetHeight;
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
 
-    // Nodes represent anonymous reporters feeding into hub
-    const hub = { x: c.width * 0.5, y: c.height * 0.48 };
-    const nodeCount = 14;
-    const nodes = Array.from({ length: nodeCount }, (_, i) => {
-      const angle = (i / nodeCount) * Math.PI * 2 + Math.random() * 0.5;
-      const r = 80 + Math.random() * 110;
-      return {
-        x: hub.x + Math.cos(angle) * r,
-        y: hub.y + Math.sin(angle) * r,
-        r: 2 + Math.random() * 3,
-        pulse: Math.random() * Math.PI * 2,
-        speed: 0.02 + Math.random() * 0.03,
-        active: Math.random() > 0.4,
-        sending: Math.random() > 0.6,
-        progress: Math.random(),
-        color: Math.random() > 0.7 ? "#b82020" : Math.random() > 0.5 ? "#00d4ff" : "#c9a84c",
-      };
-    });
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth  || 480;
+      canvas.height = canvas.offsetHeight || 340;
+    };
+    resize();
 
-    let id;
+    // Mercator helpers
+    const toXY = (lon, lat) => {
+      const cw = canvas.width, ch = canvas.height;
+      const x  = ((lon + 180) / 360) * cw;
+      const lr = (lat * Math.PI) / 180;
+      const m  = Math.log(Math.tan(Math.PI / 4 + lr / 2));
+      const y  = (0.5 - m / (2 * Math.PI)) * ch * 1.08 + ch * -0.04;
+      return [x, y];
+    };
+
+    // Land regions for dot grid (simplified rectangular blocks)
+    const LAND = [
+      [-18,52,-35,38,0.72], // Africa
+      [-11,42,35,72,0.65],  // Europe
+      [30,145,5,73,0.55],   // Asia
+      [-168,-52,7,73,0.6],  // North America
+      [-82,-34,-56,13,0.68],// South America
+      [114,154,-44,-10,0.72],// Australia
+      [95,141,-9,8,0.5],    // SE Asia islands
+      [-55,-17,59,84,0.4],  // Greenland
+      [128,146,30,46,0.65], // Japan/Korea
+      [-8,2,49,61,0.7],     // UK
+      [4,32,55,72,0.6],     // Scandinavia
+      [67,97,6,35,0.65],    // India
+      [43,51,-26,-12,0.7],  // Madagascar
+      [36,60,12,32,0.6],    // Arabian Peninsula
+    ];
+
+    // Build static dot grid
+    const STEP = 3.5;
+    const dots = [];
+    for (let lon = -180; lon <= 180; lon += STEP) {
+      const isOdd = Math.floor((lon + 180) / STEP) % 2 === 1;
+      for (let lat = (isOdd ? -STEP/2 : 0) - 80; lat <= 82; lat += STEP) {
+        let inLand = false;
+        for (const [mnLo, mxLo, mnLa, mxLa, prob] of LAND) {
+          if (lon >= mnLo && lon <= mxLo && lat >= mnLa && lat <= mxLa) {
+            if (Math.random() < prob) { inLand = true; break; }
+          }
+        }
+        if (!inLand) continue;
+        const isEth = lon > 33 && lon < 48 && lat > 3 && lat < 15;
+        dots.push({ lon, lat, isEth });
+      }
+    }
+
+    // City nodes with colors
+    const CITIES = [
+      // Ethiopia — gold/amber (primary)
+      { lon:38.74, lat:9.02,  label:'ADDIS ABABA', color:'#c9a84c', size:10, primary:true,  reports:22 },
+      { lon:41.86, lat:11.13, label:'DIRE DAWA',   color:'#c9a84c', size:7,  primary:false, reports:19 },
+      { lon:38.47, lat:11.59, label:'BAHIR DAR',   color:'#c9a84c', size:6,  primary:false, reports:17 },
+      { lon:39.47, lat:13.50, label:'MEKELLE',     color:'#c9a84c', size:6,  primary:false, reports:9  },
+      { lon:38.08, lat:7.68,  label:'HAWASSA',     color:'#c9a84c', size:5,  primary:false, reports:6  },
+      // Active global nodes — cyan
+      { lon:-0.13,  lat:51.51, label:'LONDON',    color:'#00d4ff', size:7, primary:false, reports:0 },
+      { lon:2.35,   lat:48.86, label:'PARIS',     color:'#00d4ff', size:6, primary:false, reports:0 },
+      { lon:36.82,  lat:-1.29, label:'NAIROBI',   color:'#4ade80', size:7, primary:false, reports:0 },
+      { lon:18.42,  lat:-33.93,label:'CAPE TOWN', color:'#4ade80', size:6, primary:false, reports:0 },
+      { lon:3.38,   lat:6.52,  label:'LAGOS',     color:'#4ade80', size:6, primary:false, reports:0 },
+      { lon:-74.01, lat:40.71, label:'NEW YORK',  color:'#00d4ff', size:6, primary:false, reports:0 },
+      { lon:55.30,  lat:25.20, label:'DUBAI',     color:'#00d4ff', size:5, primary:false, reports:0 },
+      { lon:100.52, lat:13.75, label:'BANGKOK',   color:'#00d4ff', size:5, primary:false, reports:0 },
+      // Flagged — red
+      { lon:40.99,  lat:11.50, label:'FLAGGED',   color:'#b82020', size:8, primary:false, reports:4 },
+    ];
+
+    let animId;
     const draw = () => {
-      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       const t = Date.now() / 1000;
 
-      // Draw connection lines
-      nodes.forEach(n => {
-        if (!n.active) return;
-        const alpha = 0.08 + Math.sin(n.pulse + t * n.speed) * 0.05;
+      // Draw land dots — tiny grey/dark dots
+      dots.forEach(d => {
+        const [x, y] = toXY(d.lon, d.lat);
+        if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) return;
         ctx.beginPath();
-        ctx.moveTo(n.x, n.y);
-        ctx.lineTo(hub.x, hub.y);
-        ctx.strokeStyle = n.color === "#b82020" ? `rgba(184,32,32,${alpha})` : `rgba(0,212,255,${alpha * 1.2})`;
+        ctx.arc(x, y, d.isEth ? 1.3 : 0.9, 0, Math.PI * 2);
+        ctx.fillStyle = d.isEth ? 'rgba(201,168,76,0.4)' : 'rgba(160,180,200,0.22)';
+        ctx.fill();
+      });
+
+      // Draw connection arcs from Addis to global cities
+      const [ax, ay] = toXY(CITIES[0].lon, CITIES[0].lat);
+      CITIES.slice(5).forEach((city, i) => {
+        const [cx2, cy2] = toXY(city.lon, city.lat);
+        const mx = (ax + cx2) / 2;
+        const my = (ay + cy2) / 2 - Math.hypot(cx2 - ax, cy2 - ay) * 0.25;
+        const alpha = 0.07 + Math.sin(t * 0.8 + i) * 0.03;
+
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.quadraticCurveTo(mx, my, cx2, cy2);
+        ctx.strokeStyle = `rgba(201,168,76,${alpha})`;
         ctx.lineWidth = 0.6;
         ctx.stroke();
 
-        // Data packet traveling along line
-        if (n.sending) {
-          n.progress += 0.004;
-          if (n.progress > 1) n.progress = 0;
-          const px = n.x + (hub.x - n.x) * n.progress;
-          const py = n.y + (hub.y - n.y) * n.progress;
+        // Animated packet
+        const prog = ((t * 0.08 + i * 0.28) % 1);
+        const px = (1-prog)*(1-prog)*ax + 2*(1-prog)*prog*mx + prog*prog*cx2;
+        const py = (1-prog)*(1-prog)*ay + 2*(1-prog)*prog*my + prog*prog*cy2;
+        ctx.beginPath();
+        ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(201,168,76,0.85)';
+        ctx.fill();
+      });
+
+      // Draw city nodes — Vercel CDN style glowing colored circles
+      CITIES.forEach((city, i) => {
+        const [x, y] = toXY(city.lon, city.lat);
+        if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) return;
+        const pulse = Math.sin(t * 2.2 + i * 0.8) * 0.5 + 0.5;
+
+        if (city.primary) {
+          // Outer glow rings (Vercel-style pulsing)
+          [city.size * 3.5, city.size * 2.2].forEach((r, ri) => {
+            ctx.beginPath();
+            ctx.arc(x, y, r + pulse * 4, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(201,168,76,${0.04 + ri * 0.03 + pulse * 0.04})`;
+            ctx.fill();
+          });
+          // Border ring
           ctx.beginPath();
-          ctx.arc(px, py, 2, 0, Math.PI * 2);
-          ctx.fillStyle = n.color;
-          ctx.globalAlpha = 0.8;
+          ctx.arc(x, y, city.size + 3, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(201,168,76,${0.5 + pulse * 0.3})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        } else {
+          // Glow halo
+          ctx.beginPath();
+          ctx.arc(x, y, city.size + 2 + pulse * 3, 0, Math.PI * 2);
+          ctx.fillStyle = `${city.color}18`;
           ctx.fill();
-          ctx.globalAlpha = 1;
+          // Outer ring
+          ctx.beginPath();
+          ctx.arc(x, y, city.size + 1, 0, Math.PI * 2);
+          ctx.strokeStyle = `${city.color}${Math.floor((0.3 + pulse * 0.2) * 255).toString(16).padStart(2,'0')}`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        // Solid circle — Vercel CDN style
+        const grad = ctx.createRadialGradient(x - city.size*0.3, y - city.size*0.3, 0, x, y, city.size);
+        grad.addColorStop(0, city.color + 'ff');
+        grad.addColorStop(1, city.color + 'aa');
+        ctx.beginPath();
+        ctx.arc(x, y, city.size, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.shadowBlur = city.primary ? 20 : 12;
+        ctx.shadowColor = city.color;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Label (primary city only)
+        if (city.primary) {
+          ctx.fillStyle = 'rgba(201,168,76,0.9)';
+          ctx.font = '700 8px "Courier New"';
+          ctx.fillText(city.label, x + city.size + 5, y + 3);
+          ctx.fillStyle = 'rgba(201,168,76,0.5)';
+          ctx.font = '7px "Courier New"';
+          ctx.fillText(`${city.reports} REPORTS`, x + city.size + 5, y + 12);
         }
       });
 
-      // Hub — central intelligence node
-      const hubPulse = Math.sin(t * 1.5) * 0.3 + 0.7;
+      // Radar sweep from Addis
+      const sweepAngle = (t * 1.2) % (Math.PI * 2);
+      ctx.save();
+      ctx.translate(ax, ay);
       ctx.beginPath();
-      ctx.arc(hub.x, hub.y, 18, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(201,168,76,${hubPulse * 0.6})`;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(hub.x, hub.y, 26, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(201,168,76,${hubPulse * 0.2})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(hub.x, hub.y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = "#c9a84c";
-      ctx.globalAlpha = hubPulse;
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, 80, sweepAngle - 0.6, sweepAngle);
+      ctx.closePath();
+      const radarG = ctx.createRadialGradient(0,0,0,0,0,80);
+      radarG.addColorStop(0, 'rgba(201,168,76,0.25)');
+      radarG.addColorStop(1, 'rgba(201,168,76,0)');
+      ctx.fillStyle = radarG;
       ctx.fill();
-      ctx.globalAlpha = 1;
+      ctx.restore();
 
-      // Draw reporter nodes
-      nodes.forEach(n => {
-        if (!n.active) return;
-        const pulse = Math.sin(n.pulse + t * n.speed);
-        const r = n.r + pulse * 1;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = n.color;
-        ctx.globalAlpha = 0.5 + pulse * 0.3;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        // Outer ring
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, r + 4, 0, Math.PI * 2);
-        ctx.strokeStyle = n.color;
-        ctx.lineWidth = 0.5;
-        ctx.globalAlpha = 0.15 + pulse * 0.1;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-      });
-
-      id = requestAnimationFrame(draw);
+      animId = requestAnimationFrame(draw);
     };
+
     draw();
-    return () => cancelAnimationFrame(id);
+    const ro = new ResizeObserver(() => { resize(); });
+    ro.observe(canvas.parentElement || canvas);
+    return () => { cancelAnimationFrame(animId); ro.disconnect(); };
   }, []);
-  return <canvas ref={ref} style={{ width:"100%", height:"100%", display:"block" }}/>;
+
+  return <canvas ref={ref} style={{ width:'100%', height:'100%', display:'block' }}/>;
 }
+
 
 // ── HUD corner brackets ────────────────────────────────────────────────────────
 function HUDBrackets({ color = "#c9a84c", size = 16, children, style = {} }) {
@@ -873,7 +973,7 @@ export default function Safuu() {
               </div>
 
               <div style={{position:"absolute",inset:"32px 0 48px 0"}}>
-                <NetworkCanvas/>
+                <MiniWorldMap/>
               </div>
 
               {/* Bottom data strip */}
