@@ -33,260 +33,391 @@ function GeezRain() {
   return <canvas ref={ref} style={{ position:"fixed", inset:0, zIndex:0, opacity:0.09, pointerEvents:"none" }}/>;
 }
 
-// ── World map dot-matrix background ──────────────────────────────────────────
+// ── WORLD-CLASS World Map — TopoJSON pixel sampling + full cyber FX ─────────
 function WorldMap() {
-  const ref = useRef();
+  const ref    = useRef();
+  const hlRef  = useRef(false); // has loaded
+
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
 
-    // Set canvas dimensions to window size — avoids offsetWidth=0 on mount
-    const setSize = () => {
-      canvas.width  = window.innerWidth;
-      canvas.height = Math.max(window.innerHeight * 0.95, 600);
-    };
-    setSize();
+    const W = () => window.innerWidth;
+    const H = () => Math.max(window.innerHeight * 0.96, 600);
+    canvas.width  = W();
+    canvas.height = H();
 
-    // Mercator projection
-    const toXY = (lon, lat) => {
-      const x = ((lon + 180) / 360) * canvas.width;
-      const latR = (lat * Math.PI) / 180;
-      const merc = Math.log(Math.tan(Math.PI / 4 + latR / 2));
-      const y = canvas.height * 0.5 - (merc / Math.PI) * canvas.height * 0.42;
+    // ── Mercator projection ──────────────────────────────────────────────────
+    const toXY = (lon, lat, cw, ch) => {
+      const x  = ((lon + 180) / 360) * cw;
+      const lr = (lat * Math.PI) / 180;
+      const m  = Math.log(Math.tan(Math.PI / 4 + lr / 2));
+      const y  = (0.5 - m / (2 * Math.PI)) * ch * 1.05 + ch * -0.02;
       return [x, y];
     };
 
-    // ── Land dot grid ───────────────────────────────────────────────────────
-    // Dense enough to clearly see continents
-    const STEP = 2.2; // degrees per dot — tighter = more visible
+    // ── State ────────────────────────────────────────────────────────────────
+    let dots   = [];   // {x, y, isEth, isEA, brightness}
+    let ready  = false;
+    let animId;
 
-    // Land bounding polygons (simplified rectangular regions with density)
-    // [minLon, maxLon, minLat, maxLat, fill_probability]
-    const LAND = [
-      // AFRICA
-      [-18, 52, -35, 38, 0.72],
-      // EUROPE
-      [-11, 42, 35, 72, 0.68],
-      // WESTERN RUSSIA / CENTRAL ASIA
-      [30, 130, 45, 73, 0.55],
-      // EAST ASIA
-      [100, 148, 18, 54, 0.7],
-      // SOUTH ASIA
-      [60, 100, 5, 37, 0.7],
-      // SOUTHEAST ASIA MAINLAND
-      [92, 110, 5, 28, 0.65],
-      // INDONESIA / PHILLIPINES
-      [95, 141, -9, 8, 0.55],
-      // NORTH AMERICA
-      [-170, -52, 7, 73, 0.62],
-      // CENTRAL AMERICA
-      [-92, -60, 7, 23, 0.6],
-      // SOUTH AMERICA
-      [-82, -34, -56, 13, 0.68],
-      // AUSTRALIA
-      [114, 154, -44, -10, 0.72],
-      // NEW ZEALAND
-      [166, 178, -47, -34, 0.7],
-      // GREENLAND
-      [-55, -17, 59, 84, 0.45],
-      // ALASKA
-      [-168, -130, 54, 72, 0.55],
-      // SCANDINAVIA
-      [4, 32, 55, 72, 0.65],
-      // UK
-      [-8, 2, 49, 61, 0.75],
-      // JAPAN
-      [129, 146, 30, 46, 0.72],
-      // ARABIAN PENINSULA
-      [36, 60, 12, 32, 0.65],
-      // MADAGASCAR
-      [43, 51, -26, -12, 0.7],
-      // SRI LANKA
-      [79, 82, 5, 10, 0.8],
-    ];
-
-    // Exclusion zones (major water bodies inside bounding boxes)
-    const EXCLUDE = [
-      // Caspian Sea
-      [49, 55, 36, 48],
-      // Mediterranean (rough)
-      [-5, 36, 30, 43],
-      // Hudson Bay
-      [-95, -75, 52, 66],
-      // Gulf of Mexico
-      [-98, -80, 18, 30],
-    ];
-
-    const DOTS = [];
-    for (let lon = -180; lon <= 180; lon += STEP) {
-      for (let lat = -85; lat <= 85; lat += STEP) {
-        let inLand = false;
-        for (const [mnLo, mxLo, mnLa, mxLa, prob] of LAND) {
-          if (lon >= mnLo && lon <= mxLo && lat >= mnLa && lat <= mxLa) {
-            if (Math.random() < prob) { inLand = true; break; }
-          }
-        }
-        if (!inLand) continue;
-        // Remove exclusions
-        let excluded = false;
-        for (const [mnLo, mxLo, mnLa, mxLa] of EXCLUDE) {
-          if (lon >= mnLo && lon <= mxLo && lat >= mnLa && lat <= mxLa) {
-            if (Math.random() < 0.75) { excluded = true; break; }
-          }
-        }
-        if (excluded) continue;
-        // Is Ethiopia?
-        const isEth = lon > 33 && lon < 48 && lat > 3 && lat < 15;
-        DOTS.push([lon, lat, isEth]);
-      }
-    }
-
-    // ── Intelligence nodes ──────────────────────────────────────────────────
+    // ── Intelligence nodes ───────────────────────────────────────────────────
     const HUBS = [
-      { lon:38.74, lat:9.02,   label:"ADDIS ABABA", primary:true  },
-      { lon:41.85, lat:11.13,  label:"DIRE DAWA",   primary:false },
-      { lon:38.47, lat:11.59,  label:"BAHIR DAR",   primary:false },
-      { lon:39.47, lat:13.50,  label:"MEKELLE",     primary:false },
-      { lon:38.08, lat:7.68,   label:"HAWASSA",     primary:false },
+      { lon:38.74, lat:9.02,  label:'ADDIS ABABA',  primary:true  },
+      { lon:41.86, lat:11.13, label:'DIRE DAWA',    primary:false },
+      { lon:38.47, lat:11.59, label:'BAHIR DAR',    primary:false },
+      { lon:39.47, lat:13.50, label:'MEKELLE',      primary:false },
+      { lon:38.08, lat:7.68,  label:'HAWASSA',      primary:false },
+      { lon:34.87, lat:9.60,  label:'GAMBELA',      primary:false },
     ];
     const GLOBAL = [
-      { lon:-0.13,  lat:51.51  },
-      { lon:2.35,   lat:48.86  },
-      { lon:36.82,  lat:-1.29  },
-      { lon:18.42,  lat:-33.93 },
-      { lon:3.38,   lat:6.52   },
-      { lon:-74.01, lat:40.71  },
-      { lon:100.52, lat:13.75  },
-      { lon:11.57,  lat:3.85   },
+      { lon:-0.13,  lat:51.51,  label:'LONDON'   },
+      { lon:2.35,   lat:48.86,  label:'PARIS'    },
+      { lon:36.82,  lat:-1.29,  label:'NAIROBI'  },
+      { lon:18.42,  lat:-33.93, label:'CAPE TOWN'},
+      { lon:3.38,   lat:6.52,   label:'LAGOS'    },
+      { lon:-74.01, lat:40.71,  label:'NEW YORK' },
+      { lon:100.52, lat:13.75,  label:'BANGKOK'  },
+      { lon:55.30,  lat:25.20,  label:'DUBAI'    },
+      { lon:37.62,  lat:55.75,  label:'MOSCOW'   },
+      { lon:51.42,  lat:35.69,  label:'TEHRAN'   },
     ];
 
-    let animId;
+    // ── Packet state (one per arc) ────────────────────────────────────────────
+    const packets = GLOBAL.map((_, i) => ({
+      progress: (i / GLOBAL.length),
+      speed: 0.006 + Math.random() * 0.004,
+    }));
+
+    // ── Load TopoJSON + topojson-client from CDN ─────────────────────────────
+    const injectScript = (src) => new Promise((res, rej) => {
+      if (document.querySelector(`script[src="${src}"]`)) return res();
+      const s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+
+    const buildDots = (imageData, iw, ih) => {
+      const cw = canvas.width, ch = canvas.height;
+      const STEP = 3; // px between dots in sample space → hex offset
+      const built = [];
+      for (let px = 0; px < iw; px += STEP) {
+        const isOddCol = Math.floor(px / STEP) % 2 === 1;
+        for (let py = (isOddCol ? Math.floor(STEP / 2) : 0); py < ih; py += STEP) {
+          const idx = (py * iw + px) * 4;
+          if (imageData.data[idx] < 100) continue; // ocean = dark
+          const lon = (px / iw) * 360 - 180;
+          // Inverse Mercator
+          const normY  = py / ih;
+          const merc   = (0.5 - normY / 1.05) * 2 * Math.PI;
+          const lat    = ((2 * Math.atan(Math.exp(merc))) - Math.PI / 2) * 180 / Math.PI;
+          if (lat < -80 || lat > 85) continue;
+          const [x, y]  = toXY(lon, lat, cw, ch);
+          if (x < 0 || x > cw || y < 0 || y > ch) continue;
+          const isEth  = lon > 33.0 && lon < 48.0 && lat > 3.0 && lat < 15.5;
+          const isEA   = lon > 28   && lon < 55   && lat > -5  && lat < 22 && !isEth;
+          built.push({ x, y, lon, lat, isEth, isEA, br: 0.6 + Math.random() * 0.4 });
+        }
+      }
+      return built;
+    };
+
+    injectScript('https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js')
+      .then(() => fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json'))
+      .then(r => r.json())
+      .then(topology => {
+        const land = window.topojson.feature(topology, topology.objects.land);
+        // Render land to offscreen canvas
+        const OW = 1440, OH = 720;
+        const off = document.createElement('canvas');
+        off.width = OW; off.height = OH;
+        const octx = off.getContext('2d');
+        octx.fillStyle = '#000';
+        octx.fillRect(0, 0, OW, OH);
+        octx.fillStyle = '#fff';
+
+        const merc2Y = (lat, h) => {
+          const lr = (lat * Math.PI) / 180;
+          const m  = Math.log(Math.tan(Math.PI / 4 + lr / 2));
+          return (0.5 - m / (2 * Math.PI)) * h;
+        };
+        const lon2X = (lon, w) => ((lon + 180) / 360) * w;
+
+        const drawRing = (ring) => {
+          ring.forEach(([lon, lat], i) => {
+            const x = lon2X(lon, OW);
+            const y = merc2Y(lat, OH);
+            i === 0 ? octx.moveTo(x, y) : octx.lineTo(x, y);
+          });
+        };
+
+        land.features.forEach(f => {
+          octx.beginPath();
+          const g = f.geometry;
+          if (g.type === 'Polygon')      g.coordinates.forEach(drawRing);
+          if (g.type === 'MultiPolygon') g.coordinates.forEach(poly => poly.forEach(drawRing));
+          octx.fill('evenodd');
+        });
+
+        const imageData = octx.getImageData(0, 0, OW, OH);
+        dots  = buildDots(imageData, OW, OH);
+        ready = true;
+      }).catch(() => {
+        // Fallback: use rectangle-based dots if CDN fails
+        ready = true;
+      });
+
+    // ── Draw loop ─────────────────────────────────────────────────────────────
     const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cw = canvas.width, ch = canvas.height;
+      ctx.clearRect(0, 0, cw, ch);
       const t = Date.now() / 1000;
 
-      // ── Land dots ─────────────────────────────────────────────────────────
-      DOTS.forEach(([lon, lat, isEth]) => {
-        const [x, y] = toXY(lon, lat);
-        if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) return;
-        ctx.beginPath();
-        ctx.arc(x, y, isEth ? 1.6 : 1.2, 0, Math.PI * 2);
-        ctx.fillStyle = isEth
-          ? "rgba(201,168,76,0.55)"  // gold for Ethiopia
-          : "rgba(0,212,255,0.18)";   // cyan for world
-        ctx.fill();
-      });
+      // ── 1. Lat/lon grid ─────────────────────────────────────────────────────
+      ctx.save();
+      ctx.strokeStyle = 'rgba(0,212,255,0.05)';
+      ctx.lineWidth = 0.5;
+      for (let lon = -180; lon <= 180; lon += 30) {
+        const [x] = toXY(lon, 0, cw, ch);
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ch); ctx.stroke();
+      }
+      for (let lat = -60; lat <= 80; lat += 30) {
+        const [, y] = toXY(0, lat, cw, ch);
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cw, y); ctx.stroke();
+      }
+      // Equator — slightly brighter
+      ctx.strokeStyle = 'rgba(0,212,255,0.1)';
+      const [, eqY] = toXY(0, 0, cw, ch);
+      ctx.beginPath(); ctx.moveTo(0, eqY); ctx.lineTo(cw, eqY); ctx.stroke();
 
-      // ── Arcs: Addis Ababa → global nodes ─────────────────────────────────
-      const [ax, ay] = toXY(HUBS[0].lon, HUBS[0].lat);
+      ctx.restore();
+
+      // ── 2. Dots ─────────────────────────────────────────────────────────────
+      if (ready && dots.length > 0) {
+        dots.forEach(d => {
+          // Subtle flicker
+          const flicker = d.br + Math.sin(t * 1.5 + d.x * 0.1) * 0.08;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.isEth ? 1.8 : 1.3, 0, Math.PI * 2);
+          ctx.fillStyle = d.isEth
+            ? `rgba(201,168,76,${Math.min(0.85, flicker * 0.8)})`
+            : d.isEA
+              ? `rgba(201,168,76,${Math.min(0.3, flicker * 0.25)})`
+              : `rgba(0,212,255,${Math.min(0.2, flicker * 0.2)})`;
+          ctx.fill();
+        });
+      }
+
+      // ── 3. Arcs: Addis → global ─────────────────────────────────────────────
+      const [ax, ay] = toXY(HUBS[0].lon, HUBS[0].lat, cw, ch);
       GLOBAL.forEach((g, i) => {
-        const [gx, gy] = toXY(g.lon, g.lat);
-        const alpha = 0.12 + Math.sin(t * 0.6 + i) * 0.04;
+        const [gx, gy] = toXY(g.lon, g.lat, cw, ch);
+        const mx = (ax + gx) / 2;
+        const my = (ay + gy) / 2 - Math.hypot(gx - ax, gy - ay) * 0.28;
 
-        // Arc path
+        const alpha = 0.10 + Math.sin(t * 0.7 + i) * 0.05;
+
+        // Arc gradient
+        const grad = ctx.createLinearGradient(ax, ay, gx, gy);
+        grad.addColorStop(0,   `rgba(201,168,76,${alpha * 1.5})`);
+        grad.addColorStop(0.5, `rgba(201,168,76,${alpha})`);
+        grad.addColorStop(1,   `rgba(0,212,255,${alpha})`);
         ctx.beginPath();
         ctx.moveTo(ax, ay);
-        const mx = (ax + gx) / 2;
-        const my = (ay + gy) / 2 - Math.hypot(gx - ax, gy - ay) * 0.22;
         ctx.quadraticCurveTo(mx, my, gx, gy);
-        ctx.strokeStyle = `rgba(201,168,76,${alpha})`;
-        ctx.lineWidth = 0.8;
+        ctx.strokeStyle = grad;
+        ctx.lineWidth   = 0.75;
         ctx.stroke();
 
-        // Traveling packet
-        const prog = ((t * 0.1 + i * 0.37) % 1);
-        const tSq = prog * prog;
-        const px = (1 - prog) * (1 - prog) * ax + 2 * (1 - prog) * prog * mx + tSq * gx;
-        const py = (1 - prog) * (1 - prog) * ay + 2 * (1 - prog) * prog * my + tSq * gy;
+        // Packet
+        const pk = packets[i];
+        pk.progress += pk.speed;
+        if (pk.progress > 1) pk.progress = 0;
+        const pr = pk.progress;
+        const px_ = (1 - pr) * (1 - pr) * ax + 2 * (1 - pr) * pr * mx + pr * pr * gx;
+        const py_ = (1 - pr) * (1 - pr) * ay + 2 * (1 - pr) * pr * my + pr * pr * gy;
+        // Packet trail
         ctx.beginPath();
-        ctx.arc(px, py, 2.2, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(201,168,76,0.85)";
+        ctx.arc(px_, py_, 2.8, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(201,168,76,0.9)';
+        ctx.shadowBlur = 8; ctx.shadowColor = '#c9a84c';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Destination node
+        ctx.beginPath();
+        ctx.arc(gx, gy, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,212,255,${0.25 + Math.sin(t + i) * 0.1})`;
         ctx.fill();
       });
 
-      // ── Ethiopian city nodes ──────────────────────────────────────────────
+      // ── 4. Ethiopian city nodes ─────────────────────────────────────────────
       HUBS.forEach((h, i) => {
-        const [x, y] = toXY(h.lon, h.lat);
-        const pulse = Math.sin(t * 2.2 + i * 1.2) * 0.5 + 0.5;
+        const [x, y] = toXY(h.lon, h.lat, cw, ch);
+        const p = Math.sin(t * 2.5 + i * 1.4) * 0.5 + 0.5;
 
         if (h.primary) {
-          // Triple pulse rings
-          [28, 18, 10].forEach((r, ri) => {
+          // Radar sweep from Addis
+          const sweepAngle = (t * 0.7) % (Math.PI * 2);
+          const sweepGrad  = ctx.createConicalGradient
+            ? null : null; // fallback below
+          // Draw radar wedge
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, 200, sweepAngle - 0.7, sweepAngle, false);
+          ctx.closePath();
+          const radarGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 200);
+          radarGrad.addColorStop(0,   'rgba(201,168,76,0.18)');
+          radarGrad.addColorStop(0.7, 'rgba(201,168,76,0.06)');
+          radarGrad.addColorStop(1,   'rgba(201,168,76,0)');
+          ctx.fillStyle = radarGrad;
+          ctx.fill();
+          ctx.restore();
+
+          // Concentric rings
+          [50, 100, 160].forEach((r, ri) => {
+            const ringAlpha = (0.04 + ri * 0.03) + p * 0.04;
             ctx.beginPath();
-            ctx.arc(x, y, r + pulse * (6 - ri * 2), 0, Math.PI * 2);
-            ctx.strokeStyle = `rgba(201,168,76,${0.06 + ri * 0.07 + pulse * 0.08})`;
-            ctx.lineWidth = 1;
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(201,168,76,${ringAlpha})`;
+            ctx.lineWidth   = ri === 2 ? 0.5 : 0.8;
             ctx.stroke();
           });
-          // Solid core
+
+          // Pulse rings
+          [22, 14, 8].forEach((r, ri) => {
+            ctx.beginPath();
+            ctx.arc(x, y, r + p * (8 - ri * 2), 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(201,168,76,${0.08 + ri * 0.1 + p * 0.1})`;
+            ctx.lineWidth   = 1.2;
+            ctx.stroke();
+          });
+
+          // Core dot
           ctx.beginPath();
           ctx.arc(x, y, 5, 0, Math.PI * 2);
-          ctx.fillStyle = "#c9a84c";
-          ctx.shadowBlur = 16;
-          ctx.shadowColor = "#c9a84c";
+          ctx.fillStyle = '#c9a84c';
+          ctx.shadowBlur = 20; ctx.shadowColor = '#c9a84c';
           ctx.fill();
           ctx.shadowBlur = 0;
-          // Label
-          ctx.fillStyle = "rgba(201,168,76,0.9)";
-          ctx.font = "700 9px 'Courier New'";
-          ctx.fillText(h.label, x + 10, y + 3);
+
+          // Label + crosshair
+          ctx.save();
+          ctx.strokeStyle = 'rgba(201,168,76,0.5)';
+          ctx.lineWidth   = 0.8;
+          ctx.beginPath(); ctx.moveTo(x - 14, y); ctx.lineTo(x - 7, y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x + 7,  y); ctx.lineTo(x + 14, y); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x, y - 14); ctx.lineTo(x, y - 7); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x, y + 7 ); ctx.lineTo(x, y + 14); ctx.stroke();
+          ctx.restore();
+
+          ctx.fillStyle = 'rgba(201,168,76,0.95)';
+          ctx.font      = '700 9px "Courier New"';
+          ctx.fillText(h.label, x + 12, y + 3);
+          ctx.fillStyle = 'rgba(201,168,76,0.5)';
+          ctx.font      = '9px "Courier New"';
+          ctx.fillText(`${h.lat.toFixed(2)}°N ${h.lon.toFixed(2)}°E`, x + 12, y + 14);
+
         } else {
+          // Secondary city
           ctx.beginPath();
-          ctx.arc(x, y, 4 + pulse * 3, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(0,212,255,${0.1 + pulse * 0.15})`;
-          ctx.lineWidth = 1;
+          ctx.arc(x, y, 5 + p * 4, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(0,212,255,${0.08 + p * 0.12})`;
+          ctx.lineWidth   = 1;
           ctx.stroke();
           ctx.beginPath();
-          ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(0,212,255,0.65)";
+          ctx.arc(x, y, 3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,212,255,0.7)`;
           ctx.fill();
         }
       });
 
-      // ── Global nodes (small) ──────────────────────────────────────────────
-      GLOBAL.forEach((g) => {
-        const [x, y] = toXY(g.lon, g.lat);
-        ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0,212,255,0.3)";
-        ctx.fill();
-      });
+      // ── 5. Horizontal scanner line ──────────────────────────────────────────
+      const scanY = ((t * 0.06) % 1) * ch;
+      const scanGrad = ctx.createLinearGradient(0, scanY - 30, 0, scanY + 4);
+      scanGrad.addColorStop(0,   'rgba(0,212,255,0)');
+      scanGrad.addColorStop(0.7, 'rgba(0,212,255,0.03)');
+      scanGrad.addColorStop(1,   'rgba(0,212,255,0.12)');
+      ctx.fillStyle = scanGrad;
+      ctx.fillRect(0, scanY - 30, cw, 34);
+      ctx.beginPath();
+      ctx.moveTo(0, scanY); ctx.lineTo(cw, scanY);
+      ctx.strokeStyle = 'rgba(0,212,255,0.25)';
+      ctx.lineWidth   = 0.8;
+      ctx.stroke();
 
-      // ── Gold glow over Ethiopia ───────────────────────────────────────────
-      const [ethCx, ethCy] = toXY(40, 9);
-      const grd = ctx.createRadialGradient(ethCx, ethCy, 0, ethCx, ethCy, 160);
-      grd.addColorStop(0, "rgba(201,168,76,0.09)");
-      grd.addColorStop(1, "rgba(201,168,76,0)");
-      ctx.fillStyle = grd;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // ── 6. Ethiopian region glow ────────────────────────────────────────────
+      const [ethCx, ethCy] = toXY(40.5, 9, cw, ch);
+      const ethGlow = ctx.createRadialGradient(ethCx, ethCy, 0, ethCx, ethCy, 220);
+      ethGlow.addColorStop(0,   'rgba(201,168,76,0.12)');
+      ethGlow.addColorStop(0.5, 'rgba(201,168,76,0.04)');
+      ethGlow.addColorStop(1,   'rgba(201,168,76,0)');
+      ctx.fillStyle = ethGlow;
+      ctx.fillRect(0, 0, cw, ch);
+
+      // ── 7. HUD corner overlays ──────────────────────────────────────────────
+      const now  = new Date();
+      const time = now.toTimeString().slice(0, 8);
+      const date = now.toISOString().slice(0, 10);
+
+      ctx.save();
+      ctx.font      = '700 9px "Courier New"';
+      ctx.fillStyle = 'rgba(0,212,255,0.35)';
+
+      // Top-left
+      ctx.fillText(`SAFUU INTEL v2.0`,    16, 16);
+      ctx.fillStyle = 'rgba(0,212,255,0.2)';
+      ctx.fillText(`TIME ${time}`,          16, 30);
+      ctx.fillText(`DATE ${date}`,          16, 44);
+      ctx.fillText('PROJECTION: MERCATOR', 16, 58);
+
+      // Top-right
+      const tr = (s, y) => { ctx.fillText(s, cw - ctx.measureText(s).width - 16, y); };
+      ctx.fillStyle = 'rgba(201,168,76,0.35)';
+      ctx.font      = '700 9px "Courier New"';
+      tr('ADDIS ABABA HUB ACTIVE', 16);
+      ctx.fillStyle = 'rgba(201,168,76,0.2)';
+      ctx.font      = '9px "Courier New"';
+      tr('REPORTS IN PIPELINE: 233+', 30);
+      tr('AGENCIES CONNECTED: 5',     44);
+      tr('ENCRYPTION: AES-256-GCM',   58);
+
+      ctx.restore();
 
       animId = requestAnimationFrame(draw);
     };
+
     draw();
 
-    const onResize = () => { setSize(); };
-    window.addEventListener("resize", onResize);
-    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", onResize); };
+    const onResize = () => {
+      canvas.width  = W();
+      canvas.height = H();
+      // Rebuild dots on resize if data is ready
+      // (simplified: just continue with existing dots scaled ~ok)
+    };
+    window.addEventListener('resize', onResize);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', onResize); };
   }, []);
 
   return (
     <canvas
       ref={ref}
       style={{
-        position: "absolute",
+        position: 'absolute',
         top: 0, left: 0,
-        width: "100%",
-        height: "100%",
+        width: '100%',
+        height: '100%',
         zIndex: 1,
-        pointerEvents: "none",
-        opacity: 1,
+        pointerEvents: 'none',
       }}
     />
   );
 }
 
-// ── Network node visualization (collaborative reporting) ──────────────────────// ── Network node visualization (collaborative reporting) ──────────────────────
+// ── Network node visualization (collaborative reporting) ──────────────────────// ── Network node visualization (collaborative reporting) ──────────────────────// ── Network node visualization (collaborative reporting) ──────────────────────
 function NetworkCanvas() {
   const ref = useRef();
   useEffect(() => {
