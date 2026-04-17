@@ -129,15 +129,26 @@ export default function CaseDetail() {
         <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"24px"}}>
           <div style={{width:"6px",height:"6px",background:c.disclosed?R:G,transform:"rotate(45deg)"}}/>
           <span style={{fontSize:"9px",color:c.disclosed?R:G,fontFamily:"'Courier New',monospace",letterSpacing:"0.25em",fontWeight:"700"}}>
-            {c.id} · {c.disclosed?"● DISCLOSED":"○ PENDING THRESHOLD"}
+            {c.id} · {c.disclosed?"● REFERRED TO AGENCY":"○ PENDING THRESHOLD"}
           </span>
           <div style={{flex:1,height:"1px",background:c.disclosed?"rgba(184,32,32,0.2)":"rgba(201,168,76,0.15)"}}/>
         </div>
 
-        <h1 style={{fontSize:"clamp(28px,4vw,48px)",fontWeight:"900",fontFamily:"'Playfair Display',serif",color:c.disclosed?R:"rgba(240,236,224,0.4)",lineHeight:1.05,marginBottom:"8px",letterSpacing:"-0.01em"}}>
+        <h1 style={{fontSize:"clamp(28px,4vw,48px)",fontWeight:"900",fontFamily:"'Playfair Display',serif",color:c.disclosed?"rgba(220,120,120,0.85)":"rgba(240,236,224,0.4)",lineHeight:1.05,marginBottom:"8px",letterSpacing:"-0.01em"}}>
           {c.name}
         </h1>
-        <div style={{fontSize:"16px",color:"rgba(240,236,224,0.6)",marginBottom:"32px"}}>{c.office} · {c.city}, {c.region}</div>
+        <div style={{fontSize:"16px",color:"rgba(240,236,224,0.6)",marginBottom:"16px"}}>{c.office} · {c.city}, {c.region}</div>
+
+        {/* Legal disclaimer — appears on every case */}
+        <div style={{background:"rgba(201,168,76,0.05)",border:"1px solid rgba(201,168,76,0.18)",borderLeft:"3px solid rgba(201,168,76,0.5)",padding:"14px 18px",marginBottom:"24px"}}>
+          <div style={{fontSize:"9px",color:"rgba(201,168,76,0.6)",fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",marginBottom:"6px",fontWeight:"700"}}>⚖ LEGAL NOTICE</div>
+          <p style={{fontSize:"12px",color:"rgba(240,236,224,0.45)",lineHeight:"1.8",fontFamily:"'Courier New',monospace"}}>
+            This case represents anonymous public submissions aggregated by SAFUU Intel.
+            <strong style={{color:"rgba(240,236,224,0.6)"}}> It is not a finding of guilt, a legal determination, or a verdict of any kind.</strong>{" "}
+            The named individual or institution retains all rights under Ethiopian law.
+            This case has been formally referred to {c.status} for independent investigation.
+          </p>
+        </div>
 
         {!c.disclosed && (
           <div style={{background:"rgba(201,168,76,0.06)",border:`1px solid rgba(201,168,76,0.2)`,padding:"16px 20px",marginBottom:"32px",fontSize:"13px",color:"rgba(240,236,224,0.5)",lineHeight:"1.8"}}>
@@ -213,7 +224,9 @@ export default function CaseDetail() {
         <div style={{background:"rgba(0,0,0,0.4)",border:`1px solid rgba(0,212,255,0.07)`,padding:"20px 24px",fontSize:"11px",color:"rgba(240,236,224,0.3)",fontFamily:"'Courier New',monospace",lineHeight:"1.8"}}>
           // Reporter identities are SHA-256 hashed — never stored, never recoverable<br/>
           // Timeline events show aggregated intake data — no personal information<br/>
-          // All evidence sealed in tamper-evident cryptographic ledger
+          // All evidence sealed in tamper-evident cryptographic ledger<br/>
+          // Coordinated or duplicate reports are flagged and weighted accordingly<br/>
+          // This case is a referral — not a verdict. Investigation is conducted by {c.status}.
         </div>
 
         {/* Actions */}

@@ -71,6 +71,8 @@ const CATEGORIES = [
        a:"Contact EHRC (1488) immediately. Your report to SAFUU does not expose your identity, so threats cannot originate from our system. If you are threatened, document the threats and report them to SAFUU and EHRC — retaliation against witnesses is a separate criminal offense."},
       {q:"Can the government access my report?",
        a:"SAFUU may comply with valid Ethiopian court orders. However, because reporter identity is never stored, there is nothing identifying to produce. The evidence ledger can be provided for prosecuting officials — it contains report content and hashes, not reporter identities."},
+      {q:"Can a named official take legal action against SAFUU?",
+       a:"SAFUU operates as a reporting aggregator — similar to how a newspaper can report that 'police received 15 complaints about an official' without making a legal determination. The transparency wall explicitly states that all appearances are public submissions, not verdicts. Every disclosed case is labelled as 'Referred to [Agency] for investigation', not 'Found guilty of corruption'. Officials retain all rights under Ethiopian law, and the actual determination of wrongdoing is made by FEACC, the courts, or the relevant authority — not SAFUU."},
     ]
   },
 ];

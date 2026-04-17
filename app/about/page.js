@@ -134,6 +134,28 @@ export default function About() {
           </p>
         </Section>
 
+        <Section label="SAFEGUARDS AGAINST ABUSE" color={"#fb923c"}>
+          <p style={{fontSize:"15px",color:"rgba(240,236,224,0.55)",lineHeight:"1.9",marginBottom:"20px"}}>
+            SAFUU is designed to protect both reporters and the officials they report on. Several layers prevent coordinated false reporting:
+          </p>
+          <div style={{display:"grid",gap:"16px"}}>
+            {[
+              {n:"01", title:"AI-weighted verification", body:"Reports without supporting evidence — no photo, no document, no verifiable details — receive a lower weight in the system. Reaching the threshold requires a meaningful number of independently verifiable reports, not just volume."},
+              {n:"02", title:"Coordination detection", body:"The system flags reports that appear coordinated: multiple near-identical submissions in a short window, clustering from a single region, or patterns suggesting organized targeting. Flagged cases go to manual analyst review before disclosure."},
+              {n:"03", title:"Referral, not verdict", body:"Reaching the threshold does not mean SAFUU declares guilt. The case is forwarded to FEACC, Federal Police, or the relevant agency. The public transparency wall explicitly labels every case as a referral, not a determination."},
+              {n:"04", title:"Legal disclaimer on every case", body:"Every entry on the transparency wall carries a clear legal notice: 'This represents anonymous public submissions — not a finding of guilt.' Officials retain all rights under Ethiopian law."},
+            ].map((s,i)=>(
+              <div key={i} style={{display:"flex",gap:"16px",padding:"18px 20px",background:"rgba(251,146,60,0.04)",border:"1px solid rgba(251,146,60,0.12)"}}>
+                <div style={{width:"28px",height:"28px",background:"rgba(251,146,60,0.1)",border:"1px solid rgba(251,146,60,0.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"11px",fontFamily:"'Courier New',monospace",fontWeight:"700",color:"#fb923c",flexShrink:0}}>{s.n}</div>
+                <div>
+                  <div style={{fontSize:"13px",fontWeight:"700",color:"rgba(240,236,224,0.85)",marginBottom:"6px"}}>{s.title}</div>
+                  <div style={{fontSize:"13px",color:"rgba(240,236,224,0.45)",lineHeight:"1.8"}}>{s.body}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+
         <Section label="REPORT NOW" color={R}>
           <div style={{background:"rgba(201,168,76,0.04)",border:`1px solid rgba(201,168,76,0.2)`,padding:"32px"}}>
             <h3 style={{fontSize:"22px",fontWeight:"800",fontFamily:"'Playfair Display',serif",color:"rgba(240,236,224,0.95)",marginBottom:"16px"}}>Two ways to report anonymously</h3>

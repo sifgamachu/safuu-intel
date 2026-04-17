@@ -132,10 +132,22 @@ export default function TransparencyWall() {
         <h1 style={{fontSize:"clamp(32px,5vw,56px)",fontWeight:"900",fontFamily:"'Playfair Display',serif",color:"rgba(240,236,224,0.95)",lineHeight:1.05,marginBottom:"16px",letterSpacing:"-0.02em"}}>
           Accountability Wall
         </h1>
-        <p style={{fontSize:"14px",color:"rgba(240,236,224,0.45)",maxWidth:"640px",lineHeight:"1.8",marginBottom:"40px"}}>
-          Officials are shown once anonymous, verified reports reach the disclosure threshold.
-          Below threshold: city and office only. At threshold: full name disclosed and case escalated.
+        <p style={{fontSize:"14px",color:"rgba(240,236,224,0.45)",maxWidth:"640px",lineHeight:"1.8",marginBottom:"20px"}}>
+          This wall shows offices and individuals against whom anonymous reports have been filed.
+          <strong style={{color:"rgba(240,236,224,0.7)"}}> Appearance here is not a finding of guilt.</strong>{" "}
+          All cases are forwarded to the appropriate Ethiopian authority for independent investigation.
         </p>
+
+        {/* Legal disclaimer banner */}
+        <div style={{background:"rgba(201,168,76,0.06)",border:"1px solid rgba(201,168,76,0.2)",padding:"14px 20px",marginBottom:"32px",display:"flex",gap:"12px",alignItems:"flex-start"}}>
+          <span style={{fontSize:"16px",flexShrink:0}}>⚖️</span>
+          <div style={{fontSize:"11px",color:"rgba(240,236,224,0.5)",lineHeight:"1.85",fontFamily:"'Courier New',monospace"}}>
+            <strong style={{color:"rgba(201,168,76,0.7)"}}>IMPORTANT:</strong> SAFUU Intel is an anonymous reporting aggregator — not an investigative authority and not a court.
+            The information on this wall represents anonymous public submissions and does not constitute a finding of guilt, wrongdoing, or any legal determination.
+            Every disclosed case is formally referred to FEACC, Federal Police, EHRC, Ombudsman, or OFAG for independent investigation.
+            Officials retain all rights under Ethiopian law.
+          </div>
+        </div>
 
         {/* Summary stats */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:"1px",background:`rgba(0,212,255,0.08)`,marginBottom:"40px",borderRadius:"2px",overflow:"hidden"}}>
@@ -157,7 +169,7 @@ export default function TransparencyWall() {
         <div style={{display:"flex",gap:"10px",flexWrap:"wrap",alignItems:"center",marginBottom:"32px"}}>
           {["all","disclosed","pending"].map(f=>(
             <button key={f} className={`pill${filter===f?" active":""}`} onClick={()=>setFilter(f)}>
-              {f==="all"?"All Officials":f==="disclosed"?"● Disclosed":"○ Pending"}
+              {f==="all"?"All Cases":f==="disclosed"?"● Referred to Agency":"○ Building Case"}
             </button>
           ))}
           <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:"0",
@@ -202,7 +214,7 @@ export default function TransparencyWall() {
             {/* Name + Office */}
             <div>
               <div style={{fontSize:"14px",fontWeight:"700",
-                color:o.disclosed?R:"rgba(240,236,224,0.5)",
+                color:o.disclosed?"rgba(220,120,120,0.85)":"rgba(240,236,224,0.5)",
                 fontFamily:"'Playfair Display',serif",marginBottom:"3px",
                 letterSpacing:o.disclosed?"0":"-0.01em"}}>
                 {o.name}
@@ -231,7 +243,7 @@ export default function TransparencyWall() {
                 background:o.disclosed?"rgba(184,32,32,0.15)":"rgba(201,168,76,0.08)",
                 border:`1px solid ${o.disclosed?"rgba(184,32,32,0.4)":"rgba(201,168,76,0.2)"}`,
                 color:o.disclosed?R:G}}>
-                {o.disclosed?"● DISCLOSED":"○ PENDING"}
+                {o.disclosed?"● REFERRED TO AGENCY":"○ BUILDING CASE"}
               </span>
             </div>
 
@@ -251,8 +263,8 @@ export default function TransparencyWall() {
           border:`1px solid rgba(0,212,255,0.12)`,display:"grid",
           gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:"24px"}}>
           {[
-            {icon:"○",color:G,title:"Below threshold",text:"Only city and office are shown. The name is masked — protecting against false accusations until enough verified reports confirm the pattern."},
-            {icon:"●",color:R,title:"At threshold (15+ reports)",text:"Full name is publicly disclosed. The case is formally escalated to the appropriate Ethiopian accountability body for investigation."},
+            {icon:"○",color:G,title:"Building case",text:"Only office and city are shown. The name is masked — protecting against coordinated false reporting until independently verified reports build a consistent pattern."},
+            {icon:"●",color:R,title:"Referred to agency",text:"When the threshold is reached, the case is formally forwarded to FEACC or the relevant authority. Appearance here is NOT a verdict — it is a referral for independent investigation."},
             {icon:"🔐",color:CY,title:"Zero identity stored",text:"Reporter identity is never recorded. One-way SHA-256 hashing makes identification mathematically impossible — even for Safuu administrators."},
           ].map((b,i)=>(
             <div key={i} style={{display:"flex",gap:"14px"}}>
