@@ -1,181 +1,195 @@
 'use client';
-const G="#c9a84c"; const CY="#00d4ff"; const R="#b82020";
+import { WhatsAppButton, TelegramButton, ReportSection, WA_GREEN, TG_BLUE } from "../components/ReportButtons";
 
-const CHANNELS = [
-  {
-    icon:"💬", name:"WhatsApp", color:G,
-    number:"+251 911 000 000",
-    steps:[
-      "Save the number +251911000000 in your contacts",
-      "Open WhatsApp and start a new chat with SAFUU",
-      "Send a voice note or text message describing the corruption",
-      "Share photos or documents as evidence if you have them",
-      "You will receive a case reference number in reply",
-    ],
-    tips:[
-      "Voice messages work in all 11 Ethiopian languages — Whisper AI transcribes automatically",
-      "WhatsApp's end-to-end encryption adds a layer of protection in transit",
-      "You can send long messages, multiple photos, and documents in one conversation",
-    ],
-    example:"Tesfaye Bekele | Ministry of Transport, Addis Ababa | Demanded ETB 5,000 for permit approval on March 14 2026",
-  },
-  {
-    icon:"📲", name:"Telegram", color:CY,
-    number:"@SafuuEthBot",
-    steps:[
-      "Open Telegram and search for @SafuuEthBot",
-      "Press Start to begin the 8-step structured intake",
-      "The bot will guide you step by step in your language",
-      "Upload photos, voice messages, or documents when prompted",
-      "Receive your case reference number at the end",
-    ],
-    tips:[
-      "The Telegram bot is more structured — 8 guided steps ensure complete information",
-      "Telegram accounts can be created with a phone number then set to anonymous",
-      "Use Telegram's 'Delete account' feature after reporting if you want zero trace",
-    ],
-    example:"The bot asks each question individually — no free-form message needed",
-  },
+const TIERS = [
+  { icon:"✏️", tier:"Text only",        threshold:100, color:"rgba(255,255,255,0.5)", desc:"Written description only — no attachment" },
+  { icon:"📷", tier:"+ Photo evidence", threshold:15,  color:"#c9a84c",              desc:"Photo attached (receipt, scene, document)" },
+  { icon:"📄", tier:"+ Financial docs", threshold:15,  color:"#c9a84c",              desc:"Bank statement, receipt, payment record" },
+  { icon:"🔴", tier:"+ Demand proof",   threshold:3,   color:"#b82020",              desc:"Screenshot of official demanding money" },
 ];
 
-const LANGS = [
-  "አማርኛ (Amharic)","Oromiffa","ትግርኛ (Tigrinya)","Soomaali","Qafar (Afar)",
-  "Sidaamu","Wolayttatto","Hadiyyissa","Dawro","Gamo","Bench","English",
-];
-
-export default function WhatsAppGuide() {
+export default function ReportingGuide() {
   return (
-    <div style={{background:"#030507",minHeight:"100vh",fontFamily:"'Space Grotesk',sans-serif",color:"rgba(240,236,224,0.9)"}}>
-      <style>{`*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}a{color:inherit;text-decoration:none}@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.lnk:hover{color:${CY}!important}`}</style>
+    <div style={{background:"#030507",minHeight:"100vh",fontFamily:"-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif",color:"rgba(240,236,224,0.9)"}}>
+      <style>{`
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        a{color:inherit;text-decoration:none}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .lnk:hover{color:#00d4ff!important}
+        ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.3)}
+        @media(max-width:640px){.two-col{grid-template-columns:1fr!important}.pad{padding:32px 20px!important}}
+      `}</style>
 
-      <nav style={{borderBottom:`1px solid rgba(0,212,255,0.1)`,padding:"0 40px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"60px",background:"rgba(3,5,7,0.97)",backdropFilter:"blur(16px)",position:"sticky",top:0,zIndex:100}}>
+      {/* Nav */}
+      <nav style={{borderBottom:"1px solid rgba(0,212,255,0.1)",padding:"0 40px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"60px",background:"rgba(3,5,7,0.97)",backdropFilter:"blur(16px)",position:"sticky",top:0,zIndex:100}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:"12px"}}>
-          <div style={{width:"32px",height:"32px",border:`1px solid rgba(201,168,76,0.3)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px"}}>⚖️</div>
+          <div style={{width:"32px",height:"32px",border:"1px solid rgba(201,168,76,0.3)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"16px"}}>⚖️</div>
           <div>
             <div style={{fontSize:"15px",fontWeight:"900",color:"rgba(240,236,224,0.95)",fontFamily:"'Playfair Display',serif"}}>SAFUU</div>
-            <div style={{fontSize:"7px",color:CY,letterSpacing:"0.3em",fontFamily:"'Courier New',monospace",opacity:0.6}}>HOW TO REPORT</div>
+            <div style={{fontSize:"7px",color:"#00d4ff",letterSpacing:"0.3em",fontFamily:"'Courier New',monospace",opacity:0.6}}>HOW TO REPORT</div>
           </div>
         </a>
-        <a href="/" className="lnk" style={{fontSize:"10px",color:`rgba(0,212,255,0.4)`,fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",transition:"color 0.2s"}}>← HOME</a>
+        <a href="/" className="lnk" style={{fontSize:"10px",color:"rgba(0,212,255,0.4)",fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",transition:"color 0.2s"}}>← HOME</a>
       </nav>
 
-      <div style={{maxWidth:"860px",margin:"0 auto",padding:"72px 40px 100px",animation:"fadeUp 0.8s ease-out"}}>
+      <div className="pad" style={{maxWidth:"860px",margin:"0 auto",padding:"60px 40px 100px",animation:"fadeUp 0.8s ease-out"}}>
+
         {/* Header */}
-        <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"20px"}}>
-          <div style={{width:"6px",height:"6px",background:G,transform:"rotate(45deg)"}}/>
-          <span style={{fontSize:"9px",color:G,fontFamily:"'Courier New',monospace",letterSpacing:"0.25em",fontWeight:"700"}}>TWO WAYS TO REPORT ANONYMOUSLY</span>
-          <div style={{flex:1,height:"1px",background:`rgba(201,168,76,0.15)`}}/>
+        <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"16px"}}>
+          <div style={{width:"6px",height:"6px",background:"#b82020",transform:"rotate(45deg)"}}/>
+          <span style={{fontSize:"9px",color:"#b82020",fontFamily:"'Courier New',monospace",letterSpacing:"0.25em",fontWeight:"700"}}>TWO WAYS TO REPORT ANONYMOUSLY</span>
+          <div style={{flex:1,height:"1px",background:"rgba(184,32,32,0.2)"}}/>
         </div>
-        <h1 style={{fontSize:"clamp(30px,5vw,52px)",fontWeight:"900",fontFamily:"'Playfair Display',serif",color:"rgba(240,236,224,0.95)",lineHeight:1.05,marginBottom:"14px",letterSpacing:"-0.02em"}}>
-          WhatsApp & Telegram
+        <h1 style={{fontSize:"clamp(28px,5vw,48px)",fontWeight:"900",fontFamily:"'Playfair Display',serif",color:"rgba(240,236,224,0.95)",lineHeight:1.05,marginBottom:"12px",letterSpacing:"-0.02em"}}>
+          Report on WhatsApp or Telegram
         </h1>
-        <p style={{fontSize:"14px",color:"rgba(240,236,224,0.45)",lineHeight:"1.85",marginBottom:"52px",maxWidth:"580px"}}>
-          SAFUU accepts anonymous reports via <strong style={{color:G}}>WhatsApp</strong> and <strong style={{color:CY}}>Telegram</strong>.
-          Both support voice messages, photos, and documents in all 11 Ethiopian languages.
-          Your identity is never stored — SHA-256 one-way hash only.
+        <p style={{fontSize:"14px",color:"rgba(240,236,224,0.45)",lineHeight:"1.85",marginBottom:"44px",maxWidth:"580px"}}>
+          Both channels accept text and photo/document attachments.
+          Your identity is never stored — one-way SHA-256 hash only.
+          Text and attachments are the two accepted formats right now.
         </p>
 
-        {/* Channel cards */}
-        <div style={{display:"flex",flexDirection:"column",gap:"24px",marginBottom:"56px"}}>
-          {CHANNELS.map((ch,i)=>(
-            <div key={i} style={{background:"rgba(0,0,0,0.5)",border:`1px solid ${ch.color}22`,overflow:"hidden"}}>
-              {/* Header */}
-              <div style={{display:"flex",alignItems:"center",gap:"16px",padding:"22px 28px",borderBottom:`1px solid rgba(255,255,255,0.04)`,background:`${ch.color}08`}}>
-                <div style={{fontSize:"32px"}}>{ch.icon}</div>
-                <div>
-                  <div style={{fontSize:"20px",fontWeight:"900",color:ch.color,fontFamily:"'Playfair Display',serif",marginBottom:"4px"}}>{ch.name}</div>
-                  <div style={{fontSize:"14px",color:"rgba(240,236,224,0.7)",fontFamily:"'Courier New',monospace",fontWeight:"700"}}>{ch.number}</div>
-                </div>
-                <a href={ch.name==="WhatsApp"?"https://wa.me/251911000000":"https://t.me/SafuuEthBot"}
-                  target="_blank" rel="noreferrer"
-                  style={{marginLeft:"auto",background:ch.color,color:"#030507",fontFamily:"'Courier New',monospace",
-                    fontSize:"10px",fontWeight:"700",padding:"10px 22px",letterSpacing:"0.12em",textDecoration:"none",flexShrink:0}}>
-                  OPEN {ch.name.toUpperCase()} →
-                </a>
-              </div>
+        {/* The main two-channel card */}
+        <div style={{marginBottom:"52px"}}>
+          <ReportSection/>
+        </div>
 
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0"}}>
-                {/* Steps */}
-                <div style={{padding:"22px 24px",borderRight:`1px solid rgba(255,255,255,0.04)`}}>
-                  <div style={{fontSize:"9px",color:`rgba(0,212,255,0.5)`,fontFamily:"'Courier New',monospace",letterSpacing:"0.18em",marginBottom:"14px"}}>HOW TO USE</div>
-                  {ch.steps.map((s,j)=>(
-                    <div key={j} style={{display:"flex",gap:"10px",marginBottom:"10px",alignItems:"flex-start"}}>
-                      <span style={{fontSize:"9px",color:ch.color,fontFamily:"'Courier New',monospace",flexShrink:0,marginTop:"3px",fontWeight:"700"}}>{String(j+1).padStart(2,"0")}</span>
-                      <span style={{fontSize:"12px",color:"rgba(240,236,224,0.55)",lineHeight:"1.65"}}>{s}</span>
-                    </div>
-                  ))}
-                </div>
+        {/* WhatsApp detail */}
+        <div style={{marginBottom:"40px",padding:"28px 32px",background:`rgba(37,211,102,0.05)`,border:`1px solid rgba(37,211,102,0.2)`,borderLeft:`4px solid ${WA_GREEN}`,borderRadius:"2px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"20px"}}>
+            <div style={{width:"40px",height:"40px",borderRadius:"50%",background:WA_GREEN,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"22px"}}>
+              <span>💬</span>
+            </div>
+            <div>
+              <div style={{fontSize:"20px",fontWeight:"700",color:"white"}}>WhatsApp</div>
+              <div style={{fontSize:"13px",color:WA_GREEN,fontFamily:"monospace"}}>+251 911 000 000</div>
+            </div>
+          </div>
 
-                {/* Tips */}
-                <div style={{padding:"22px 24px"}}>
-                  <div style={{fontSize:"9px",color:`rgba(0,212,255,0.5)`,fontFamily:"'Courier New',monospace",letterSpacing:"0.18em",marginBottom:"14px"}}>TIPS</div>
-                  {ch.tips.map((t,j)=>(
-                    <div key={j} style={{display:"flex",gap:"10px",marginBottom:"10px",alignItems:"flex-start"}}>
-                      <span style={{color:ch.color,flexShrink:0,marginTop:"1px",fontSize:"10px"}}>◆</span>
-                      <span style={{fontSize:"12px",color:"rgba(240,236,224,0.45)",lineHeight:"1.65"}}>{t}</span>
-                    </div>
-                  ))}
-                  {/* Example message */}
-                  <div style={{marginTop:"16px",padding:"12px 14px",background:"rgba(0,0,0,0.4)",border:`1px solid ${ch.color}25`}}>
-                    <div style={{fontSize:"8px",color:`rgba(0,212,255,0.4)`,fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",marginBottom:"6px"}}>EXAMPLE</div>
-                    <div style={{fontSize:"11px",color:"rgba(240,236,224,0.5)",lineHeight:"1.6",fontFamily:"'Courier New',monospace"}}>{ch.example}</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"24px",marginBottom:"24px"}} className="two-col">
+            <div>
+              <div style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.5)",letterSpacing:"0.12em",marginBottom:"12px",textTransform:"uppercase"}}>How to send a report</div>
+              {[
+                "Save our number: +251 911 000 000",
+                "Open WhatsApp → New message → SAFUU",
+                "Type what happened in your own words",
+                "Attach a photo, receipt, or screenshot if you have one",
+                "Send — you'll receive a confirmation with your case number",
+              ].map((s,i)=>(
+                <div key={i} style={{display:"flex",gap:"10px",marginBottom:"10px",alignItems:"flex-start"}}>
+                  <span style={{color:WA_GREEN,fontWeight:"700",flexShrink:0,marginTop:"1px",fontSize:"13px"}}>{i+1}.</span>
+                  <span style={{fontSize:"13px",color:"rgba(240,236,224,0.6)",lineHeight:"1.6"}}>{s}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.5)",letterSpacing:"0.12em",marginBottom:"12px",textTransform:"uppercase"}}>What you can send</div>
+              {[
+                {icon:"✏️",t:"Text description",      n:"Write what happened — who, where, when, how much"},
+                {icon:"📷",t:"Photos",                n:"Scene, official, receipt, document — photo evidence"},
+                {icon:"📄",t:"Documents",             n:"Bank statements, receipts, payment records"},
+                {icon:"📸",t:"Screenshots",           n:"Screenshot of a WhatsApp/message demanding money"},
+              ].map(s=>(
+                <div key={s.t} style={{display:"flex",gap:"10px",marginBottom:"10px",alignItems:"flex-start"}}>
+                  <span style={{fontSize:"16px",flexShrink:0}}>{s.icon}</span>
+                  <div>
+                    <div style={{fontSize:"13px",fontWeight:"600",color:"rgba(240,236,224,0.75)",marginBottom:"1px"}}>{s.t}</div>
+                    <div style={{fontSize:"11px",color:"rgba(240,236,224,0.4)",lineHeight:"1.5"}}>{s.n}</div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <WhatsAppButton text="Save number and message us" size="lg"/>
         </div>
 
-        {/* Which to choose */}
-        <div style={{marginBottom:"48px",background:"rgba(0,0,0,0.4)",border:`1px solid rgba(0,212,255,0.1)`,padding:"28px 32px"}}>
-          <div style={{fontSize:"9px",color:CY,fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",marginBottom:"16px"}}>WHICH SHOULD I USE?</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"24px"}}>
+        {/* Telegram detail */}
+        <div style={{marginBottom:"52px",padding:"28px 32px",background:`rgba(34,158,217,0.05)`,border:`1px solid rgba(34,158,217,0.2)`,borderLeft:`4px solid ${TG_BLUE}`,borderRadius:"2px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"12px",marginBottom:"20px"}}>
+            <div style={{width:"40px",height:"40px",borderRadius:"50%",background:TG_BLUE,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"22px"}}>
+              <span>✈️</span>
+            </div>
             <div>
-              <div style={{fontSize:"14px",fontWeight:"700",color:G,marginBottom:"10px",fontFamily:"'Playfair Display',serif"}}>💬 Use WhatsApp if…</div>
-              {["You already have WhatsApp installed","You want a simple free-form conversation","You prefer voice messages","You want to share multiple photos easily"].map((s,i)=>(
-                <div key={i} style={{display:"flex",gap:"8px",marginBottom:"7px",fontSize:"12px",color:"rgba(240,236,224,0.5)"}}>
-                  <span style={{color:G,flexShrink:0}}>✓</span>{s}
+              <div style={{fontSize:"20px",fontWeight:"700",color:"white"}}>Telegram</div>
+              <div style={{fontSize:"13px",color:TG_BLUE,fontFamily:"monospace"}}>@SafuuEthBot</div>
+            </div>
+          </div>
+
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"24px",marginBottom:"24px"}} className="two-col">
+            <div>
+              <div style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.5)",letterSpacing:"0.12em",marginBottom:"12px",textTransform:"uppercase"}}>How to use the bot</div>
+              {[
+                "Open Telegram → Search @SafuuEthBot",
+                "Tap Start — the bot guides you step by step",
+                "Answer each question at your own pace",
+                "Attach photos or documents when prompted",
+                "Review and confirm — receive your case number",
+              ].map((s,i)=>(
+                <div key={i} style={{display:"flex",gap:"10px",marginBottom:"10px",alignItems:"flex-start"}}>
+                  <span style={{color:TG_BLUE,fontWeight:"700",flexShrink:0,marginTop:"1px",fontSize:"13px"}}>{i+1}.</span>
+                  <span style={{fontSize:"13px",color:"rgba(240,236,224,0.6)",lineHeight:"1.6"}}>{s}</span>
                 </div>
               ))}
             </div>
             <div>
-              <div style={{fontSize:"14px",fontWeight:"700",color:CY,marginBottom:"10px",fontFamily:"'Playfair Display',serif"}}>📲 Use Telegram if…</div>
-              {["You want step-by-step structured guidance","You want maximum privacy control","You prefer not using your phone number","You want to delete your account trace after reporting"].map((s,i)=>(
-                <div key={i} style={{display:"flex",gap:"8px",marginBottom:"7px",fontSize:"12px",color:"rgba(240,236,224,0.5)"}}>
-                  <span style={{color:CY,flexShrink:0}}>✓</span>{s}
+              <div style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.5)",letterSpacing:"0.12em",marginBottom:"12px",textTransform:"uppercase"}}>Why use Telegram</div>
+              {[
+                {icon:"🔒",t:"Maximum privacy",       n:"Create an account without showing your number"},
+                {icon:"🤖",t:"Guided 8 steps",        n:"Bot walks you through — nothing is missed"},
+                {icon:"📎",t:"All attachment types",  n:"Photo, document, screenshot — same as WhatsApp"},
+                {icon:"🗑️",t:"Delete trace",           n:"Delete the conversation after — no record on your device"},
+              ].map(s=>(
+                <div key={s.t} style={{display:"flex",gap:"10px",marginBottom:"10px",alignItems:"flex-start"}}>
+                  <span style={{fontSize:"16px",flexShrink:0}}>{s.icon}</span>
+                  <div>
+                    <div style={{fontSize:"13px",fontWeight:"600",color:"rgba(240,236,224,0.75)",marginBottom:"1px"}}>{s.t}</div>
+                    <div style={{fontSize:"11px",color:"rgba(240,236,224,0.4)",lineHeight:"1.5"}}>{s.n}</div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
+
+          <TelegramButton text="Open @SafuuEthBot in Telegram" size="lg"/>
         </div>
 
-        {/* Languages */}
+        {/* Evidence tiers */}
         <div style={{marginBottom:"48px"}}>
-          <div style={{fontSize:"9px",color:`rgba(0,212,255,0.5)`,fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",marginBottom:"16px"}}>SUPPORTED LANGUAGES</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:"8px"}}>
-            {LANGS.map(l=>(
-              <span key={l} style={{fontSize:"11px",color:"rgba(240,236,224,0.5)",padding:"5px 14px",border:`1px solid rgba(0,212,255,0.1)`}}>{l}</span>
+          <div style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.4)",letterSpacing:"0.2em",marginBottom:"18px",textTransform:"uppercase"}}>What you send affects how quickly action is taken</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:"10px"}}>
+            {TIERS.map((t,i)=>(
+              <div key={i} style={{padding:"16px",background:"rgba(0,0,0,0.45)",border:`1px solid ${t.color}22`,borderTop:`3px solid ${t.color}`}}>
+                <div style={{fontSize:"22px",marginBottom:"8px"}}>{t.icon}</div>
+                <div style={{fontSize:"12px",fontWeight:"700",color:t.color,marginBottom:"4px"}}>{t.tier}</div>
+                <div style={{fontSize:"11px",color:"rgba(240,236,224,0.4)",lineHeight:"1.6",marginBottom:"10px"}}>{t.desc}</div>
+                <div style={{display:"flex",alignItems:"center",gap:"6px"}}>
+                  <div style={{fontSize:"24px",fontWeight:"900",color:t.color,fontFamily:"'Courier New',monospace"}}>{t.threshold}</div>
+                  <div style={{fontSize:"9px",color:"rgba(240,236,224,0.3)",fontFamily:"monospace",lineHeight:"1.4"}}>verified<br/>reports needed</div>
+                </div>
+              </div>
             ))}
           </div>
-          <p style={{fontSize:"12px",color:"rgba(240,236,224,0.3)",marginTop:"12px",fontFamily:"'Courier New',monospace",lineHeight:"1.7"}}>
-            // Voice messages are automatically transcribed by OpenAI Whisper<br/>
-            // You can mix languages in a single report — AI processes each segment
-          </p>
+          <div style={{marginTop:"12px",fontSize:"11px",color:"rgba(240,236,224,0.3)",fontFamily:"'Courier New',monospace",lineHeight:"1.8"}}>
+            // A screenshot of an official demanding money = threshold of 3 verified reports<br/>
+            // Text only = 100 reports required to protect against coordinated false reporting<br/>
+            // Voice intake: built in the system — not active yet (future feature)
+          </div>
         </div>
 
-        {/* Anonymity assurance */}
-        <div style={{background:"rgba(201,168,76,0.04)",border:`1px solid rgba(201,168,76,0.18)`,padding:"28px 32px"}}>
-          <div style={{fontSize:"9px",color:G,fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",marginBottom:"14px",fontWeight:"700"}}>YOUR ANONYMITY</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:"16px"}}>
+        {/* Privacy assurance */}
+        <div style={{padding:"24px 28px",background:"rgba(201,168,76,0.04)",border:"1px solid rgba(201,168,76,0.18)"}}>
+          <div style={{fontSize:"9px",color:"#c9a84c",fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",marginBottom:"14px",fontWeight:"700"}}>YOUR PRIVACY — WHAT SAFUU NEVER STORES</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px"}} className="two-col">
             {[
-              {icon:"🔐",t:"Identity",v:"SHA-256 hash only — your phone number or Telegram ID is never stored"},
-              {icon:"🔒",t:"Encryption",v:"AES-256-GCM at rest — all report content is encrypted"},
-              {icon:"⛓️",t:"Evidence",v:"Every report sealed in a cryptographic hash chain — court-ready"},
-              {icon:"⚖️",t:"Routing",v:"Auto-matched to FEACC, Federal Police, EHRC, Ombudsman, or OFAG"},
-            ].map(s=>(
-              <div key={s.t} style={{fontSize:"12px"}}>
-                <div style={{color:G,marginBottom:"4px",fontWeight:"700"}}>{s.icon} {s.t}</div>
-                <div style={{color:"rgba(240,236,224,0.4)",lineHeight:"1.7"}}>{s.v}</div>
+              ["❌ Your WhatsApp number","SHA-256 hashed — cannot be reversed"],
+              ["❌ Your Telegram ID","SHA-256 hashed — cannot be reversed"],
+              ["❌ Your name","Never requested, never stored"],
+              ["❌ Your location","Not tracked, not logged"],
+            ].map(([k,v])=>(
+              <div key={k} style={{fontSize:"12px"}}>
+                <div style={{color:"rgba(240,236,224,0.6)",marginBottom:"3px",fontWeight:"600"}}>{k}</div>
+                <div style={{color:"rgba(240,236,224,0.35)",fontFamily:"'Courier New',monospace",fontSize:"11px"}}>{v}</div>
               </div>
             ))}
           </div>

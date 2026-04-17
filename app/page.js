@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from "react";
+import { WhatsAppButton, TelegramButton, ReportSection, WA_GREEN, WA_DARK, TG_BLUE, TG_DARK, WA_LINK, TG_LINK, WA_SVG, TG_SVG } from "./components/ReportButtons";
 
 const G="#c9a84c", CY="#00d4ff", R="#b82020", GR="#4ade80";
 
@@ -126,8 +127,8 @@ export default function Safuu() {
           ))}
         </div>
         <div style={{display:"flex",gap:"8px"}}>
-          <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer" className="btn-cy" style={{padding:"8px 16px",fontSize:"10px"}}>💬 WhatsApp</a>
-          <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-gold" style={{padding:"8px 18px",fontSize:"10px"}}>📲 Telegram</a>
+          <WhatsAppButton text="WhatsApp" size="sm"/>
+          <TelegramButton text="Telegram" size="sm"/>
         </div>
       </nav>
 
@@ -152,9 +153,8 @@ export default function Safuu() {
             Your identity is never stored — not even by us.
           </p>
 
-          <div style={{display:"flex",gap:"12px",flexWrap:"wrap",marginBottom:"48px"}}>
-            <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer" className="btn-gold" style={{fontSize:"13px",padding:"14px 36px"}}>💬 Report on WhatsApp</a>
-            <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-cy" style={{fontSize:"13px",padding:"13px 32px"}}>📲 Report on Telegram</a>
+          <div style={{marginBottom:"48px",maxWidth:"680px"}}>
+            <ReportSection/>
           </div>
 
           {/* Trust strip */}
