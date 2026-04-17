@@ -8,13 +8,13 @@ const CATEGORIES = [
     color:CY,
     questions:[
       {q:"Is my identity truly protected?",
-       a:"Yes. SAFUU never stores your WhatsApp username, user ID, phone number, IP address, or real name. The only thing derived from your identifying information is a one-way SHA-256 cryptographic hash — a mathematical fingerprint that is computationally irreversible. Even if our servers were seized, there is no identifying information to find."},
+       a:"Yes. SAFUU never stores your Telegram ID, username, phone number, IP address, or real name. The only thing derived from your identifying information is a one-way SHA-256 cryptographic hash — a mathematical fingerprint that is computationally irreversible. Even if our servers were seized, there is no identifying information to find."},
       {q:"What is a SHA-256 hash and why does it matter?",
        a:"A SHA-256 hash is a fixed-length string of characters computed from an input. The process is one-way: you can compute the hash from the input, but you cannot reconstruct the input from the hash. This means even if someone had our database, they could not find out who reported. It's used in banking, blockchain, and government systems worldwide."},
       {q:"Can SAFUU administrators identify me?",
        a:"No. The system is designed so that no administrator can reverse the SHA-256 hash or cross-reference it with any external database. The anonymity guarantee is cryptographic — it doesn't depend on trusting SAFUU staff."},
       {q:"What if I report from a shared or public phone?",
-       a:"The hash is derived per-session. If you use a public phone's WhatsApp, you still won't be identified — the hash is based on the WhatsApp user ID of that session, not your real identity. For SMS, the phone number is hashed and discarded."},
+       a:"The hash is derived per-session. The hash is based on the Telegram session ID only, not your real identity. For SMS, the phone number is hashed and discarded."},
     ]
   },
   {
@@ -38,7 +38,7 @@ const CATEGORIES = [
     color:"#a78bfa",
     questions:[
       {q:"What happens after I submit?",
-       a:"Your report goes through the SAFUU pipeline: (1) Claude AI categorizes the type and severity, (2) evidence is forensically verified (EXIF dates, Hive AI image detection), (3) the report is deduplicated against existing records, (4) it is auto-routed to the correct Ethiopian agency, (5) it is sealed in the cryptographic evidence ledger. You receive a case reference number by WhatsApp or SMS."},
+       a:"Your report goes through the SAFUU pipeline: (1) Claude AI categorizes the type and severity, (2) evidence is forensically verified (EXIF dates, Hive AI image detection), (3) the report is deduplicated against existing records, (4) it is auto-routed to the correct Ethiopian agency, (5) it is sealed in the cryptographic evidence ledger. You receive a case reference number via Telegram."},
       {q:"How does the 15-report threshold work?",
        a:"15 is the default. Below threshold: only city and office are shown on the transparency wall — names remain masked. At threshold: the official's full name is published on the transparency wall and the case is formally escalated to the relevant agency. The threshold can be adjusted by administrators — sensitive cases may have a higher threshold."},
       {q:"Can I follow the progress of my report?",
@@ -111,7 +111,7 @@ export default function FAQPage() {
         <p style={{fontSize:"14px",color:"rgba(240,236,224,0.4)",lineHeight:"1.85",marginBottom:"56px",maxWidth:"560px"}}>
           {CATEGORIES.reduce((sum,c)=>sum+c.questions.length,0)} questions across {CATEGORIES.length} categories. 
           Can't find an answer?{" "}
-          <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer" style={{color:G,textDecoration:"underline"}}>Ask via WhatsApp</a>.
+          <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" style={{color:G,textDecoration:"underline"}}>Ask via WhatsApp</a>.
         </p>
 
         {/* Category nav */}
@@ -168,7 +168,7 @@ export default function FAQPage() {
           </div>
           <div style={{display:"flex",gap:"10px",flexWrap:"wrap"}}>
             <a href="/report" style={{background:G,color:"#030507",fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:"700",padding:"12px 24px",letterSpacing:"0.12em",textDecoration:"none"}}>⚖ REPORT ONLINE</a>
-            <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer"
+            <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer"
               style={{background:"transparent",color:`rgba(0,212,255,0.7)`,border:`1px solid rgba(0,212,255,0.3)`,fontFamily:"'Courier New',monospace",fontSize:"10px",padding:"12px 20px",letterSpacing:"0.12em",textDecoration:"none"}}>TELEGRAM BOT</a>
           </div>
         </div>

@@ -113,7 +113,7 @@ const SEV_C   = {1:CY,2:G,3:R};
 const SEV_L   = {1:"LOW",2:"MED",3:"HIGH"};
 
 const FAQS = [
-  {q:"Is my identity truly protected?",   a:"Yes. SAFUU never stores your WhatsApp number, Telegram ID, or real name. A one-way SHA-256 hash is the only derivative — mathematically irreversible. Not even administrators can identify you."},
+  {q:"Is my identity truly protected?",   a:"Yes. SAFUU never stores your Telegram ID, or real name. A one-way SHA-256 hash is the only derivative — mathematically irreversible. Not even administrators can identify you."},
   {q:"What happens after I submit?",       a:"Claude AI categorizes severity and type. Evidence is forensically verified. The report is auto-routed to the correct Ethiopian agency. Reports cluster — at threshold, the official's name is publicly disclosed."},
   {q:"How does name disclosure work?",    a:"Below threshold: only city and office shown — protecting against false accusations. At threshold: full name disclosed and formally escalated to FEACC or relevant authority."},
   {q:"Which languages are supported?",    a:"Amharic, Oromiffa, Tigrinya, Somali, Afar, Sidama, Wolaytta, Hadiyya, Dawro, Gamo, Bench, and English. Voice messages are auto-transcribed by Whisper AI."},
@@ -205,7 +205,7 @@ export default function Safuu() {
           <div style={{display:"flex",animation:"marquee 44s linear infinite",whiteSpace:"nowrap"}}>
             {[...Array(2)].map((_,i)=>(
               <span key={i} style={{display:"inline-flex"}}>
-                {[`● SYSTEM ONLINE · ${date}`,`● ${total} TIPS · ${today} TODAY`,"● IDENTITY :: NULL","● ሙስና ይጥፋእ · JUSTICE WILL PREVAIL","● AES-256-GCM ACTIVE","● WHATSAPP +251911000000","● Malaanmmaltummaa Dhabamu","● SAFUU.NET · COLLABORATIVE INTELLIGENCE"].map((t,j)=>(
+                {[`● SYSTEM ONLINE · ${date}`,`● ${total} TIPS · ${today} TODAY`,"● IDENTITY :: NULL","● ሙስና ይጥፋእ · JUSTICE WILL PREVAIL","● AES-256-GCM ACTIVE","● WHATSAPP @SafuuAfBot","● Malaanmmaltummaa Dhabamu","● SAFUU.NET · COLLABORATIVE INTELLIGENCE"].map((t,j)=>(
                   <span key={j} style={{fontSize:"9px",fontFamily:"'Courier New',monospace",padding:"0 24px",color:j%2===0?"rgba(0,212,255,0.65)":"rgba(201,168,76,0.55)"}}>{t}</span>
                 ))}
               </span>
@@ -229,8 +229,8 @@ export default function Safuu() {
           ))}
         </div>
         <div style={{display:"flex",gap:"8px"}}>
-          <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer" className="btn-cy" style={{padding:"8px 16px",fontSize:"10px"}}>💬 WhatsApp</a>
-          <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-gold" style={{padding:"8px 18px",fontSize:"10px"}}>📲 Telegram</a>
+          <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" className="btn-cy" style={{padding:"8px 16px",fontSize:"10px"}}></a>
+          <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" className="btn-gold" style={{padding:"8px 18px",fontSize:"10px"}}>📲 Telegram</a>
         </div>
       </nav>
 
@@ -453,7 +453,7 @@ export default function Safuu() {
               <div title="Telegram 42%" style={{width:"42%",background:CY,height:"100%"}}/>
             </div>
             <div style={{display:"flex",justifyContent:"space-between",marginTop:"6px",fontSize:"9px",fontFamily:"'Courier New',monospace"}}>
-              <span style={{color:`rgba(201,168,76,0.6)`}}>💬 WhatsApp 58%</span>
+              <span style={{color:`rgba(201,168,76,0.6)`}}> 58%</span>
               <span style={{color:`rgba(0,212,255,0.55)`}}>📲 Telegram 42%</span>
             </div>
           </div>
@@ -474,8 +474,8 @@ export default function Safuu() {
             </p>
           </div>
           <div style={{display:"flex",gap:"10px",flexWrap:"wrap"}}>
-            <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer" className="btn-gold" style={{fontSize:"13px",padding:"14px 32px"}}>💬 Report on WhatsApp</a>
-            <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-cy" style={{fontSize:"13px",padding:"13px 28px"}}>📲 Report on Telegram</a>
+            <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" className="btn-gold" style={{fontSize:"13px",padding:"14px 32px"}}>💬 Report on Telegram</a>
+            <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" className="btn-cy" style={{fontSize:"13px",padding:"13px 28px"}}>📲 Report on Telegram</a>
           </div>
         </div>
       </section>
@@ -553,10 +553,10 @@ export default function Safuu() {
             </div>
             <div style={{display:"flex",gap:"40px",flexWrap:"wrap"}}>
               {[
-                ["PLATFORM",   [["/"," Home"],["/transparency","Transparency"],["/report","File a Report"],["/analytics","Analytics"],["/sms","WhatsApp & Telegram"]]],
+                ["PLATFORM",   [["/"," Home"],["/transparency","Transparency"],["/report","File a Report"],["/analytics","Analytics"],["/sms","Telegram"]]],
                 ["LANGUAGES",  [["/am","አማርኛ (Amharic)"],["/or","Oromiffa"],["/ti","ትግርኛ (Tigrinya)"]]],
                 ["ABOUT",      [["/about","About"],["/faq","FAQ"],["/partners","Partners"],["/press","Press"],["/donate","Support"],["/privacy","Privacy"],["/changelog","Changelog"]]],
-                ["DEVELOPERS", [["/backend","Backend Setup"],["/api-docs","API Reference"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://wa.me/251911000000","WhatsApp"],["https://t.me/SafuuEthBot","Telegram"]]],
+                ["DEVELOPERS", [["/backend","Backend Setup"],["/api-docs","API Reference"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuAfBot","Telegram"],["https://t.me/SafuuAfBot","Telegram"]]],
               ].map(([col,links])=>(
                 <div key={col}>
                   <div style={{fontSize:"8px",color:"rgba(201,168,76,0.32)",fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",marginBottom:"12px",fontWeight:"700"}}>{col}</div>

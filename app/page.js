@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from "react";
-import { WhatsAppButton, TelegramButton, ReportSection, WA_GREEN, WA_DARK, TG_BLUE, TG_DARK, WA_LINK, TG_LINK, WA_SVG, TG_SVG } from "./components/ReportButtons";
+import { TelegramButton, ReportSection, TG_BLUE, TG_LINK } from "./components/ReportButtons";
 
 const G="#c9a84c", CY="#00d4ff", R="#b82020", GR="#4ade80";
 
@@ -62,10 +62,10 @@ export default function Safuu() {
   },[]);
 
   const FAQS = [
-    {q:"When will the dashboard show real data?",          a:"The moment the first verified report is submitted through WhatsApp or Telegram, it will appear on this dashboard. The system is fully live — the pipeline is active, encryption is running, and AI is ready to process. We're waiting for the first report."},
+    {q:"When will the dashboard show real data?",          a:"The moment the first verified report is submitted through Telegram, it will appear on this dashboard. The system is fully live — the pipeline is active, encryption is running, and AI is ready to process. We're waiting for the first report."},
     {q:"Why is the dashboard empty now?",                  a:"We believe in complete transparency. Showing fabricated or placeholder data — even as an illustration — would undermine the integrity of the platform. What you see is the truth: zero reports have been processed yet. That changes the moment you or someone you know submits."},
     {q:"How do I know the system actually works?",         a:"The code is fully open-source at github.com/sifgamachu/safuu-intel. The backend runs 76 automated security tests on every deployment. You can inspect every component. And once the first report comes in, you'll see it appear here in real time — anonymized, encrypted, and verifiable."},
-    {q:"Is my identity protected when I report?",         a:"Yes. Your WhatsApp number or Telegram ID is passed through a one-way SHA-256 hash — a mathematical process that cannot be reversed. No name, no number, no identifier is stored anywhere in the system. Not even administrators can trace a report back to you."},
+    {q:"Is my identity protected when I report?",         a:"Yes. Your Telegram ID is passed through a one-way SHA-256 hash — a mathematical process that cannot be reversed. No name, no number, no identifier is stored anywhere in the system. Not even administrators can trace a report back to you."},
     {q:"What happens to my report?",                       a:"Claude AI analyzes the corruption type and severity. Evidence is forensically verified (EXIF metadata, AI image detection). The report is auto-routed to the correct Ethiopian agency — FEACC, Federal Police, EHRC, Ombudsman, or OFAG. When enough verified reports cluster, the official is disclosed publicly."},
   ];
 
@@ -103,7 +103,7 @@ export default function Safuu() {
           <div style={{display:"flex",animation:"marquee 44s linear infinite",whiteSpace:"nowrap"}}>
             {[...Array(2)].map((_,i)=>(
               <span key={i} style={{display:"inline-flex"}}>
-                {[`● SYSTEM ACTIVE · ${date} · ${time}`,"● PIPELINE READY · AWAITING FIRST REPORT","● IDENTITY_STORAGE :: NULL — SHA-256 ONLY","● AES-256-GCM ENCRYPTION ACTIVE","● AI FORENSICS READY · CLAUDE + WHISPER + HIVE","● WHATSAPP +251911000000 · @SafuuEthBot","● ሙስናን ሪፖርት አድርጉ · REPORT CORRUPTION NOW"].map((t,j)=>(
+                {[`● SYSTEM ACTIVE · ${date} · ${time}`,"● PIPELINE READY · AWAITING FIRST REPORT","● IDENTITY_STORAGE :: NULL — SHA-256 ONLY","● AES-256-GCM ENCRYPTION ACTIVE","● AI FORENSICS READY · CLAUDE + WHISPER + HIVE","● WHATSAPP @SafuuAfBot · @SafuuAfBot","● ሙስናን ሪፖርት አድርጉ · REPORT CORRUPTION NOW"].map((t,j)=>(
                   <span key={j} style={{fontSize:"9px",fontFamily:"'Courier New',monospace",padding:"0 24px",color:j%2===0?"rgba(0,212,255,0.65)":"rgba(201,168,76,0.55)"}}>{t}</span>
                 ))}
               </span>
@@ -127,7 +127,7 @@ export default function Safuu() {
           ))}
         </div>
         <div style={{display:"flex",gap:"8px"}}>
-          <WhatsAppButton text="WhatsApp" size="sm"/>
+          <TelegramButton text="@SafuuAfBot" size="sm"/>
           <TelegramButton text="Telegram" size="sm"/>
         </div>
       </nav>
@@ -149,7 +149,7 @@ export default function Safuu() {
 
           <p style={{fontSize:"16px",color:"rgba(240,236,224,0.5)",lineHeight:"1.85",marginBottom:"36px",maxWidth:"580px"}}>
             Anonymous, AI-verified corruption intelligence for Ethiopia.
-            Report by WhatsApp or Telegram in any Ethiopian language.
+            Report by Telegram in any Ethiopian language.
             Your identity is never stored — not even by us.
           </p>
 
@@ -319,7 +319,7 @@ export default function Safuu() {
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"16px"}}>
           {[
-            {n:"01",icon:"💬",title:"Report anonymously",       body:"Send a WhatsApp voice note or message to +251911000000, or message @SafuuEthBot on Telegram. Text or voice — any Ethiopian language."},
+            {n:"01",icon:"💬",title:"Report anonymously",       body:"Message @SafuuAfBot on Telegram in any Ethiopian language. The bot guides you step by step — text or attach a photo, receipt, or document."},
             {n:"02",icon:"🔬",title:"AI forensic verification", body:"Claude AI analyzes your report. Whisper transcribes voice. Hive AI checks photo authenticity. EXIF metadata verifies dates and locations."},
             {n:"03",icon:"⚖️",title:"Auto-routed to agencies",   body:"Your report is automatically matched to the correct authority — FEACC, Federal Police, EHRC, Ombudsman, or OFAG. No manual steps."},
             {n:"04",icon:"📊",title:"Public disclosure at threshold", body:"Below the threshold: only the office and region are shown publicly. At threshold: the official's name is disclosed and formally escalated."},
@@ -406,10 +406,10 @@ export default function Safuu() {
             </div>
             <div style={{display:"flex",gap:"40px",flexWrap:"wrap"}}>
               {[
-                ["PLATFORM",   [["/"," Home"],["/demo","Live Dashboard Demo"],["/transparency","Transparency Wall"],["/report","File a Report"],["/analytics","Analytics"],["/sms","WhatsApp & Telegram"]]],
+                ["PLATFORM",   [["/"," Home"],["/demo","Live Dashboard Demo"],["/transparency","Transparency Wall"],["/report","File a Report"],["/analytics","Analytics"],["/sms","Telegram"]]],
                 ["LANGUAGES",  [["/am","አማርኛ (Amharic)"],["/or","Oromiffa"],["/ti","ትግርኛ (Tigrinya)"]]],
                 ["ABOUT",      [["/about","About"],["/faq","FAQ"],["/partners","Partners"],["/press","Press"],["/donate","Support"],["/privacy","Privacy"],["/changelog","Changelog"]]],
-                ["DEVELOPERS", [["/backend","Backend Setup"],["/api-docs","API Reference"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://wa.me/251911000000","WhatsApp"],["https://t.me/SafuuEthBot","Telegram"]]],
+                ["DEVELOPERS", [["/backend","Backend Setup"],["/api-docs","API Reference"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuAfBot","Telegram"],["https://t.me/SafuuAfBot","Telegram"]]],
               ].map(([col,links])=>(
                 <div key={col}>
                   <div style={{fontSize:"8px",color:"rgba(201,168,76,0.32)",fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",marginBottom:"12px",fontWeight:"700"}}>{col}</div>

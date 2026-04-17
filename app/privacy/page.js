@@ -44,7 +44,7 @@ export default function Privacy() {
         {[
           {title:"1. What We DO NOT Collect",
            content:[
-             ["WhatsApp username or user ID","We never record these. The moment a report arrives, only a cryptographic hash is derived. The identifier is discarded."],
+             ["Telegram ID or username","We never record these. The moment a report arrives, only a cryptographic hash is derived. The identifier is discarded."],
              ["Phone number","SMS reports go through Africa's Talking. Your number is one-way hashed. We cannot reverse it."],
              ["Real name","Never requested, never stored."],
              ["IP address","Our intake pipeline does not log IP addresses of reporters."],
@@ -55,7 +55,7 @@ export default function Privacy() {
            content:[
              ["SHA-256 hash of reporter identifier","A one-way mathematical fingerprint used only to prevent spam flooding from the same source. Cannot be reversed to reveal identity."],
              ["Report content","The text, audio transcription, or image of your report. Stored encrypted with AES-256-GCM."],
-             ["Report metadata","Date, language, channel (WhatsApp/SMS/web). No personal data."],
+             ["Report metadata","Date, language, channel (Telegram/web). No personal data."],
              ["Evidence hash chain","Every report is sealed into a cryptographic ledger. The ledger records hashes of report content — not personal data."],
            ]
           },

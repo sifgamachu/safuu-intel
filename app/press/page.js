@@ -8,7 +8,7 @@ const FACTS = [
   ["Founded","2026"],
   ["Technology","Claude AI · OpenAI Whisper · Hive Moderation · AES-256-GCM · Blockchain-style ledger"],
   ["Languages","11 Ethiopian languages + English"],
-  ["Channels","WhatsApp bot · WhatsApp or WhatsApp · Web form"],
+  ["Channels","Telegram bot (@SafuuAfBot) · Web form"],
   ["Key agencies","FEACC (959) · EHRC (1488) · Ombudsman (6060) · Federal Police (911) · OFAG"],
   ["Disclosure model","Progressive — 15 verified reports triggers full public name disclosure"],
   ["Identity protection","SHA-256 one-way hash — mathematically impossible to reverse"],
@@ -87,7 +87,7 @@ export default function Press() {
             <span style={{fontSize:"9px",color:R,fontFamily:"'Courier New',monospace",letterSpacing:"0.22em",fontWeight:"700"}}>HOW IT WORKS — JOURNALIST SUMMARY</span>
           </div>
           <div style={{fontSize:"14px",color:"rgba(240,236,224,0.5)",lineHeight:"1.95"}}>
-            <p style={{marginBottom:"16px"}}>Citizens file anonymous reports via WhatsApp, web form, or WhatsApp (+251911000000) or WhatsApp in any of 11 Ethiopian languages. No identity is ever stored — only a one-way SHA-256 cryptographic hash, making identification mathematically impossible.</p>
+            <p style={{marginBottom:"16px"}}>Citizens file anonymous reports via Telegram (@SafuuAfBot) or the web form, in any of 11 Ethiopian languages. No identity is ever stored — only a one-way SHA-256 cryptographic hash, making identification mathematically impossible.</p>
             <p style={{marginBottom:"16px"}}>Each report is analyzed by Claude AI (Anthropic) for corruption type and severity, forensically verified using EXIF image analysis and Hive Moderation's AI detection, and automatically routed to the appropriate Ethiopian authority: FEACC, Federal Police, Ombudsman, EHRC, or OFAG.</p>
             <p style={{marginBottom:"16px"}}>Reports are sealed in a cryptographic hash chain — a tamper-evident evidence ledger suitable for court proceedings. Multiple reports on the same official cluster together.</p>
             <p>When verified reports on an official reach the configured threshold (default: 15), the name is publicly disclosed on the SAFUU Transparency Wall and the case is formally escalated. Below the threshold, only city and office are shown — protecting against false accusations while building the evidence record.</p>
@@ -109,10 +109,10 @@ export default function Press() {
           <div style={{fontSize:"9px",color:CY,fontFamily:"'Courier New',monospace",letterSpacing:"0.22em",marginBottom:"16px",fontWeight:"700"}}>MEDIA CONTACT</div>
           <h3 style={{fontSize:"22px",fontWeight:"800",fontFamily:"'Playfair Display',serif",color:"rgba(240,236,224,0.95)",marginBottom:"12px"}}>Need more information?</h3>
           <p style={{fontSize:"13px",color:"rgba(240,236,224,0.45)",lineHeight:"1.85",marginBottom:"24px",maxWidth:"500px"}}>
-            For interview requests, additional data, or coverage of specific cases on the transparency wall, contact us via WhatsApp. We respond to verified media organizations within 48 hours.
+            For interview requests, additional data, or coverage of specific cases on the transparency wall, contact us via Telegram (@SafuuAfBot). We respond to verified media organizations within 48 hours.
           </p>
           <div style={{display:"flex",gap:"12px",flexWrap:"wrap"}}>
-            <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer"
+            <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer"
               style={{background:G,color:"#030507",fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:"700",padding:"12px 28px",letterSpacing:"0.12em",textDecoration:"none"}}>
               CONTACT VIA WHATSAPP
             </a>

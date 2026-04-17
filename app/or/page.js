@@ -34,7 +34,7 @@ export default function OromiffaPage() {
             Gabaasa 15 yoo guutame maqaan isaa uummataaf ni baha.
           </p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:"12px",marginBottom:"40px"}}>
-            {[{icon:"📲",t:"WhatsApp",s:"Sagalee / barreeffama",href:"https://wa.me/251911000000"},{icon:"📱",t:"SMS — 21000",s:"Bilbila kamiyyuu",href:"/sms"},{icon:"🌐",t:"Galmee Intarneetii",s:"Kallattiin gabaasi",href:"/report"}].map((c,i)=>(
+            {[{icon:"📲",t:"Telegram",s:"Sagalee / barreeffama",href:"https://t.me/SafuuAfBot"},{icon:"📱",t:"SMS — 21000",s:"Bilbila kamiyyuu",href:"/sms"},{icon:"🌐",t:"Galmee Intarneetii",s:"Kallattiin gabaasi",href:"/report"}].map((c,i)=>(
               <a key={i} href={c.href} target={c.href.startsWith("http")?"_blank":"_self"} rel="noreferrer"
                 style={{background:"rgba(0,0,0,0.5)",border:`1px solid rgba(201,168,76,0.15)`,padding:"22px",display:"block",textDecoration:"none",color:"inherit",transition:"all 0.2s"}}>
                 <div style={{fontSize:"26px",marginBottom:"8px"}}>{c.icon}</div>
