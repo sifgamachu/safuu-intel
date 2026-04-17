@@ -109,7 +109,6 @@ const TYPES = [
 
 const MONTHLY = [8,12,16,22,29,34,45,52,58,62,68,73];
 const MONTHS  = ["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"];
-const LANG_L  = {AM:"አማርኛ",OR:"Oromiffa",TI:"ትግርኛ",SO:"Soomaali",WO:"Wolaytta",AF:"Afar"};
 const SEV_C   = {1:CY,2:G,3:R};
 const SEV_L   = {1:"LOW",2:"MED",3:"HIGH"};
 
@@ -178,7 +177,7 @@ export default function Safuu() {
         .btn-cy{background:transparent;color:${CY};font-family:'Courier New',monospace;font-size:11px;letter-spacing:0.1em;padding:11px 24px;border:1px solid ${CY}55;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:all 0.2s;text-transform:uppercase;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))}
         .btn-cy:hover{border-color:${CY};background:rgba(0,212,255,0.07);transform:translateY(-2px)}
         .lnk:hover{color:${CY}!important}
-        .feed-row{display:grid;grid-template-columns:80px 1fr 1fr 90px;gap:12px;align-items:center;padding:14px 24px;border-bottom:1px solid rgba(0,212,255,0.06);transition:background 0.15s}
+        .feed-row{display:grid;grid-template-columns:80px 1fr 1fr;gap:12px;align-items:center;padding:14px 24px;border-bottom:1px solid rgba(0,212,255,0.06);transition:background 0.15s}
         .feed-row:hover{background:rgba(0,212,255,0.035)}
         .feed-new{animation:slidein 0.5s ease;background:rgba(0,212,255,0.055)!important}
         .bar-row{padding:12px 24px;transition:background 0.15s}
@@ -191,7 +190,7 @@ export default function Safuu() {
         .faq-row:hover{background:rgba(0,212,255,0.02)}
         ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.3)}
         @media(max-width:900px){.two-col{grid-template-columns:1fr!important}}
-        @media(max-width:640px){.hide-mob{display:none!important}nav{padding:0 16px!important}.sec{padding:28px 16px!important}.feed-row{grid-template-columns:70px 1fr 80px!important}.hide-sm{display:none!important}}
+        @media(max-width:640px){.hide-mob{display:none!important}nav{padding:0 16px!important}.sec{padding:28px 16px!important}.feed-row{grid-template-columns:70px 1fr!important}.hide-sm{display:none!important}}
       `}</style>
 
       <GeezRain/>
@@ -277,9 +276,9 @@ export default function Safuu() {
         </div>
 
         {/* Column headers */}
-        <div style={{display:"grid",gridTemplateColumns:"80px 1fr 1fr 90px",gap:"12px",padding:"8px 24px",background:"rgba(0,0,0,0.3)"}}>
-          {["TIME","OFFICE","REGION & TYPE","LANGUAGE"].map((h,i)=>(
-            <div key={h} className={i===2?"hide-sm":""} style={{fontSize:"8px",color:"rgba(0,212,255,0.35)",fontFamily:"'Courier New',monospace",letterSpacing:"0.16em"}}>{h}</div>
+        <div style={{display:"grid",gridTemplateColumns:"80px 1fr 1fr",gap:"12px",padding:"8px 24px",background:"rgba(0,0,0,0.3)"}}>
+          {["TIME","OFFICE","REGION & TYPE"].map((h,i)=>(
+            <div key={h} style={{fontSize:"8px",color:"rgba(0,212,255,0.35)",fontFamily:"'Courier New',monospace",letterSpacing:"0.16em"}}>{h}</div>
           ))}
         </div>
 
@@ -298,8 +297,7 @@ export default function Safuu() {
               <div style={{fontSize:"12px",color:"rgba(240,236,224,0.5)",marginBottom:"2px"}}>{r.region}</div>
               <div style={{fontSize:"11px",color:"rgba(240,236,224,0.32)"}}>{r.type}</div>
             </div>
-            {/* Language */}
-            <div style={{fontSize:"10px",fontFamily:"'Courier New',monospace",padding:"4px 10px",background:"rgba(0,212,255,0.07)",border:`1px solid rgba(0,212,255,0.18)`,color:"rgba(0,212,255,0.65)",textAlign:"center"}}>{r.lang}<br/><span style={{fontSize:"8px",opacity:0.7}}>{LANG_L[r.lang]||r.lang}</span></div>
+
           </div>
         ))}
         <div style={{padding:"12px 24px",textAlign:"center",fontSize:"10px",color:"rgba(240,236,224,0.15)",fontFamily:"'Courier New',monospace",background:"rgba(0,0,0,0.2)"}}>
