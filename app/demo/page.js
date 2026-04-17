@@ -458,8 +458,7 @@ export default function Safuu() {
           <div style={{marginTop:"20px",padding:"12px 16px",background:"rgba(0,0,0,0.3)",border:`1px solid rgba(0,212,255,0.07)`}}>
             <div style={{fontSize:"8px",color:"rgba(0,212,255,0.35)",fontFamily:"'Courier New',monospace",marginBottom:"8px",letterSpacing:"0.12em"}}>CHANNEL SPLIT</div>
             <div style={{display:"flex",gap:"0",height:"8px",borderRadius:"2px",overflow:"hidden"}}>
-              <div title="Telegram 100%" style={{width:"100%",background:TG_BLUE if "TG_BLUE" in c else "#229ED9",height:"100%"}}/>
-              <div title="Telegram 42%" style={{width:"42%",background:CY,height:"100%"}}/>
+              <div title="Telegram 100%" style={{width:"100%",background:"#229ED9",height:"100%"}}/>
             </div>
             <div style={{display:"flex",justifyContent:"space-between",marginTop:"6px",fontSize:"9px",fontFamily:"'Courier New',monospace"}}>
               <span style={{color:`rgba(201,168,76,0.6)`}}> 58%</span>
