@@ -115,6 +115,40 @@ export default function ReportingGuide() {
           </div>
         </div>
 
+        {/* Subscribe to intelligence feed */}
+        <div style={{marginBottom:"40px",padding:"24px 28px",background:"linear-gradient(135deg,rgba(167,139,250,0.08),rgba(34,158,217,0.06))",border:"1px solid rgba(167,139,250,0.2)",borderRadius:"12px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}>
+            <div style={{width:"5px",height:"5px",background:"#a78bfa",transform:"rotate(45deg)"}}/>
+            <span style={{fontSize:"9px",color:"#a78bfa",fontFamily:"'Courier New',monospace",letterSpacing:"0.22em",fontWeight:"700"}}>INTELLIGENCE FEED — BEYOND REPORTING</span>
+          </div>
+          <h2 style={{fontSize:"clamp(18px,3vw,26px)",fontWeight:"900",fontFamily:"'Playfair Display',serif",color:"rgba(240,236,224,0.92)",marginBottom:"10px",letterSpacing:"-0.01em"}}>
+            Also subscribe to the intelligence feed.
+          </h2>
+          <p style={{fontSize:"13px",color:"rgba(240,236,224,0.45)",lineHeight:"1.85",marginBottom:"18px"}}>
+            Once you're in the bot, tap <strong style={{color:"rgba(240,236,224,0.7)"}}>/subscribe</strong> to receive broadcasts — not just confirmation of your own report, but ongoing corruption intelligence from across Africa and the world.
+          </p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"18px"}}>
+            {[
+              {icon:"🔴",label:"Case disclosures",      desc:"When SAFUU cases hit threshold"},
+              {icon:"🌍",label:"Africa intelligence",    desc:"Breaking stories across the continent"},
+              {icon:"🌐",label:"Global intelligence",   desc:"Major world corruption cases"},
+              {icon:"📊",label:"Weekly digest",          desc:"Every Monday — summary + stats"},
+            ].map(s=>(
+              <div key={s.label} style={{display:"flex",gap:"9px",alignItems:"flex-start",padding:"10px 12px",background:"rgba(0,0,0,0.3)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:"6px"}}>
+                <span style={{fontSize:"16px",flexShrink:0}}>{s.icon}</span>
+                <div>
+                  <div style={{fontSize:"12px",fontWeight:"600",color:"rgba(240,236,224,0.75)",marginBottom:"2px"}}>{s.label}</div>
+                  <div style={{fontSize:"11px",color:"rgba(240,236,224,0.38)"}}>{s.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{fontSize:"11px",color:"rgba(240,236,224,0.3)",fontFamily:"'Courier New',monospace",lineHeight:"1.8"}}>
+            // In the bot: /subscribe to join · /region to set country preference · /unsubscribe to stop<br/>
+            // English broadcasts · Africa + global · Free · Anonymous
+          </div>
+        </div>
+
         {/* Evidence tiers */}
         <div style={{marginBottom:"40px"}}>
           <div style={{fontSize:"11px",fontWeight:"700",color:"rgba(255,255,255,0.35)",letterSpacing:"0.18em",marginBottom:"16px",textTransform:"uppercase",fontFamily:"'Courier New',monospace"}}>What you send affects the threshold</div>

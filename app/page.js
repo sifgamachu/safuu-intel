@@ -336,6 +336,48 @@ export default function Safuu() {
         </div>
       </section>
 
+      {/* ══ SUBSCRIBE SECTION ══ */}
+      <section className="sec" style={{position:"relative",zIndex:5,padding:"48px 40px",borderBottom:"1px solid rgba(0,212,255,0.08)",background:"rgba(0,0,0,0.2)"}}>
+        <div style={{maxWidth:"1200px",margin:"0 auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:"32px",alignItems:"center"}} className="two-col">
+          {/* Left — headline */}
+          <div>
+            <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"14px"}}>
+              <div style={{width:"5px",height:"5px",background:"#229ED9",transform:"rotate(45deg)"}}/>
+              <span style={{fontSize:"9px",color:"#229ED9",fontFamily:"'Courier New',monospace",letterSpacing:"0.22em",fontWeight:"700"}}>INTELLIGENCE FEED · AFRICA + WORLD</span>
+            </div>
+            <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(22px,3vw,36px)",fontWeight:"900",color:"rgba(240,236,224,0.95)",lineHeight:1.1,marginBottom:"14px",letterSpacing:"-0.01em"}}>
+              Stay informed on corruption<br/><span style={{color:"#c9a84c",fontStyle:"italic"}}>across Africa and the world.</span>
+            </h2>
+            <p style={{fontSize:"14px",color:"rgba(240,236,224,0.45)",lineHeight:"1.85",maxWidth:"440px"}}>
+              Subscribe to @SafuuAfBot and receive intelligence broadcasts — case disclosures, breaking African corruption news, and major global corruption stories. In English. Free. Anonymous.
+            </p>
+          </div>
+          {/* Right — what you get */}
+          <div style={{display:"flex",flexDirection:"column",gap:"0",background:"rgba(34,158,217,0.06)",border:"1px solid rgba(34,158,217,0.2)",borderRadius:"12px",overflow:"hidden"}}>
+            {[
+              {icon:"🔴",color:"#b82020",title:"Case disclosures",  desc:"When a SAFUU case hits threshold and is referred to FEACC or Police — you hear first."},
+              {icon:"🌍",color:"#c9a84c",title:"Africa intelligence",desc:"Breaking corruption stories across Ethiopia, Nigeria, Kenya, South Africa, Egypt and beyond."},
+              {icon:"🌐",color:"#229ED9",title:"Global intelligence", desc:"Major world corruption cases — governments, multinationals, international institutions."},
+              {icon:"📊",color:"#a78bfa",title:"Weekly digest",       desc:"Every Monday: a summary of the week's cases, referrals, and reports across the platform."},
+            ].map((s,i)=>(
+              <div key={i} style={{display:"flex",gap:"14px",padding:"16px 20px",borderBottom:i<3?"1px solid rgba(34,158,217,0.1)":"none",alignItems:"flex-start"}}>
+                <div style={{fontSize:"20px",flexShrink:0,marginTop:"2px"}}>{s.icon}</div>
+                <div>
+                  <div style={{fontSize:"13px",fontWeight:"700",color:"rgba(240,236,224,0.85)",marginBottom:"3px"}}>{s.title}</div>
+                  <div style={{fontSize:"12px",color:"rgba(240,236,224,0.4)",lineHeight:"1.65"}}>{s.desc}</div>
+                </div>
+              </div>
+            ))}
+            <div style={{padding:"16px 20px",background:"rgba(34,158,217,0.08)"}}>
+              <TelegramButton text="Subscribe via @SafuuAfBot" size="md" fullWidth/>
+              <div style={{marginTop:"10px",fontSize:"10px",color:"rgba(255,255,255,0.25)",fontFamily:"'Courier New',monospace",textAlign:"center",lineHeight:"1.7"}}>
+                Tap /subscribe after opening · Set region with /region · Unsubscribe anytime with /unsubscribe
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ══ AGENCIES ══ */}
       <section id="agencies" className="sec" style={{position:"relative",zIndex:5,padding:"48px 40px",maxWidth:"1200px",margin:"0 auto",borderBottom:`1px solid rgba(0,212,255,0.08)`}}>
         <div style={{display:"flex",alignItems:"center",gap:"16px",marginBottom:"24px",paddingBottom:"14px",borderBottom:`1px solid rgba(0,212,255,0.09)`}}>

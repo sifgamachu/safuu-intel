@@ -51,6 +51,8 @@ const CATEGORIES = [
     label:"TECHNOLOGY",
     color:"#4ade80",
     questions:[
+      {q:"Can I subscribe to receive corruption news — not just file reports?",
+       a:"Yes. Once you open @SafuuAfBot on Telegram, send /subscribe. You'll receive three types of broadcasts: case disclosures when a SAFUU case hits the disclosure threshold; Africa intelligence covering breaking corruption stories across the continent; and global intelligence covering major world corruption cases. You can also set a region preference with /region — for example, 'Ethiopia only' or 'all of Africa' — and opt out anytime with /unsubscribe. Broadcasts are in English, free, and anonymous."},
       {q:"What AI is used to analyze reports?",
        a:"Claude (Anthropic) analyzes each report for corruption type, severity, jurisdictional routing, and consistency with prior reports on the same official. OpenAI Whisper transcribes voice messages in all 11 Ethiopian languages. Hive Moderation AI detects AI-generated or manipulated images submitted as evidence (94% accuracy). All AI systems are used for analysis only — no AI makes final disclosure decisions."},
       {q:"How is evidence verified?",
