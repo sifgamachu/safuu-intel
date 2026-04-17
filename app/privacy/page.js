@@ -44,7 +44,7 @@ export default function Privacy() {
         {[
           {title:"1. What We DO NOT Collect",
            content:[
-             ["Telegram username or user ID","We never record these. The moment a report arrives, only a cryptographic hash is derived. The identifier is discarded."],
+             ["WhatsApp username or user ID","We never record these. The moment a report arrives, only a cryptographic hash is derived. The identifier is discarded."],
              ["Phone number","SMS reports go through Africa's Talking. Your number is one-way hashed. We cannot reverse it."],
              ["Real name","Never requested, never stored."],
              ["IP address","Our intake pipeline does not log IP addresses of reporters."],
@@ -55,7 +55,7 @@ export default function Privacy() {
            content:[
              ["SHA-256 hash of reporter identifier","A one-way mathematical fingerprint used only to prevent spam flooding from the same source. Cannot be reversed to reveal identity."],
              ["Report content","The text, audio transcription, or image of your report. Stored encrypted with AES-256-GCM."],
-             ["Report metadata","Date, language, channel (Telegram/SMS/web). No personal data."],
+             ["Report metadata","Date, language, channel (WhatsApp/SMS/web). No personal data."],
              ["Evidence hash chain","Every report is sealed into a cryptographic ledger. The ledger records hashes of report content — not personal data."],
            ]
           },
@@ -92,7 +92,7 @@ export default function Privacy() {
           {title:"7. Changes to This Policy",
            body:"We will post any changes to this page with an updated date. Material changes will be noted in the platform changelog on GitHub."},
           {title:"8. Contact",
-           body:"Questions about this privacy policy can be sent via the SAFUU Telegram bot or filed as a GitHub issue at github.com/sifgamachu/safuu-intel."},
+           body:"Questions about this privacy policy can be sent via the SAFUU WhatsApp bot or filed as a GitHub issue at github.com/sifgamachu/safuu-intel."},
         ].map((section,i)=>(
           <div key={i} style={{marginBottom:"40px",paddingBottom:"40px",borderBottom:`1px solid rgba(0,212,255,0.06)`}}>
             <h2 style={{fontSize:"18px",fontWeight:"800",fontFamily:"'Playfair Display',serif",color:"rgba(240,236,224,0.88)",marginBottom:"20px"}}>{section.title}</h2>

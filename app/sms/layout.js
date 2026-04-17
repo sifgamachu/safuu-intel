@@ -1,6 +1,6 @@
 export const metadata = {
-  title:"Report by SMS — SAFUU Intel",
-  description:"No smartphone needed. Report corruption from any mobile phone in Ethiopia. SMS shortcode 21000. Format: SAFUU [Name] | [Office] | [What happened].",
-  openGraph:{title:"Report by SMS — SAFUU",description:"Any phone. No internet. SMS 21000.",url:"https://safuu.net/sms"},
+  title:"How to Report — SAFUU Intel",
+  description:"Report corruption anonymously via WhatsApp (+251911000000) or Telegram (@SafuuEthBot). Voice, text, photos in all 11 Ethiopian languages. Identity never stored.",
+  openGraph:{title:"Report via WhatsApp or Telegram — SAFUU",description:"Two ways to report anonymously. WhatsApp + Telegram. 11 Ethiopian languages.",url:"https://safuu.net/sms"},
 };
 export default function Layout({children}){return children;}

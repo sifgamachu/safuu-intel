@@ -34,7 +34,7 @@ export default function TigrinyaPage() {
             15 ዝረጋገጹ ጸብጻብ ምስ ኣኸለ ስሙ ንህዝቢ ይወጽእ።
           </p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:"12px",marginBottom:"40px"}}>
-            {[{icon:"📲",t:"Telegram",s:"ድምጺ / ጽሑፍ",href:"https://t.me/SafuuEthBot"},{icon:"📱",t:"SMS — 21000",s:"ዝኾነ ስልኪ",href:"/sms"},{icon:"🌐",t:"ናይ ኢንተርነት ቅጺ",s:"ቀጥታ ጸብጻብ",href:"/report"}].map((c,i)=>(
+            {[{icon:"📲",t:"WhatsApp",s:"ድምጺ / ጽሑፍ",href:"https://wa.me/251911000000"},{icon:"📱",t:"SMS — 21000",s:"ዝኾነ ስልኪ",href:"/sms"},{icon:"🌐",t:"ናይ ኢንተርነት ቅጺ",s:"ቀጥታ ጸብጻብ",href:"/report"}].map((c,i)=>(
               <a key={i} href={c.href} target={c.href.startsWith("http")?"_blank":"_self"} rel="noreferrer"
                 style={{background:"rgba(0,0,0,0.5)",border:`1px solid rgba(201,168,76,0.15)`,padding:"22px",display:"block",textDecoration:"none",color:"inherit",transition:"all 0.2s"}}>
                 <div style={{fontSize:"26px",marginBottom:"8px"}}>{c.icon}</div>

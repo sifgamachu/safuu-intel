@@ -115,7 +115,7 @@ export default function TransparencyWall() {
         </a>
         <div style={{display:"flex",alignItems:"center",gap:"24px"}}>
           <a href="/" style={{fontSize:"10px",color:`rgba(0,212,255,0.4)`,fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",transition:"color 0.2s"}}>← BACK TO SAFUU.NET</a>
-          <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer"
+          <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer"
             style={{background:G,color:"#030507",fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:"700",padding:"8px 18px",letterSpacing:"0.12em",textTransform:"uppercase"}}>
             ⚖ REPORT
           </a>

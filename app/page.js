@@ -999,7 +999,7 @@ const STATS = [
   {n:3,  s:"", l:"Cases Escalated",       d:"// FEACC · formal investigation"},
 ];
 const PROCESS = [
-  {n:"01",icon:"📲",title:"ANONYMOUS_INPUT()",    body:"Encrypted intake via Telegram or SMS shortcode 21000. 11 Ethiopian languages. SHA-256 one-way hash — your identity does not enter the system."},
+  {n:"01",icon:"📲",title:"ANONYMOUS_INPUT()",    body:"Message via Telegram or WhatsApp in any of 11 Ethiopian languages. SHA-256 one-way hash — your identity never enters the system."},
   {n:"02",icon:"🔬",title:"AI_VERIFY(evidence)",  body:"EXIF timestamp cross-check. AI-image authentication at 94% accuracy. Whisper voice transcription. Claude severity classification. Every step logged."},
   {n:"03",icon:"⚖️",title:"ROUTE_TO(agency)",    body:"Algorithmic routing to FEACC, Federal Police, Ombudsman, OFAG, or EHRC. No human bottleneck. Case record opened immediately."},
   {n:"04",icon:"📊",title:"DISCLOSE_AT(threshold)",body:"Below threshold: institution and city only — protecting against false accusation. At threshold: full name published to the accountability wall. Case formally escalated."},
@@ -1009,7 +1009,7 @@ const SHIELDS = [
   {code:"AES-256",   val:"GCM at rest — all fields",       icon:"🔒", c:"#00d4ff"},
   {code:"HIVE_AI",   val:"94% AI-image accuracy",          icon:"🤖", c:"#00d4ff"},
   {code:"LEDGER",    val:"Tamper-evident hash chain",       icon:"⛓️", c:"#c9a84c"},
-  {code:"WHISPER",   val:"11 Ethiopian languages",          icon:"🗣️", c:"#00d4ff"},
+  {code:"WHISPER",   val:"WhatsApp + Telegram",          icon:"🗣️", c:"#00d4ff"},
   {code:"AUTOROUTE", val:"5 agencies — zero delay",         icon:"⚡", c:"#c9a84c"},
 ];
 const AGENCIES = [
@@ -1023,7 +1023,7 @@ const FAQS = [
   {q:"Is reporting truly anonymous?",   a:"Correct. SAFUU never records your Telegram username, user ID, phone number, or real name. One-way SHA-256 — computationally irreversible. No administrator can reverse it. No court order can produce what does not exist."},
   {q:"What happens after I submit?",    a:"Claude AI classifies corruption type and severity. Evidence is forensically authenticated. Case is algorithmically routed. When verified reports on a single official reach the threshold — name disclosed, case formally escalated."},
   {q:"How does name disclosure work?",  a:"Below threshold: only city and office shown — protecting against false accusations. At threshold: full name disclosed on the transparency wall and formally flagged."},
-  {q:"No smartphone — can I report?",  a:"SMS shortcode 21000. Format: SAFUU [Name] | [Office] | [Description]. Any mobile carrier in Ethiopia. No data connection required. Processed by the same AI forensic pipeline."},
+  {q:"No smartphone — can I report?",  a:"WhatsApp (+251911000000) or Telegram (@SafuuEthBot). Both support voice messages and are available on any smartphone. WhatsApp works even on low-data connections."},
   {q:"Which languages are supported?",  a:"Amharic, Oromiffa, Tigrinya, Somali, Afar, Sidama, Wolaytta, Hadiyya, Dawro, Gamo, Bench, and English. Voice auto-transcribed by Whisper."},
 ];
 
@@ -1138,7 +1138,7 @@ export default function Safuu() {
                   "● ሙስና ይጥፋእ · JUSTICE WILL PREVAIL",
                   "● AES-256-GCM ACTIVE",
                   "● ሙስናን ሪፖርት አድርጉ",
-                  "● 233+ ANONYMOUS TIPS FILED",
+                  "● WHATSAPP: +251911000000",
                   "● Malaanmmaltummaa Dhabamu",
                   "● SAFUU.NET · COLLABORATIVE INTELLIGENCE",
                 ].map((t,j)=>(
@@ -1236,8 +1236,8 @@ export default function Safuu() {
               <a href="/report" className="btn-gold">
                 ⚖ Report Online
               </a>
-              <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" className="btn-outline">
-                Telegram Bot
+              <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer" className="btn-outline">
+                💬 WhatsApp
               </a>
             </div>
             <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"32px"}}>
@@ -1252,7 +1252,7 @@ export default function Safuu() {
               {[
                 {k:"SHA-256",v:"Identity null"},
                 {k:"AES-256-GCM",v:"Encrypted"},
-                {k:"11 languages",v:"Voice + text"},
+                {k:"11 languages",v:"11 languages"},
               ].map((s,i)=>(
                 <div key={i} style={{padding:"10px 16px",borderRight:i<2?`1px solid rgba(0,212,255,0.1)`:"none",flex:1}}>
                   <div style={{fontSize:"7px",color:`rgba(0,212,255,0.4)`,fontFamily:"'Courier New',monospace",
@@ -1553,12 +1553,12 @@ export default function Safuu() {
               <a href="/report" className="btn-gold" style={{fontSize:"13px",padding:"15px 40px"}}>
                 ⚖ OPEN CASE FILE
               </a>
-              <a href="/transparency" className="btn-outline" style={{fontSize:"12px",padding:"14px 28px"}}>
-                View Transparency Wall
+              <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer" className="btn-outline" style={{fontSize:"12px",padding:"14px 28px"}}>
+                💬 WhatsApp
               </a>
             </div>
             <div style={{marginTop:"16px",fontSize:"10px",color:`rgba(0,212,255,0.3)`,fontFamily:"'Courier New',monospace"}}>
-              // no smartphone? → SMS <strong style={{color:`rgba(0,212,255,0.5)`}}>21000</strong> from any phone
+              // also available on <strong style={{color:`rgba(0,212,255,0.5)`}}>WhatsApp</strong> · +251911000000
             </div>
           </div>
           );})()}
@@ -1583,7 +1583,7 @@ export default function Safuu() {
               </div>
             </div>
             <div style={{display:"flex",gap:"32px",flexWrap:"wrap"}}>
-              {[["/transparency","Transparency Wall"],["/analytics","Analytics"],["/report","File a Report"],["/sms","SMS Guide"],["/about","About"],["/am","አማርኛ"],["/or","Oromiffa"],["/ti","ትግርኛ"],["/partners","Partners"],["/press","Press Kit"],["/backend","Backend"],["/changelog","Changelog"],["/privacy","Privacy"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuEthBot","Telegram"]].map(([h,l])=>(
+              {[["/transparency","Transparency Wall"],["/analytics","Analytics"],["/report","File a Report"],["/sms","WhatsApp & Telegram"],["/about","About"],["/am","አማርኛ"],["/or","Oromiffa"],["/ti","ትግርኛ"],["/partners","Partners"],["/press","Press Kit"],["/backend","Backend"],["/changelog","Changelog"],["/privacy","Privacy"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuEthBot","Telegram"]].map(([h,l])=>(
                 <a key={l} href={h} target={h.startsWith("http")?"_blank":"_self"} rel="noreferrer"
                   className="lnk" style={{fontSize:"10px",color:`rgba(0,212,255,0.3)`,
                     fontFamily:"'Courier New',monospace",letterSpacing:"0.1em",transition:"color 0.2s"}}>{l}</a>

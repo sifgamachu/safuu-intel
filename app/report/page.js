@@ -284,9 +284,9 @@ export default function ReportPage() {
         </div>
 
         <div style={{marginTop:"32px",textAlign:"center",fontSize:"11px",color:"rgba(240,236,224,0.2)",fontFamily:"'Courier New',monospace"}}>
-          Prefer Telegram?{" "}
-          <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer" style={{color:`rgba(0,212,255,0.4)`,textDecoration:"underline"}}>
-            t.me/SafuuEthBot
+          Also report via{" "}
+          <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer" style={{color:`rgba(0,212,255,0.4)`,textDecoration:"underline"}}>
+            wa.me/251911000000
           </a>
           {" · "}SMS: <strong style={{color:"rgba(240,236,224,0.35)"}}>21000</strong>
         </div>

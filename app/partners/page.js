@@ -112,9 +112,9 @@ export default function Partners() {
             If you represent a civil society organization, media outlet, academic institution, or legal aid group working on Ethiopian accountability, we'd like to hear from you.
           </p>
           <div style={{display:"flex",gap:"12px",flexWrap:"wrap"}}>
-            <a href="https://t.me/SafuuEthBot" target="_blank" rel="noreferrer"
+            <a href="https://wa.me/251911000000" target="_blank" rel="noreferrer"
               style={{background:G,color:"#030507",fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:"700",padding:"12px 28px",letterSpacing:"0.12em",textDecoration:"none"}}>
-              CONTACT VIA TELEGRAM →
+              CONTACT VIA WHATSAPP →
             </a>
             <a href="https://github.com/sifgamachu/safuu-intel" target="_blank" rel="noreferrer"
               style={{background:"transparent",color:`rgba(0,212,255,0.7)`,border:`1px solid rgba(0,212,255,0.3)`,fontFamily:"'Courier New',monospace",fontSize:"10px",padding:"12px 24px",letterSpacing:"0.12em",textDecoration:"none"}}>
