@@ -270,6 +270,28 @@ export default function ReportPage() {
         {/* Trust footer */}
         <div style={{marginTop:"60px",paddingTop:"24px",borderTop:`1px solid rgba(0,212,255,0.06)`}}>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:"16px"}}>
+            {/* Evidence tier impact */}
+            <div style={{marginBottom:"20px",padding:"14px 18px",background:"rgba(0,0,0,0.4)",border:"1px solid rgba(201,168,76,0.18)",borderLeft:"3px solid rgba(201,168,76,0.5)"}}>
+              <div style={{fontSize:"9px",color:"rgba(201,168,76,0.6)",fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",marginBottom:"10px",fontWeight:"700"}}>📊 YOUR REPORT WILL BE CLASSIFIED AS:</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+                {[
+                  {icon:"✏️",tier:"Text only",      t:100,c:"rgba(255,255,255,0.3)",note:"Add photo to lower threshold to 15"},
+                  {icon:"📷",tier:"+ Photo evidence",t:15, c:"#c9a84c",             note:"Photo attached — threshold 15"},
+                  {icon:"📄",tier:"+ Financial docs",t:15, c:"#c9a84c",             note:"Receipt/doc attached — threshold 15"},
+                  {icon:"🔴",tier:"+ Demand proof",  t:3,  c:"#b82020",             note:"Screenshot of demand — threshold 3"},
+                ].map(s=>(
+                  <div key={s.tier} style={{padding:"8px 10px",background:`${s.c}08`,border:`1px solid ${s.c}20`}}>
+                    <div style={{fontSize:"10px",fontWeight:"700",color:s.c,marginBottom:"2px",fontFamily:"'Courier New',monospace"}}>{s.icon} {s.tier}</div>
+                    <div style={{fontSize:"9px",color:"rgba(240,236,224,0.35)",fontFamily:"'Courier New',monospace"}}>{s.t} reports needed</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{fontSize:"10px",color:"rgba(0,212,255,0.4)",fontFamily:"'Courier New',monospace",marginTop:"10px",lineHeight:"1.7"}}>
+                // Voice intake built — not active yet (future feature)<br/>
+                // Attach a photo or document in step 6 to lower your threshold
+              </div>
+            </div>
+
             {[
               ["🔐 Identity","SHA-256 one-way hash. Not even admins can identify you."],
               ["🔒 Encrypted","AES-256-GCM. All fields encrypted at rest."],

@@ -58,8 +58,8 @@ const CASES = {
       {date:"2026-04-03",event:"FEACC case opened",lang:"EN",verified:true},
     ],
   },
-  "ETH-004": { id:"ETH-004", disclosed:false, name:"[MASKED]", office:"Regional Health Bureau", city:"Hawassa", region:"Sidama", type:"Healthcare Theft", amount:"—", firstReport:"2026-02-10", lastReport:"2026-04-08", reports:9, threshold:15, verified:7, status:"PENDING", escalated:null, timeline:[] },
-  "ETH-005": { id:"ETH-005", disclosed:false, name:"[MASKED]", office:"Education Department", city:"Jimma", region:"Oromia", type:"Education Bribery", amount:"—", firstReport:"2026-03-01", lastReport:"2026-04-10", reports:6, threshold:15, verified:5, status:"PENDING", escalated:null, timeline:[] },
+  "ETH-004": { id:"ETH-004", tier:"TEXT",    disclosed:false, name:"[MASKED]", office:"Regional Health Bureau", city:"Hawassa", region:"Sidama", type:"Healthcare Theft", amount:"—", firstReport:"2026-02-10", lastReport:"2026-04-08", reports:9, threshold:15, verified:7, status:"PENDING", escalated:null, timeline:[] },
+  "ETH-005": { id:"ETH-005", tier:"TEXT",    disclosed:false, name:"[MASKED]", office:"Education Department", city:"Jimma", region:"Oromia", type:"Education Bribery", amount:"—", firstReport:"2026-03-01", lastReport:"2026-04-10", reports:6, threshold:15, verified:5, status:"PENDING", escalated:null, timeline:[] },
 };
 
 const LANG_MAP = {AM:"አማርኛ",OR:"Oromiffa",TI:"ትግርኛ",SO:"Soomaali",AF:"Qafar",EN:"English"};
@@ -171,6 +171,23 @@ export default function CaseDetail() {
             </div>
           ))}
         </div>
+
+        {/* Evidence tier badge */}
+        {(()=>{const tier=TIERS[c.tier||"TEXT"];return(
+        <div style={{marginBottom:"20px",display:"flex",alignItems:"center",gap:"16px",padding:"14px 20px",background:`${tier.color}08`,border:`1px solid ${tier.color}20`,borderLeft:`3px solid ${tier.color}`}}>
+          <div style={{fontSize:"22px"}}>{tier.icon}</div>
+          <div>
+            <div style={{fontSize:"8px",color:"rgba(0,212,255,0.4)",fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",marginBottom:"4px"}}>EVIDENCE CLASSIFICATION</div>
+            <div style={{fontSize:"13px",fontWeight:"700",color:tier.color,fontFamily:"'Courier New',monospace",marginBottom:"2px"}}>{tier.badge}</div>
+            <div style={{fontSize:"11px",color:"rgba(240,236,224,0.4)"}}>{tier.label} · Disclosure threshold: <strong style={{color:tier.color}}>{tier.threshold} verified reports</strong></div>
+          </div>
+          <div style={{marginLeft:"auto",textAlign:"right"}}>
+            <div style={{fontSize:"9px",color:"rgba(240,236,224,0.3)",fontFamily:"'Courier New',monospace",marginBottom:"2px"}}>WEIGHT</div>
+            <div style={{fontSize:"18px",fontWeight:"900",color:tier.color,fontFamily:"'Courier New',monospace"}}>{tier.threshold===100?"1x":tier.threshold===15?"7x":"33x"}</div>
+            <div style={{fontSize:"8px",color:"rgba(240,236,224,0.25)",fontFamily:"'Courier New',monospace"}}>vs text-only</div>
+          </div>
+        </div>
+        );})()}
 
         {/* Progress ring + key dates */}
         <div style={{display:"grid",gridTemplateColumns:"auto 1fr",gap:"32px",alignItems:"center",background:"rgba(0,0,0,0.5)",border:`1px solid rgba(0,212,255,0.1)`,padding:"28px 32px",marginBottom:"32px"}}>
