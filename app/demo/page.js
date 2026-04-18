@@ -205,7 +205,7 @@ export default function Safuu() {
           <div style={{display:"flex",animation:"marquee 44s linear infinite",whiteSpace:"nowrap"}}>
             {[...Array(2)].map((_,i)=>(
               <span key={i} style={{display:"inline-flex"}}>
-                {[`● SYSTEM ONLINE · ${date}`,`● ${total} TIPS · ${today} TODAY`,"● IDENTITY :: NULL","● ሙስና ይጥፋእ · JUSTICE WILL PREVAIL","● AES-256-GCM ACTIVE","● WHATSAPP @SafuuAfBot","● Malaanmmaltummaa Dhabamu","● SAFUU.NET · COLLABORATIVE INTELLIGENCE"].map((t,j)=>(
+                {[`● SYSTEM ONLINE · ${date}`,`● ${total} TIPS · ${today} TODAY`,"● IDENTITY :: NULL","● ሙስና ይጥፋእ · JUSTICE WILL PREVAIL","● AES-256-GCM ACTIVE","● WHATSAPP @SafuuIntelBot","● Malaanmmaltummaa Dhabamu","● SAFUU.NET · COLLABORATIVE INTELLIGENCE"].map((t,j)=>(
                   <span key={j} style={{fontSize:"9px",fontFamily:"'Courier New',monospace",padding:"0 24px",color:j%2===0?"rgba(0,212,255,0.65)":"rgba(201,168,76,0.55)"}}>{t}</span>
                 ))}
               </span>
@@ -238,8 +238,8 @@ export default function Safuu() {
           ))}
         </div>
         <div style={{display:"flex",gap:"8px"}}>
-          <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" className="btn-cy" style={{padding:"8px 16px",fontSize:"10px"}}></a>
-          <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" className="btn-gold" style={{padding:"8px 18px",fontSize:"10px"}}>📲 Telegram</a>
+          <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer" className="btn-cy" style={{padding:"8px 16px",fontSize:"10px"}}></a>
+          <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer" className="btn-gold" style={{padding:"8px 18px",fontSize:"10px"}}>📲 Telegram</a>
         </div>
       </nav>
 
@@ -482,8 +482,8 @@ export default function Safuu() {
             </p>
           </div>
           <div style={{display:"flex",gap:"10px",flexWrap:"wrap"}}>
-            <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" className="btn-gold" style={{fontSize:"13px",padding:"14px 32px"}}>💬 Report on Telegram</a>
-            <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" className="btn-cy" style={{fontSize:"13px",padding:"13px 28px"}}>📲 Report on Telegram</a>
+            <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer" className="btn-gold" style={{fontSize:"13px",padding:"14px 32px"}}>💬 Report on Telegram</a>
+            <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer" className="btn-cy" style={{fontSize:"13px",padding:"13px 28px"}}>📲 Report on Telegram</a>
           </div>
         </div>
       </section>
@@ -564,7 +564,7 @@ export default function Safuu() {
                 ["PLATFORM",   [["/"," Home"],["/transparency","Transparency"],["/report","File a Report"],["/analytics","Analytics"],["/sms","Telegram"]]],
                 ["LANGUAGES",  [["/am","አማርኛ (Amharic)"],["/or","Oromiffa"],["/ti","ትግርኛ (Tigrinya)"]]],
                 ["ABOUT",      [["/about","About"],["/faq","FAQ"],["/partners","Partners"],["/press","Press"],["/donate","Support"],["/privacy","Privacy"],["/changelog","Changelog"]]],
-                ["DEVELOPERS", [["/backend","Backend Setup"],["/api-docs","API Reference"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuAfBot","Telegram"],["https://t.me/SafuuAfBot","Telegram"]]],
+                ["DEVELOPERS", [["/backend","Backend Setup"],["/api-docs","API Reference"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuIntelBot","Telegram"],["https://t.me/SafuuIntelBot","Telegram"]]],
               ].map(([col,links])=>(
                 <div key={col}>
                   <div style={{fontSize:"8px",color:"rgba(201,168,76,0.32)",fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",marginBottom:"12px",fontWeight:"700"}}>{col}</div>

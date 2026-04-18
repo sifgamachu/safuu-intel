@@ -52,7 +52,7 @@ const CATEGORIES = [
     color:"#4ade80",
     questions:[
       {q:"Can I subscribe to receive corruption news — not just file reports?",
-       a:"Yes. Once you open @SafuuAfBot on Telegram, send /subscribe. You'll receive three types of broadcasts: case disclosures when a SAFUU case hits the disclosure threshold; Africa intelligence covering breaking corruption stories across the continent; and global intelligence covering major world corruption cases. You can also set a region preference with /region — for example, 'Ethiopia only' or 'all of Africa' — and opt out anytime with /unsubscribe. Broadcasts are in English, free, and anonymous."},
+       a:"Yes. Once you open @SafuuIntelBot on Telegram, send /subscribe. You'll receive three types of broadcasts: case disclosures when a SAFUU case hits the disclosure threshold; Africa intelligence covering breaking corruption stories across the continent; and global intelligence covering major world corruption cases. You can also set a region preference with /region — for example, 'Ethiopia only' or 'all of Africa' — and opt out anytime with /unsubscribe. Broadcasts are in English, free, and anonymous."},
       {q:"What AI is used to analyze reports?",
        a:"Claude (Anthropic) analyzes each report for corruption type, severity, jurisdictional routing, and consistency with prior reports on the same official. OpenAI Whisper transcribes voice messages in all 11 Ethiopian languages. Hive Moderation AI detects AI-generated or manipulated images submitted as evidence (94% accuracy). All AI systems are used for analysis only — no AI makes final disclosure decisions."},
       {q:"How is evidence verified?",
@@ -113,7 +113,7 @@ export default function FAQPage() {
         <p style={{fontSize:"14px",color:"rgba(240,236,224,0.4)",lineHeight:"1.85",marginBottom:"56px",maxWidth:"560px"}}>
           {CATEGORIES.reduce((sum,c)=>sum+c.questions.length,0)} questions across {CATEGORIES.length} categories. 
           Can't find an answer?{" "}
-          <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" style={{color:G,textDecoration:"underline"}}>Ask via WhatsApp</a>.
+          <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer" style={{color:G,textDecoration:"underline"}}>Ask via WhatsApp</a>.
         </p>
 
         {/* Category nav */}
@@ -170,7 +170,7 @@ export default function FAQPage() {
           </div>
           <div style={{display:"flex",gap:"10px",flexWrap:"wrap"}}>
             <a href="/report" style={{background:G,color:"#030507",fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:"700",padding:"12px 24px",letterSpacing:"0.12em",textDecoration:"none"}}>⚖ REPORT ONLINE</a>
-            <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer"
+            <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer"
               style={{background:"transparent",color:`rgba(0,212,255,0.7)`,border:`1px solid rgba(0,212,255,0.3)`,fontFamily:"'Courier New',monospace",fontSize:"10px",padding:"12px 20px",letterSpacing:"0.12em",textDecoration:"none"}}>TELEGRAM BOT</a>
           </div>
         </div>

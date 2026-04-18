@@ -37,7 +37,7 @@ export default function About() {
         <div style={{display:"flex",gap:"20px",alignItems:"center"}}>
           <a href="/" className="lnk" style={{fontSize:"10px",color:`rgba(0,212,255,0.4)`,fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",transition:"color 0.2s"}}>HOME</a>
           <a href="/transparency" className="lnk" style={{fontSize:"10px",color:`rgba(0,212,255,0.4)`,fontFamily:"'Courier New',monospace",letterSpacing:"0.15em",transition:"color 0.2s"}}>TRANSPARENCY</a>
-          <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer"
+          <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer"
             style={{background:G,color:"#030507",fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:"700",padding:"8px 18px",letterSpacing:"0.12em"}}>⚖ REPORT</a>
         </div>
       </nav>
@@ -163,7 +163,7 @@ export default function About() {
               <div>
                 <div style={{fontSize:"11px",color:G,fontFamily:"'Courier New',monospace",letterSpacing:"0.12em",marginBottom:"8px",fontWeight:"700"}}>TELEGRAM (SMARTPHONE)</div>
                 <p style={{fontSize:"13px",color:"rgba(240,236,224,0.5)",lineHeight:"1.8",marginBottom:"12px"}}>Voice or text. 11 languages. Step-by-step guidance. Evidence upload.</p>
-                <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer"
+                <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer"
                   style={{display:"inline-block",background:G,color:"#030507",fontFamily:"'Courier New',monospace",fontSize:"10px",fontWeight:"700",padding:"10px 20px",letterSpacing:"0.12em"}}>
                   OPEN WHATSAPP →
                 </a>

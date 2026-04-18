@@ -48,7 +48,7 @@ export default function AmharicPage() {
           {/* Report channels */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"12px",marginBottom:"40px"}}>
             {[
-              {icon:"📲",title:"ቴሌግራም",sub:"ድምፅ ወይም ፅሑፍ",cta:"@SafuuAfBot",href:"https://t.me/SafuuAfBot"},
+              {icon:"📲",title:"ቴሌግራም",sub:"ድምፅ ወይም ፅሑፍ",cta:"@SafuuIntelBot",href:"https://t.me/SafuuIntelBot"},
               {icon:"📱",title:"SMS",sub:"ማንኛውም ስልክ — 21000",cta:"SAFUU [ስም] | [ቢሮ] | [ምን ሆነ]",href:"/sms"},
               {icon:"🌐",title:"ድረ-ገጽ",sub:"ቀጥታ ቅጽ",cta:"ሪፖርት ያድርጉ →",href:"/report"},
             ].map((c,i)=>(

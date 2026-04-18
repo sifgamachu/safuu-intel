@@ -175,7 +175,7 @@ export default function ReportingGuide() {
         <div style={{padding:"20px 24px",background:"rgba(201,168,76,0.05)",border:"1px solid rgba(201,168,76,0.18)"}}>
           <div style={{fontSize:"9px",fontWeight:"700",color:"#c9a84c",letterSpacing:"0.18em",marginBottom:"10px",textTransform:"uppercase",fontFamily:"'Courier New',monospace"}}>🌍 Expanding across Africa</div>
           <p style={{fontSize:"13px",color:"rgba(240,236,224,0.48)",lineHeight:"1.85"}}>
-            SAFUU started in Ethiopia. The <strong style={{color:"rgba(240,236,224,0.7)"}}>@SafuuAfBot</strong> handle reflects the pan-African vision —
+            SAFUU started in Ethiopia. The <strong style={{color:"rgba(240,236,224,0.7)"}}>@SafuuIntelBot</strong> handle reflects the pan-African vision —
             the same anonymous reporting infrastructure, evidence tier system, and accountability pipeline will expand to serve citizens across the continent.
             One platform. Multiple countries. Zero identity stored.
           </p>

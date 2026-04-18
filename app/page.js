@@ -103,7 +103,7 @@ export default function Safuu() {
           <div style={{display:"flex",animation:"marquee 44s linear infinite",whiteSpace:"nowrap"}}>
             {[...Array(2)].map((_,i)=>(
               <span key={i} style={{display:"inline-flex"}}>
-                {[`● SYSTEM ACTIVE · ${date} · ${time}`,"● PIPELINE READY · AWAITING FIRST REPORT","● IDENTITY_STORAGE :: NULL — SHA-256 ONLY","● AES-256-GCM ENCRYPTION ACTIVE","● AI FORENSICS READY · CLAUDE + WHISPER + HIVE","● WHATSAPP @SafuuAfBot · @SafuuAfBot","● ሙስናን ሪፖርት አድርጉ · REPORT CORRUPTION NOW"].map((t,j)=>(
+                {[`● SYSTEM ACTIVE · ${date} · ${time}`,"● PIPELINE READY · AWAITING FIRST REPORT","● IDENTITY_STORAGE :: NULL — SHA-256 ONLY","● AES-256-GCM ENCRYPTION ACTIVE","● AI FORENSICS READY · CLAUDE + WHISPER + HIVE","● WHATSAPP @SafuuIntelBot · @SafuuIntelBot","● ሙስናን ሪፖርት አድርጉ · REPORT CORRUPTION NOW"].map((t,j)=>(
                   <span key={j} style={{fontSize:"9px",fontFamily:"'Courier New',monospace",padding:"0 24px",color:j%2===0?"rgba(0,212,255,0.65)":"rgba(201,168,76,0.55)"}}>{t}</span>
                 ))}
               </span>
@@ -127,7 +127,7 @@ export default function Safuu() {
           ))}
         </div>
         <div style={{display:"flex",gap:"8px"}}>
-          <TelegramButton text="@SafuuAfBot" size="sm"/>
+          <TelegramButton text="@SafuuIntelBot" size="sm"/>
           <TelegramButton text="Telegram" size="sm"/>
         </div>
       </nav>
@@ -319,7 +319,7 @@ export default function Safuu() {
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"16px"}}>
           {[
-            {n:"01",icon:"💬",title:"Report anonymously",       body:"Message @SafuuAfBot on Telegram in any Ethiopian language. The bot guides you step by step — text or attach a photo, receipt, or document."},
+            {n:"01",icon:"💬",title:"Report anonymously",       body:"Message @SafuuIntelBot on Telegram in any Ethiopian language. The bot guides you step by step — text or attach a photo, receipt, or document."},
             {n:"02",icon:"🔬",title:"AI forensic verification", body:"Claude AI analyzes your report. Whisper transcribes voice. Hive AI checks photo authenticity. EXIF metadata verifies dates and locations."},
             {n:"03",icon:"⚖️",title:"Auto-routed to agencies",   body:"Your report is automatically matched to the correct authority — FEACC, Federal Police, EHRC, Ombudsman, or OFAG. No manual steps."},
             {n:"04",icon:"📊",title:"Public disclosure at threshold", body:"Below the threshold: only the office and region are shown publicly. At threshold: the official's name is disclosed and formally escalated."},
@@ -349,7 +349,7 @@ export default function Safuu() {
               Stay informed on corruption<br/><span style={{color:"#c9a84c",fontStyle:"italic"}}>across Africa and the world.</span>
             </h2>
             <p style={{fontSize:"14px",color:"rgba(240,236,224,0.45)",lineHeight:"1.85",maxWidth:"440px"}}>
-              Subscribe to @SafuuAfBot and receive intelligence broadcasts — case disclosures, breaking African corruption news, and major global corruption stories. In English. Free. Anonymous.
+              Subscribe to @SafuuIntelBot and receive intelligence broadcasts — case disclosures, breaking African corruption news, and major global corruption stories. In English. Free. Anonymous.
             </p>
           </div>
           {/* Right — what you get */}
@@ -369,7 +369,7 @@ export default function Safuu() {
               </div>
             ))}
             <div style={{padding:"16px 20px",background:"rgba(34,158,217,0.08)"}}>
-              <TelegramButton text="Subscribe via @SafuuAfBot" size="md" fullWidth/>
+              <TelegramButton text="Subscribe via @SafuuIntelBot" size="md" fullWidth/>
               <div style={{marginTop:"10px",fontSize:"10px",color:"rgba(255,255,255,0.25)",fontFamily:"'Courier New',monospace",textAlign:"center",lineHeight:"1.7"}}>
                 Tap /subscribe after opening · Set region with /region · Unsubscribe anytime with /unsubscribe
               </div>
@@ -451,7 +451,7 @@ export default function Safuu() {
                 ["PLATFORM",   [["/"," Home"],["/demo","Live Dashboard Demo"],["/transparency","Transparency Wall"],["/report","File a Report"],["/analytics","Analytics"],["/sms","Telegram"]]],
                 ["LANGUAGES",  [["/am","አማርኛ (Amharic)"],["/or","Oromiffa"],["/ti","ትግርኛ (Tigrinya)"]]],
                 ["ABOUT",      [["/about","About"],["/faq","FAQ"],["/partners","Partners"],["/press","Press"],["/donate","Support"],["/privacy","Privacy"],["/changelog","Changelog"]]],
-                ["DEVELOPERS", [["/backend","Backend Setup"],["/api-docs","API Reference"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuAfBot","Telegram"],["https://t.me/SafuuAfBot","Telegram"]]],
+                ["DEVELOPERS", [["/backend","Backend Setup"],["/api-docs","API Reference"],["https://github.com/sifgamachu/safuu-intel","GitHub"],["https://t.me/SafuuIntelBot","Telegram"],["https://t.me/SafuuIntelBot","Telegram"]]],
               ].map(([col,links])=>(
                 <div key={col}>
                   <div style={{fontSize:"8px",color:"rgba(201,168,76,0.32)",fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",marginBottom:"12px",fontWeight:"700"}}>{col}</div>

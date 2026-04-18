@@ -2,7 +2,7 @@
  * SAFUU INTEL — Telegram Broadcast System
  * ==========================================
  * Handles:
- *   1. Subscriber management (subscribe/unsubscribe via @SafuuAfBot)
+ *   1. Subscriber management (subscribe/unsubscribe via @SafuuIntelBot)
  *   2. Three broadcast types:
  *      A. SAFUU platform events (case hits threshold)
  *      B. African corruption news (curated + AI-sourced)
@@ -87,7 +87,7 @@ _Appearance on the transparency wall is not a finding of guilt — it is a refer
 🔗 [View case → safuu.net/transparency/${caseData.id}](https://safuu.net/transparency/${caseData.id})
 
 ${DIVIDER}
-🌍 @SafuuAfBot · safuu.net`;
+🌍 @SafuuIntelBot · safuu.net`;
 }
 
 function africaNewsMessage(story) {
@@ -111,7 +111,7 @@ ${story.summary}
 🔗 [Read more](${story.url})
 
 ${DIVIDER}
-🌍 @SafuuAfBot · Subscribe for Africa + global corruption intelligence`;
+🌍 @SafuuIntelBot · Subscribe for Africa + global corruption intelligence`;
 }
 
 function globalNewsMessage(story) {
@@ -127,7 +127,7 @@ ${story.summary}
 🔗 [Read more](${story.url})
 
 ${DIVIDER}
-🌍 @SafuuAfBot · safuu.net`;
+🌍 @SafuuIntelBot · safuu.net`;
 }
 
 function weeklyDigest(stats) {
@@ -347,4 +347,4 @@ bot.onText(/\/help/, async (msg) => {
 // ─── Export broadcast functions for use by other backend modules ───────────────
 module.exports = { broadcastThreshold, broadcastAfricaNews, broadcastGlobalNews, broadcastWeeklyDigest, broadcast };
 
-console.log('SAFUU broadcaster running — @SafuuAfBot active');
+console.log('SAFUU broadcaster running — @SafuuIntelBot active');

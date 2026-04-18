@@ -13,7 +13,7 @@ const ENV_VARS = [
   {key:"JWT_SECRET",               required:true,  source:"openssl rand -hex 32",             desc:"For admin dashboard JWT authentication"},
   {key:"DASHBOARD_API_KEY",        required:true,  source:"openssl rand -hex 32",             desc:"API key for programmatic dashboard access"},
   {key:"HIVE_API_URL",             required:false, source:"thehive.ai docs",                  desc:"Default: https://api.thehive.ai/api/v2/task/sync"},
-  {key:"SMS_USERNAME",             required:false, source:"Africa's Talking dashboard",       desc:"For SMS intake via Telegram @SafuuAfBot"},
+  {key:"SMS_USERNAME",             required:false, source:"Africa's Talking dashboard",       desc:"For SMS intake via Telegram @SafuuIntelBot"},
   {key:"SMS_API_KEY",              required:false, source:"Africa's Talking dashboard",       desc:"Africa's Talking API key for SMS"},
   {key:"DISCLOSURE_THRESHOLD",     required:false, source:"Your choice",                      desc:"Number of verified reports to trigger name disclosure (default: 15)"},
 ];

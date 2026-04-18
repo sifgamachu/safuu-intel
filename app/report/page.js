@@ -307,8 +307,8 @@ export default function ReportPage() {
 
         <div style={{marginTop:"32px",textAlign:"center",fontSize:"11px",color:"rgba(240,236,224,0.2)",fontFamily:"'Courier New',monospace"}}>
           Also report via{" "}
-          <a href="https://t.me/SafuuAfBot" target="_blank" rel="noreferrer" style={{color:`rgba(0,212,255,0.4)`,textDecoration:"underline"}}>
-            t.me/SafuuAfBot
+          <a href="https://t.me/SafuuIntelBot" target="_blank" rel="noreferrer" style={{color:`rgba(0,212,255,0.4)`,textDecoration:"underline"}}>
+            t.me/SafuuIntelBot
           </a>
           {" · "}SMS: <strong style={{color:"rgba(240,236,224,0.35)"}}>21000</strong>
         </div>

@@ -34,7 +34,7 @@ export default function SomaliPage() {
             15 warbixin oo xaqiijisan markay gaartaan magaca dadweynaha waa la soo bandhigayaa.
           </p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:"12px",marginBottom:"40px"}}>
-            {[{icon:"📲",t:"Telegram",s:"Cod / Qoraal",href:"https://t.me/SafuuAfBot"},{icon:"📱",t:"SMS — 21000",s:"Telefoon kasta",href:"/sms"},{icon:"🌐",t:"Foomka Internetka",s:"Toos u soo gudbi",href:"/report"}].map((c,i)=>(
+            {[{icon:"📲",t:"Telegram",s:"Cod / Qoraal",href:"https://t.me/SafuuIntelBot"},{icon:"📱",t:"SMS — 21000",s:"Telefoon kasta",href:"/sms"},{icon:"🌐",t:"Foomka Internetka",s:"Toos u soo gudbi",href:"/report"}].map((c,i)=>(
               <a key={i} href={c.href} target={c.href.startsWith("http")?"_blank":"_self"} rel="noreferrer"
                 style={{background:"rgba(0,0,0,0.5)",border:`1px solid rgba(201,168,76,0.15)`,padding:"22px",display:"block",textDecoration:"none",color:"inherit",transition:"all 0.2s"}}>
                 <div style={{fontSize:"26px",marginBottom:"8px"}}>{c.icon}</div>
