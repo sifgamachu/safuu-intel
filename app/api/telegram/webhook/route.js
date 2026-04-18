@@ -18,6 +18,10 @@ import {
 
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET;
 
+// Skip static analysis at build time — this route needs runtime env vars.
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(req) {
   const headerSecret = req.headers.get('x-telegram-bot-api-secret-token');
   if (headerSecret !== WEBHOOK_SECRET) {
