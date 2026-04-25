@@ -52,6 +52,7 @@ function Uptime() {
 export default function Safuu() {
   const [scrolled,setScrolled]=useState(false);
   const [faq,setFaq]=useState(null);
+  const [mobileOpen,setMobileOpen]=useState(false);
   const date = new Date().toISOString().slice(0,10);
   const time = new Date().toTimeString().slice(0,8);
 
@@ -59,6 +60,13 @@ export default function Safuu() {
     const fn=()=>setScrolled(window.scrollY>50);
     window.addEventListener("scroll",fn,{passive:true});
     return()=>window.removeEventListener("scroll",fn);
+  },[]);
+
+  // Close mobile menu when route hash changes
+  useEffect(()=>{
+    const close=()=>setMobileOpen(false);
+    window.addEventListener("hashchange",close);
+    return()=>window.removeEventListener("hashchange",close);
   },[]);
 
   const FAQS = [
@@ -79,6 +87,7 @@ export default function Safuu() {
         @keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
         @keyframes fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes pulsering{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,0.3)}70%{box-shadow:0 0 0 14px rgba(0,212,255,0)}}
+        @keyframes slidedown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
         .btn-gold{background:${G};color:#030507;font-family:'Courier New',monospace;font-weight:700;font-size:11px;letter-spacing:0.12em;padding:13px 32px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:all 0.2s;text-transform:uppercase;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
         .btn-gold:hover{background:#dab85e;transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,168,76,0.3)}
         .btn-cy{background:transparent;color:${CY};font-family:'Courier New',monospace;font-size:11px;letter-spacing:0.1em;padding:12px 28px;border:1px solid ${CY}55;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:all 0.2s;text-transform:uppercase;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px))}
@@ -87,8 +96,59 @@ export default function Safuu() {
         .faq-row{cursor:pointer;border-bottom:1px solid rgba(0,212,255,0.07);transition:background 0.15s}
         .faq-row:hover{background:rgba(0,212,255,0.02)}
         ::-webkit-scrollbar{width:2px}::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.3)}
-        @media(max-width:768px){.two-col{grid-template-columns:1fr!important}}
-        @media(max-width:640px){.hide-mob{display:none!important}nav{padding:0 16px!important}.sec{padding:32px 16px!important}}
+
+        /* ── Hamburger button ─────────────────────────────── */
+        .hamburger{display:none;width:42px;height:42px;border:1px solid rgba(0,212,255,0.18);background:rgba(0,0,0,0.4);cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:5px;transition:all 0.2s;flex-shrink:0}
+        .hamburger:hover{border-color:rgba(0,212,255,0.4);background:rgba(0,212,255,0.06)}
+        .hamburger span{display:block;width:18px;height:1.5px;background:rgba(0,212,255,0.7);transition:transform 0.2s,opacity 0.2s}
+        .hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+        .hamburger.open span:nth-child(2){opacity:0}
+        .hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+
+        /* ── Mobile menu drawer ───────────────────────────── */
+        .mobile-menu{display:none;position:fixed;top:86px;left:0;right:0;z-index:99;background:rgba(3,5,7,0.98);backdrop-filter:blur(24px);border-bottom:1px solid rgba(0,212,255,0.16);padding:16px 20px 24px;animation:slidedown 0.18s ease-out}
+        .mobile-menu a{display:block;padding:16px 8px;font-size:15px;color:rgba(240,236,224,0.85);font-family:'Space Grotesk',sans-serif;letter-spacing:0.04em;border-bottom:1px solid rgba(0,212,255,0.06);transition:color 0.15s;min-height:48px;display:flex;align-items:center}
+        .mobile-menu a:last-child{border-bottom:none}
+        .mobile-menu a:active{color:${CY}}
+
+        /* ── 1024px and below ─────────────────────────────── */
+        @media(max-width:1024px){
+          .two-col{grid-template-columns:1fr!important}
+          .three-col-mob{grid-template-columns:1fr!important}
+        }
+
+        /* ── 768px and below — tablet/mobile ──────────────── */
+        @media(max-width:768px){
+          .hamburger{display:flex}
+          .desktop-nav{display:none!important}
+          .nav-cta-extra{display:none!important}
+          .ticker-hide-mob{display:none!important}
+          .hide-mob-dash{display:none!important}
+          .mob-callout{display:block!important}
+          .sec{padding:40px 20px!important}
+          h1{font-size:clamp(32px,9vw,42px)!important;line-height:1.1!important;margin-bottom:18px!important}
+          h2{font-size:clamp(22px,6vw,28px)!important}
+          .body-prose{font-size:16px!important;line-height:1.7!important}
+          .faq-row span:first-child{font-size:16px!important;line-height:1.45!important;padding-right:12px!important}
+          .faq-row > div{padding:18px 4px!important;min-height:60px!important}
+          /* Increase the trust-strip readability */
+          .trust-strip{flex-direction:column!important}
+          .trust-strip > div{flex:1 1 100%!important;border-right:none!important;border-bottom:1px solid rgba(0,212,255,0.08)!important;text-align:left!important;display:flex!important;align-items:center!important;gap:14px!important;padding:14px 18px!important}
+          .trust-strip > div:last-child{border-bottom:none!important}
+          .trust-strip > div > div:first-child{font-size:22px!important;margin-bottom:0!important}
+          /* Tap targets */
+          a, button{min-height:44px}
+        }
+
+        /* ── 480px and below — phone ──────────────────────── */
+        @media(max-width:480px){
+          nav{padding:0 14px!important;height:64px!important}
+          .sec{padding:32px 16px!important}
+          .nav-brand-meta{display:none!important}
+        }
+
+        /* ── Default desktop (open by default) ────────────── */
+        .mob-callout{display:none}
       `}</style>
 
       <GeezRain/>
@@ -97,7 +157,7 @@ export default function Safuu() {
       <div style={{position:"fixed",left:0,right:0,height:"1px",zIndex:2,pointerEvents:"none",background:`linear-gradient(transparent,${CY}14,transparent)`,animation:"scan 10s linear infinite"}}/>
 
       {/* TICKER */}
-      <div style={{position:"relative",zIndex:10,background:"#010204",height:"26px",borderBottom:`1px solid rgba(0,212,255,0.12)`,overflow:"hidden",display:"flex",alignItems:"center"}}>
+      <div className="ticker-hide-mob" style={{position:"relative",zIndex:10,background:"#010204",height:"26px",borderBottom:`1px solid rgba(0,212,255,0.12)`,overflow:"hidden",display:"flex",alignItems:"center"}}>
         <div style={{background:GR,color:"#030507",fontSize:"8px",fontWeight:"700",padding:"0 14px",height:"100%",display:"flex",alignItems:"center",fontFamily:"'Courier New',monospace",letterSpacing:"0.2em",flexShrink:0}}>● ONLINE</div>
         <div style={{flex:1,overflow:"hidden"}}>
           <div style={{display:"flex",animation:"marquee 44s linear infinite",whiteSpace:"nowrap"}}>
@@ -113,24 +173,51 @@ export default function Safuu() {
       </div>
 
       {/* NAV */}
-      <nav style={{position:"sticky",top:0,zIndex:100,background:scrolled?"rgba(3,5,7,0.97)":"rgba(3,5,7,0.88)",backdropFilter:"blur(24px)",borderBottom:`1px solid ${scrolled?"rgba(0,212,255,0.14)":"rgba(0,212,255,0.06)"}`,padding:"0 40px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"60px",transition:"all 0.3s"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
-          <div style={{width:"34px",height:"34px",border:`1px solid rgba(201,168,76,0.28)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"17px",background:"rgba(201,168,76,0.04)"}}>⚖️</div>
-          <div>
+      <nav style={{position:"sticky",top:0,zIndex:100,background:scrolled?"rgba(3,5,7,0.97)":"rgba(3,5,7,0.88)",backdropFilter:"blur(24px)",borderBottom:`1px solid ${scrolled?"rgba(0,212,255,0.14)":"rgba(0,212,255,0.06)"}`,padding:"0 40px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"60px",transition:"all 0.3s",gap:"12px"}}>
+        <a href="/" style={{display:"flex",alignItems:"center",gap:"12px",flexShrink:0}}>
+          <div style={{width:"34px",height:"34px",border:`1px solid rgba(201,168,76,0.28)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"17px",background:"rgba(201,168,76,0.04)",flexShrink:0}}>⚖️</div>
+          <div className="nav-brand-meta">
             <div style={{fontSize:"17px",fontWeight:"900",color:"rgba(240,236,224,0.95)",fontFamily:"'Playfair Display',serif",lineHeight:1,letterSpacing:"0.04em"}}>SAFUU</div>
-            <div style={{fontSize:"7px",color:CY,letterSpacing:"0.28em",fontFamily:"'Courier New',monospace",marginTop:"1px",opacity:0.55}}>INTEL v2.0 · SAFUU.NET</div>
+            <div style={{fontSize:"7px",color:CY,letterSpacing:"0.28em",fontFamily:"'Courier New',monospace",marginTop:"1px",opacity:0.55}}>INTEL · SAFUU.NET</div>
           </div>
-        </div>
-        <div className="hide-mob" style={{display:"flex",gap:"24px",alignItems:"center"}}>
+        </a>
+
+        <div className="desktop-nav" style={{display:"flex",gap:"24px",alignItems:"center"}}>
           {[["#how","HOW IT WORKS"],["#agencies","AGENCIES"],["/faq","FAQ"],["/transparency","WALL"],["/demo","DEMO"],["/about","ABOUT"]].map(([h,l])=>(
             <a key={l} href={h} className="lnk" style={{fontSize:"10px",color:l==="DEMO"?`rgba(201,168,76,0.55)`:"rgba(0,212,255,0.42)",fontFamily:"'Courier New',monospace",letterSpacing:"0.14em",transition:"color 0.2s"}}>{l}</a>
           ))}
         </div>
-        <div style={{display:"flex",gap:"8px"}}>
-          <TelegramButton text="@SafuuIntelBot" size="sm"/>
+
+        <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
+          <span className="nav-cta-extra"><TelegramButton text="@SafuuIntelBot" size="sm"/></span>
           <TelegramButton text="Telegram" size="sm"/>
+          <button
+            className={`hamburger ${mobileOpen?"open":""}`}
+            onClick={()=>setMobileOpen(v=>!v)}
+            aria-label={mobileOpen?"Close menu":"Open menu"}
+            aria-expanded={mobileOpen}
+          >
+            <span/><span/><span/>
+          </button>
         </div>
       </nav>
+
+      {/* MOBILE MENU DRAWER */}
+      {mobileOpen && (
+        <div className="mobile-menu" style={{display:"block"}}>
+          {[
+            ["#how","How it works"],
+            ["#agencies","Agencies"],
+            ["/transparency","Transparency wall"],
+            ["/demo","Live dashboard demo"],
+            ["/faq","FAQ"],
+            ["/about","About"],
+            ["/report","Report corruption"],
+          ].map(([h,l])=>(
+            <a key={l} href={h} onClick={()=>setMobileOpen(false)}>{l}</a>
+          ))}
+        </div>
+      )}
 
       {/* ══ HERO ══ */}
       <section className="sec" style={{position:"relative",zIndex:5,padding:"72px 40px 56px",borderBottom:`1px solid rgba(0,212,255,0.08)`,minHeight:"60vh",display:"flex",alignItems:"center"}}>
@@ -147,7 +234,7 @@ export default function Safuu() {
             <span style={{color:"rgba(240,236,224,0.95)"}}>refuse to be silent.</span>
           </h1>
 
-          <p style={{fontSize:"16px",color:"rgba(240,236,224,0.5)",lineHeight:"1.85",marginBottom:"36px",maxWidth:"580px"}}>
+          <p className="body-prose" style={{fontSize:"16px",color:"rgba(240,236,224,0.5)",lineHeight:"1.85",marginBottom:"36px",maxWidth:"580px"}}>
             Anonymous, AI-verified corruption intelligence for Ethiopia.
             Report by Telegram in any Ethiopian language.
             Your identity is never stored — not even by us.
@@ -158,7 +245,7 @@ export default function Safuu() {
           </div>
 
           {/* Trust strip */}
-          <div style={{display:"flex",gap:"0",background:"rgba(0,0,0,0.4)",border:`1px solid rgba(0,212,255,0.1)`,overflow:"hidden",flexWrap:"wrap"}}>
+          <div className="trust-strip" style={{display:"flex",gap:"0",background:"rgba(0,0,0,0.4)",border:`1px solid rgba(0,212,255,0.1)`,overflow:"hidden",flexWrap:"wrap"}}>
             {[
               {icon:"🔐",label:"SHA-256",sub:"Identity never stored"},
               {icon:"🔒",label:"AES-256-GCM",sub:"Encrypted at rest"},
@@ -175,8 +262,28 @@ export default function Safuu() {
         </div>
       </section>
 
-      {/* ══ LIVE DASHBOARD — EMPTY STATE ══ */}
-      <section className="sec" style={{position:"relative",zIndex:5,padding:"48px 40px",borderBottom:`1px solid rgba(0,212,255,0.08)`,background:"rgba(0,0,0,0.25)"}}>
+      {/* ══ MOBILE-ONLY CALLOUT — replaces heavy dashboard ══ */}
+      <section className="mob-callout sec" style={{position:"relative",zIndex:5,padding:"36px 20px",borderBottom:`1px solid rgba(0,212,255,0.08)`,background:"rgba(0,0,0,0.25)"}}>
+        <div style={{maxWidth:"560px",margin:"0 auto",textAlign:"center"}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:"10px",padding:"8px 14px",background:"rgba(74,222,128,0.08)",border:`1px solid rgba(74,222,128,0.25)`,borderRadius:"8px",marginBottom:"22px"}}>
+            <div style={{width:"7px",height:"7px",borderRadius:"50%",background:GR,animation:"pulsering 2s infinite"}}/>
+            <span style={{fontSize:"11px",color:GR,fontFamily:"'Courier New',monospace",fontWeight:"700",letterSpacing:"0.12em"}}>SYSTEM ONLINE · 0 REPORTS</span>
+          </div>
+          <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:"24px",fontWeight:"900",color:"rgba(240,236,224,0.95)",lineHeight:1.2,marginBottom:"14px",letterSpacing:"-0.01em"}}>
+            The dashboard is empty <span style={{color:G,fontStyle:"italic"}}>by design.</span>
+          </h2>
+          <p style={{fontSize:"15px",color:"rgba(240,236,224,0.55)",lineHeight:1.7,marginBottom:"22px"}}>
+            We don't fabricate data. The first report submitted via Telegram will appear here in real time — anonymized, encrypted, and verifiable. Be the first.
+          </p>
+          <div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
+            <TelegramButton text="Report on Telegram" size="md" fullWidth/>
+            <a href="/demo" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:"8px",fontSize:"13px",color:"rgba(201,168,76,0.7)",fontFamily:"'Courier New',monospace",letterSpacing:"0.08em",padding:"14px 20px",border:`1px solid rgba(201,168,76,0.25)`,background:"rgba(201,168,76,0.04)",minHeight:"48px"}}>◆ See dashboard demo →</a>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ LIVE DASHBOARD — EMPTY STATE (desktop only) ══ */}
+      <section className="hide-mob-dash sec" style={{position:"relative",zIndex:5,padding:"48px 40px",borderBottom:`1px solid rgba(0,212,255,0.08)`,background:"rgba(0,0,0,0.25)"}}>
         <div style={{maxWidth:"1200px",margin:"0 auto"}}>
 
           {/* System status bar */}
