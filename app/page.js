@@ -49,6 +49,43 @@ function Uptime() {
   return <span>{String(h).padStart(2,"0")}:{String(m).padStart(2,"0")}:{String(sec).padStart(2,"0")}</span>;
 }
 
+// ── Live cryptographic seal — scrambles for ~1.8s then settles ──────────────
+// Visualises "your reading is being sealed in the evidence ledger right now"
+function HashTicker() {
+  const [hash, setHash] = useState("0000000000000000…00000000");
+  const [stamp, setStamp] = useState("00:00:00.000");
+  useEffect(()=>{
+    const chars = "0123456789abcdef";
+    const target = "7c4f3a92e8b1d605"; const tail = "c9a84c2b";
+    let frame = 0;
+    const tick = setInterval(()=>{
+      frame++;
+      if (frame > 36) {
+        setHash(`${target}…${tail}`);
+        clearInterval(tick);
+        return;
+      }
+      const r1 = Array.from({length:16}, () => chars[Math.random()*16|0]).join("");
+      const r2 = Array.from({length:8},  () => chars[Math.random()*16|0]).join("");
+      setHash(`${r1}…${r2}`);
+    }, 50);
+    const tk = setInterval(()=>{
+      const d = new Date();
+      setStamp(`${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:${String(d.getSeconds()).padStart(2,"0")}.${String(d.getMilliseconds()).padStart(3,"0")}`);
+    }, 53);
+    return ()=>{clearInterval(tick);clearInterval(tk);};
+  },[]);
+  return (
+    <>
+      <span style={{color:CY}}>◆ SEAL</span>
+      <span style={{color:"rgba(240,236,224,0.2)",margin:"0 10px"}}>║</span>
+      <span style={{color:G,fontFamily:"'Courier New',monospace",letterSpacing:"0.04em"}}>{hash}</span>
+      <span style={{color:"rgba(240,236,224,0.2)",margin:"0 10px"}}>║</span>
+      <span style={{color:"rgba(240,236,224,0.45)"}}>ENTRY #001 · t={stamp}</span>
+    </>
+  );
+}
+
 export default function Safuu() {
   const [scrolled,setScrolled]=useState(false);
   const [faq,setFaq]=useState(null);
@@ -149,6 +186,96 @@ export default function Safuu() {
 
         /* ── Default desktop (open by default) ────────────── */
         .mob-callout{display:none}
+
+        /* ── INVESTIGATIVE DECLASSIFIED HERO ──────────────── */
+        @keyframes r-peel{to{transform:scaleX(0)}}
+        @keyframes stamp-slam{
+          0%  {transform:rotate(-7deg) scale(1.55);opacity:0;filter:blur(2px)}
+          45% {opacity:0.95;filter:blur(0)}
+          70% {transform:rotate(-7deg) scale(0.93)}
+          100%{transform:rotate(-7deg) scale(1);opacity:0.92}
+        }
+        @keyframes meta-fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes seal-fade{from{opacity:0}to{opacity:1}}
+
+        .doc-meta{
+          display:flex;align-items:center;gap:10px;margin-bottom:20px;
+          font-size:10px;color:rgba(0,212,255,0.5);font-family:'Courier New',monospace;
+          letter-spacing:0.18em;font-weight:700;flex-wrap:wrap;
+          animation:meta-fade 0.4s ease-out 0s both;
+        }
+        .doc-headline-wrap{position:relative;margin-bottom:34px;padding-right:24px}
+        .doc-h1{
+          font-family:'Playfair Display',serif;
+          font-size:clamp(34px,6vw,72px);
+          font-weight:900;line-height:1.18;letter-spacing:-0.02em;
+          display:grid;grid-template-columns:auto 1fr;column-gap:24px;row-gap:6px;
+          align-items:start;margin:0;
+        }
+        .line-num{
+          font-family:'Courier New',monospace;font-size:11px;font-weight:700;
+          letter-spacing:0.1em;color:rgba(0,212,255,0.32);
+          padding-top:0.5em;
+        }
+        .r-line{
+          position:relative;display:inline-block;width:fit-content;
+          color:rgba(240,236,224,0.95);
+        }
+        .r-line.emph{color:${G};font-style:italic}
+        .r-line::after{
+          content:"";position:absolute;top:-2px;bottom:-2px;left:-10px;right:-10px;
+          background:#0a0a0a;
+          transform:scaleX(1);transform-origin:right center;
+          animation:r-peel 0.5s cubic-bezier(0.7,0.05,0.3,1) forwards;
+          animation-delay:var(--rd,0s);
+          box-shadow:0 0 0 1px rgba(0,0,0,0.5),0 1px 2px rgba(0,0,0,0.6);
+        }
+        .declassified-stamp{
+          position:absolute;bottom:-14px;right:0;
+          border:3px solid ${R};color:${R};
+          font-family:'Courier New',monospace;font-weight:900;
+          font-size:18px;letter-spacing:0.18em;
+          padding:9px 18px;
+          background:rgba(184,32,32,0.04);
+          transform:rotate(-7deg) scale(0.7);opacity:0;
+          animation:stamp-slam 0.45s cubic-bezier(0.34,1.56,0.64,1) 1.7s forwards;
+          box-shadow:inset 0 0 0 1px rgba(184,32,32,0.4);
+          text-shadow:0 0 8px rgba(184,32,32,0.25);
+          pointer-events:none;
+        }
+        .seal-ticker{
+          font-family:'Courier New',monospace;font-size:11px;letter-spacing:0.04em;
+          padding:11px 14px;background:rgba(0,0,0,0.55);
+          border:1px solid rgba(0,212,255,0.14);border-radius:3px;
+          margin-bottom:34px;
+          display:inline-flex;align-items:center;flex-wrap:wrap;
+          opacity:0;animation:seal-fade 0.5s ease-out 0.4s forwards;
+        }
+        @media(prefers-reduced-motion:reduce){
+          .r-line::after{animation:none;transform:scaleX(0)}
+          .declassified-stamp{animation:none;opacity:0.92;transform:rotate(-7deg) scale(1)}
+        }
+        @media(max-width:768px){
+          .line-num{display:none}
+          .doc-h1{grid-template-columns:1fr;column-gap:0}
+          .declassified-stamp{font-size:14px;padding:7px 14px;border-width:2px;bottom:-8px}
+          .doc-meta{font-size:9px;letter-spacing:0.14em}
+          .seal-ticker{font-size:10px;padding:9px 12px;width:100%}
+          .seal-ticker > span{display:inline-block}
+        }
+        @media(max-width:480px){
+          .declassified-stamp{
+            position:static;display:inline-block;margin-top:18px;
+            transform:rotate(-4deg) scale(1);
+            animation:stamp-slam-mob 0.45s cubic-bezier(0.34,1.56,0.64,1) 1.7s forwards;
+          }
+          @keyframes stamp-slam-mob{
+            0%{transform:rotate(-4deg) scale(1.4);opacity:0;filter:blur(2px)}
+            70%{transform:rotate(-4deg) scale(0.94);opacity:0.95;filter:blur(0)}
+            100%{transform:rotate(-4deg) scale(1);opacity:0.92}
+          }
+          .doc-headline-wrap{padding-right:0}
+        }
       `}</style>
 
       <GeezRain/>
@@ -223,16 +350,29 @@ export default function Safuu() {
       <section className="sec" style={{position:"relative",zIndex:5,padding:"72px 40px 56px",borderBottom:`1px solid rgba(0,212,255,0.08)`,minHeight:"60vh",display:"flex",alignItems:"center"}}>
         <div style={{maxWidth:"760px",margin:"0 auto",width:"100%",animation:"fadein 0.9s ease-out"}}>
 
-          <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"16px"}}>
-            <div style={{width:"5px",height:"5px",background:R,transform:"rotate(45deg)"}}/>
-            <span style={{fontSize:"9px",color:R,fontFamily:"'Courier New',monospace",letterSpacing:"0.22em",fontWeight:"700"}}>INTELLIGENCE PLATFORM · ETHIOPIA · {new Date().getFullYear()}</span>
+          {/* ══ DECLASSIFIED DOCUMENT HERO ══ */}
+          <div className="doc-meta">
+            <span style={{color:R}}>▼</span>
+            <span>FILE-{date.replace(/-/g,"")}-SAFUU-001</span>
+            <span style={{opacity:0.4}}>╱</span>
+            <span>CLEARANCE: PUBLIC</span>
+            <span style={{opacity:0.4}}>╱</span>
+            <span style={{color:R}}>◆ DECLASSIFIED</span>
           </div>
 
-          <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(36px,6vw,72px)",fontWeight:"900",lineHeight:1.08,letterSpacing:"-0.02em",marginBottom:"24px"}}>
-            <span style={{color:"rgba(240,236,224,0.95)"}}>Corruption ends </span>
-            <span style={{color:G,fontStyle:"italic"}}>when people </span>
-            <span style={{color:"rgba(240,236,224,0.95)"}}>refuse to be silent.</span>
-          </h1>
+          <div className="doc-headline-wrap">
+            <h1 className="doc-h1">
+              <span className="line-num">01</span>
+              <span className="r-line" style={{"--rd":"0.2s"}}>Corruption ends</span>
+              <span className="line-num">02</span>
+              <span className="r-line emph" style={{"--rd":"0.7s"}}>when people</span>
+              <span className="line-num">03</span>
+              <span className="r-line" style={{"--rd":"1.2s"}}>refuse to be silent.</span>
+            </h1>
+            <div className="declassified-stamp">DECLASSIFIED</div>
+          </div>
+
+          <div className="seal-ticker"><HashTicker/></div>
 
           <p className="body-prose" style={{fontSize:"16px",color:"rgba(240,236,224,0.5)",lineHeight:"1.85",marginBottom:"36px",maxWidth:"580px"}}>
             Anonymous, AI-verified corruption intelligence for Ethiopia.
