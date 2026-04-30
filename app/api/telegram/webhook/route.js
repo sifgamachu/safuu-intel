@@ -23,8 +23,17 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function POST(req) {
-  const headerSecret = req.headers.get('x-telegram-bot-api-secret-token');
-  if (headerSecret !== WEBHOOK_SECRET) {
+  // Re-read env at request time (defensive against module caching)
+  const expected = process.env.TELEGRAM_WEBHOOK_SECRET;
+  const got = req.headers.get('x-telegram-bot-api-secret-token');
+
+  if (!expected) {
+    console.error('[auth] TELEGRAM_WEBHOOK_SECRET env var is not set');
+    return new NextResponse('server misconfigured', { status: 500 });
+  }
+  if (got !== expected) {
+    // Lengths only — never the actual secret values
+    console.error(`[auth] webhook secret mismatch — got=${got ? got.length + 'ch' : 'missing'} expected=${expected.length}ch`);
     return new NextResponse('unauthorized', { status: 401 });
   }
 
