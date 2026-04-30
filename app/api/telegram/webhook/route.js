@@ -91,10 +91,13 @@ async function handleMessage(msg) {
   const chatId = msg.chat.id;
   const tipperHash = hashTipper(chatId);
   const text = (msg.text || '').trim();
+  // Telegram tells us the user's UI language — use it to show the welcome
+  // in their native tongue when we support it
+  const hintLang = msg.from?.language_code?.slice(0, 2);
 
   if (text.startsWith('/')) {
     const [cmd] = text.slice(1).split(/\s+/);
-    return handleCommand(cmd.toLowerCase(), chatId, tipperHash);
+    return handleCommand(cmd.toLowerCase(), chatId, tipperHash, hintLang);
   }
 
   const session = await getSession(tipperHash);
@@ -102,24 +105,22 @@ async function handleMessage(msg) {
     return handleIntakeStep(session, msg, chatId, tipperHash);
   }
 
-  await sendInlineKeyboard(
-    chatId,
-    `Send /report to file an anonymous corruption report, or /help to see what I can do.`,
-    languageOnlyKeyboard('en'),
-  );
+  // No session, no command — first contact. Kick off intake with the
+  // language picker as the very first thing they see.
+  return startIntake(chatId, tipperHash, hintLang);
 }
 
 // ─────────────────────────────────────────────────────────────────────────
 // Commands
 // ─────────────────────────────────────────────────────────────────────────
-async function handleCommand(cmd, chatId, tipperHash) {
+async function handleCommand(cmd, chatId, tipperHash, hintLang = null) {
   const session = await getSession(tipperHash);
   const lang = session?.language || 'en';
 
   switch (cmd) {
     case 'start':
     case 'report':
-      return startIntake(chatId, tipperHash);
+      return startIntake(chatId, tipperHash, hintLang);
 
     case 'cancel': {
       if (session) {
@@ -159,15 +160,21 @@ async function handleCommand(cmd, chatId, tipperHash) {
 // ─────────────────────────────────────────────────────────────────────────
 // Intake start + language menu
 // ─────────────────────────────────────────────────────────────────────────
-async function startIntake(chatId, tipperHash) {
+async function startIntake(chatId, tipperHash, hintLang = null) {
+  // Map Telegram's detected language code to one we actually support.
+  // Anything else (es, fr, ar, etc.) falls back to English — the picker
+  // is the same either way.
+  const SUPPORTED = new Set(['en', 'am', 'or', 'ti', 'so']);
+  const initialLang = SUPPORTED.has(hintLang) ? hintLang : 'en';
+
   await supabase.from('telegram_sessions').upsert({
     tipper_hash: tipperHash,
     current_step: 0,
-    language: 'en',
+    language: initialLang,
     draft: {},
     last_activity: new Date().toISOString(),
   });
-  return showLanguageMenu(chatId, 'intake', 'en');
+  return showLanguageMenu(chatId, 'intake', initialLang);
 }
 
 async function showLanguageMenu(chatId, mode, currentLang) {
