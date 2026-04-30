@@ -43,7 +43,13 @@ export async function POST(req) {
     if (update.message)             await handleMessage(update.message);
     else if (update.callback_query) await handleCallback(update.callback_query);
   } catch (err) {
-    console.error('webhook handler error:', err);
+    // Surface the real error in logs — Vercel truncates long stack traces
+    const msg = err?.message || String(err);
+    const cls = err?.constructor?.name || 'Error';
+    console.error(`[handler] ${cls}: ${msg}`);
+    if (err?.code) console.error(`[handler] code=${err.code}`);
+    if (err?.details) console.error(`[handler] details=${err.details}`);
+    if (err?.hint) console.error(`[handler] hint=${err.hint}`);
   }
 
   return NextResponse.json({ ok: true });
