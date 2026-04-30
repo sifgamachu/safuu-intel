@@ -68,6 +68,15 @@ function languageOnlyKeyboard(lang) {
   return [[{ text: p.langButton, callback_data: 'lang_menu' }]];
 }
 
+// Optional steps (8, 9, 10) — Skip button on top, Language below
+function skipAndLanguageKeyboard(lang) {
+  const p = getPrompts(lang);
+  return [
+    [{ text: p.skipButton || '⏭ Skip', callback_data: 'skip' }],
+    [{ text: p.langButton, callback_data: 'lang_menu' }],
+  ];
+}
+
 function languageMenuKeyboard(mode /* 'intake' | 'switch' */) {
   return LANGUAGES.map(l => [{
     text: l.native,
@@ -195,9 +204,12 @@ async function handleIntakeStep(session, msg, chatId, tipperHash) {
       break;
     }
     case 9: {
-      if (!msg.photo && !msg.document && text.toLowerCase() !== 'skip') {
-        return sendInlineKeyboard(chatId, 'Send a photo/document, or type "skip".',
-          languageOnlyKeyboard(session.language));
+      // Any text input = skip (no evidence). Only attachments add evidence.
+      // This avoids the trap of users typing "no" / "none" / "I dont" and
+      // getting stuck on a rigid 'must type "skip"' check.
+      if (!msg.photo && !msg.document) {
+        // any text → treat as skip
+        break;
       }
       // TODO: upload attachment to Supabase Storage here
       break;
@@ -240,9 +252,9 @@ async function askStep(chatId, step, lang, draft) {
     }
     case 6:  return sendInlineKeyboard(chatId, p.step6,  languageOnlyKeyboard(lang));
     case 7:  return sendInlineKeyboard(chatId, p.step7,  languageOnlyKeyboard(lang));
-    case 8:  return sendInlineKeyboard(chatId, p.step8,  languageOnlyKeyboard(lang));
-    case 9:  return sendInlineKeyboard(chatId, p.step9,  languageOnlyKeyboard(lang));
-    case 10: return sendInlineKeyboard(chatId, p.step10, languageOnlyKeyboard(lang));
+    case 8:  return sendInlineKeyboard(chatId, p.step8,  skipAndLanguageKeyboard(lang));
+    case 9:  return sendInlineKeyboard(chatId, p.step9,  skipAndLanguageKeyboard(lang));
+    case 10: return sendInlineKeyboard(chatId, p.step10, skipAndLanguageKeyboard(lang));
     case 11: {
       const summary = buildSummary(draft, lang);
       return sendInlineKeyboard(
@@ -286,6 +298,22 @@ async function handleCallback(cq) {
     const currentLang = session?.language || 'en';
     const mode = session ? 'switch' : 'intake';
     return showLanguageMenu(chatId, mode, currentLang);
+  }
+
+  // ⏭ Skip button — advances optional steps (8/9/10) cleanly
+  if (data === 'skip') {
+    const session = await getSession(tipperHash);
+    if (!session) return;
+    const draft = { ...session.draft };
+    const step = session.current_step;
+    if (step === 8)  draft.amount_etb = null;
+    if (step === 10) draft.note = null;
+    // step 9: nothing to set — no evidence attached
+    const nextStep = step + 1;
+    await supabase.from('telegram_sessions')
+      .update({ current_step: nextStep, draft, last_activity: new Date().toISOString() })
+      .eq('tipper_hash', tipperHash);
+    return askStep(chatId, nextStep, session.language, draft);
   }
 
   // Language selection — handles both intake and mid-flow switch
