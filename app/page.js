@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from "react";
 import { TelegramButton, ReportSection, TG_BLUE, TG_LINK } from "./components/ReportButtons";
+import { SafuuMark } from "./components/SafuuMark";
 
 const G="#c9a84c", CY="#00d4ff", R="#b82020", GR="#4ade80";
 
@@ -302,7 +303,7 @@ export default function Safuu() {
       {/* NAV */}
       <nav style={{position:"sticky",top:0,zIndex:100,background:scrolled?"rgba(3,5,7,0.97)":"rgba(3,5,7,0.88)",backdropFilter:"blur(24px)",borderBottom:`1px solid ${scrolled?"rgba(0,212,255,0.14)":"rgba(0,212,255,0.06)"}`,padding:"0 40px",display:"flex",alignItems:"center",justifyContent:"space-between",height:"60px",transition:"all 0.3s",gap:"12px"}}>
         <a href="/" style={{display:"flex",alignItems:"center",gap:"12px",flexShrink:0}}>
-          <div style={{width:"34px",height:"34px",border:`1px solid rgba(201,168,76,0.28)`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"17px",background:"rgba(201,168,76,0.04)",flexShrink:0}}>⚖️</div>
+          <SafuuMark size={36} variant="gold-on-dark" />
           <div className="nav-brand-meta">
             <div style={{fontSize:"17px",fontWeight:"900",color:"rgba(240,236,224,0.95)",fontFamily:"'Playfair Display',serif",lineHeight:1,letterSpacing:"0.04em"}}>SAFUU</div>
             <div style={{fontSize:"7px",color:CY,letterSpacing:"0.28em",fontFamily:"'Courier New',monospace",marginTop:"1px",opacity:0.55}}>INTEL · SAFUU.NET</div>
