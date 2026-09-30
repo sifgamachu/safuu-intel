@@ -1,5 +1,7 @@
 export const metadata = {
-  title:"Live Tracker — SAFUU Intel",
-  description:"Live anonymized activity feed. See tips received, reports verified, and names disclosed in real time. No personally identifying information.",
+  title: 'Track a report — SAFUU',
+  description: 'Check report status using your private receipt code.',
 };
-export default function Layout({children}){return children;}
+export default function Layout({ children }) {
+  return children;
+}

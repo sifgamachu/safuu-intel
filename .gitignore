@@ -32,3 +32,9 @@ tmp_*.ogg
 tmp_*.mp3
 tmp_*.wav
 safuu-export.json
+.supabase/
+supabase/.temp/
+.env*
+!.env.example
+test-results/
+artifacts/

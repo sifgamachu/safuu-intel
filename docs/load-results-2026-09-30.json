@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-09-30T20:01:27.769Z",
+  "environment": {
+    "node": "v24.19.0",
+    "application": "Next production build on loopback",
+    "database": "PostgreSQL WASM / PGlite, one local process",
+    "network": "loopback only",
+    "files": "none",
+    "telegram": "not exercised",
+    "production_capacity": "not established by this test"
+  },
+  "results": [
+    {
+      "label": "Warm public summary HTTP",
+      "concurrent_clients": 2000,
+      "requests": 2000,
+      "failures": 0,
+      "http_statuses": {
+        "200": 2000
+      },
+      "elapsed_ms": 3723,
+      "requests_per_second": 537,
+      "latency_ms": {
+        "p50": 1992,
+        "p95": 3298,
+        "p99": 3448
+      }
+    },
+    {
+      "label": "Transactional report HTTP",
+      "concurrent_clients": 2000,
+      "requests": 2000,
+      "failures": 0,
+      "http_statuses": {
+        "201": 2000
+      },
+      "elapsed_ms": 9819,
+      "requests_per_second": 204,
+      "latency_ms": {
+        "p50": 9515,
+        "p95": 9798,
+        "p99": 9800
+      }
+    },
+    {
+      "label": "Identical report retry HTTP",
+      "concurrent_clients": 2000,
+      "requests": 2000,
+      "failures": 0,
+      "http_statuses": {
+        "200": 2000
+      },
+      "elapsed_ms": 7069,
+      "requests_per_second": 283,
+      "latency_ms": {
+        "p50": 5373,
+        "p95": 6571,
+        "p99": 6825
+      }
+    }
+  ],
+  "first_error": null,
+  "effects": {
+    "reports": 2000,
+    "ledger_entries": 2000,
+    "metric_reports": 2000,
+    "orphan_reports": 0,
+    "public_names": 0
+  },
+  "broken_ledger_links": 0
+}
