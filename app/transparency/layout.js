@@ -1,6 +1,8 @@
 export const metadata = {
-  title:"Transparency Wall — SAFUU Intel",
-  description:"Public accountability wall. Officials disclosed when anonymous verified reports reach threshold. No personally identifying reporter information included.",
-  openGraph:{title:"SAFUU Transparency Wall",description:"See which officials have been reported, verified, and disclosed — anonymously.",url:"https://safuu.net/transparency"},
+  title: 'The public record — SAFUU',
+  description:
+    'Cases published after human review and explicit approval. Private reports and attachments are excluded.',
 };
-export default function Layout({children}){return children;}
+export default function Layout({ children }) {
+  return children;
+}

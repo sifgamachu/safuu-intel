@@ -1,223 +1,67 @@
-# ሳፉ · SAFUU INTEL
+# Safuu · civic accountability
 
-> **Safuu** (ሳፉ) — Oromo: *the moral order that holds society together*
+Private corruption reporting for Ethiopia, with a receipt after a confirmed save, human review, and an approved public record.
 
-Ethiopia's anonymous anti-corruption intelligence platform. Citizens report via Telegram voice/text or SMS in any Ethiopian language. Evidence is AI-verified, cryptographically sealed, and publicly disclosed at a configurable threshold.
+## Current application
 
-**🌐 Live:** [safuu-intel.vercel.app](https://safuu-intel.vercel.app) → target domain: [safuu.net](https://safuu.net)  
-**📊 Transparency Wall:** [safuu-intel.vercel.app/transparency](https://safuu-intel.vercel.app/transparency)  
-**💻 Source:** [github.com/sifgamachu/safuu-intel](https://github.com/sifgamachu/safuu-intel)
+The supported production path is **Next.js + Supabase**, in the root of this repository. The `backend/` SQLite bots and the separate `dashboard/` are legacy prototypes, not the production database or review desk. Do not run a polling bot alongside the webhook for the same Telegram token.
 
----
+- Three-step web intake in English, Amharic, Afaan Oromoo, Tigrinya, and Somali.
+- Text Telegram intake with optional private photo, PDF, or audio evidence. Automatic transcription and translation are not enabled.
+- Atomic report, case, evidence references, ledger entry, and receipt save.
+- Client request IDs and keyed fingerprints prevent duplicate submissions on retry.
+- Private storage with direct signed uploads (up to four files, 10 MB each).
+- Durable encrypted Telegram jobs, per-chat ordering, leased workers, and provider throttling.
+- Protected staff review desk at `/admin`. Staff access requires Supabase Auth, a server-managed role, and MFA by default.
+- Public totals and cases come from the database. Pending names, narratives, and evidence are not exposed.
+- Publication requires a case threshold of distinct reviewed reporting identities and a separate authorized human decision. Distinct identities are not proof of distinct people.
 
-## Platform Overview
+SMS is not provisioned. A receipt confirms storage, not guilt or a review deadline. No service can guarantee complete anonymity.
 
-```
-CITIZEN INPUT
-├── Telegram Bot     → Voice (Whisper STT) + Text — 11-step structured intake
-└── SMS Shortcode    → Africa's Talking — any feature phone
+## Development
 
-INTELLIGENCE PIPELINE
-├── Claude AI        → Tip analysis, categorization, routing
-├── OpenAI Whisper   → Voice transcription (11 Ethiopian languages)
-├── Hive Moderation  → AI-generated image detection (94% accuracy)
-├── EXIF Forensics   → Date/GPS verification vs reported incident
-├── Dedup Engine     → SHA-256 + phonetic name matching
-└── Evidence Ledger  → Cryptographic hash chain (tamper-evident, court-ready)
+Use Node 22 or later. Dependencies and lockfiles are pinned.
 
-PUBLIC INTERFACE
-├── Landing Page     → safuu.net
-└── Transparency Wall → safuu.net/transparency (progressive name disclosure)
-
-ADMIN INTERFACE
-└── Dashboard        → Splunk-grade investigative panel + ORACLE AI chat
+```sh
+npm ci
+cp .env.example .env.local
+npm run dev
 ```
 
----
+Set the required server variables in `.env.local`; never prefix the service key or privacy salt with `NEXT_PUBLIC_`. The browser calls server routes and only receives narrowly scoped private upload/download links.
+
+For an existing Supabase project initialized with `supabase/001_schema.sql`, apply the SQL files in `supabase/migrations/` in timestamp order before deploying this app. It adds the v2 tables/RPCs and removes automatic disclosure. For a new project, initialize `001_schema.sql` and then apply the migration files. The historical schema comments describe the old prototype; the v2 migration and this README are authoritative for current behaviour.
+
+## Production setup
+
+1. Apply the migration in staging and verify the app there. Keep the migration ahead of the app deployment.
+2. Configure the same `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `TIPPER_HASH_SALT` in the app and workers. The privacy salt also derives the application encryption key: back it up separately from the database and do not rotate it blindly. A versioned key rotation process is required before a broad rollout.
+3. Configure Telegram webhook secrets and a bot token. The webhook acknowledges only after a durable enqueue; it returns 503 on persistence failure so Telegram can retry. Use private chats only.
+4. The scheduled-drain migration prepares a one-minute Supabase Cron backstop and hourly queue maintenance, both initially inactive. It keeps the bearer credential in Vault; the app reads only a digest through a service-only RPC. After the production route is live, verify `SELECT safuu_ops.request_worker();` through `net._http_response`, then activate the two named jobs using `cron.alter_job(jobid, active := true)`. Never print Vault values or request headers. For staging, change the fixed endpoint to the staging app before enabling any job. A separate scheduler can still POST `/api/internal/worker` using a strong `CRON_SECRET`. For national throughput, run `npm run worker` as a persistent service with the same app secrets; multiple workers can share the queue. The webhook's `after()` drain accelerates processing while the scheduled drain covers quiet-period retries.
+5. Create staff users through an authorized administrative process, enroll TOTP, and grant the verified Auth UUID a `reviewer`, `publisher`, or `admin` entry in `public.staff_members`. Roles do not come from editable user metadata. There is no public staff signup. Do not disable MFA in production.
+6. Configure both Turnstile keys, allowed hostname, and edge abuse controls before national promotion. Cookie-based limits alone are easy to evade by obtaining another cookie. Uploaded files are reserved through rate-limited routes; provider-level storage quotas and upload abuse controls are still required.
+7. Verify actual hosting quotas, database compute, backups, key recovery, monitoring, and review staffing. See [deployment and capacity plan](docs/SCALING.md).
+
+Existing hosting, checked 30 September 2026: application on Vercel; domain registration and DNS with Cloudflare. Deployment URLs and configured project quotas must be checked in the hosting account; this repository does not provision paid plans.
+
+## Verification
+
+```sh
+npm test
+npm run build
+npm run load:test
+```
+
+The load test is **local only**: it starts a production Next server and a temporary PostgreSQL WASM/PGlite PostgREST harness. It submits synthetic reports and refuses production URLs. Default: 2,000 concurrent clients for each of three bursts (public reads, submissions, identical retries). `LOAD_CONCURRENCY=100 npm run load:test` is the CI smoke test.
+
+The transaction tests cover rollback, ownership, replay, receipt access, public isolation, disclosure gates, job deduplication, leases, and session atomicity. PGlite serializes database execution; these tests do not prove multi-connection PostgreSQL lock behaviour, production Supabase performance, provider rate limits, or regional capacity. Those require staging tests against the real deployment. Legacy `backend/test.js` has 76 mocked regression assertions and is not a production security certification.
 
 ## Architecture
 
-### File Structure
+Web writes use a single Postgres transaction. Reports begin `pending`; encrypted text is available only to authorized staff. Public read endpoints use 60-second server/CDN caching and bounded lists. A receipt capability is submitted in a JSON body, never a URL.
 
-```
-safuu-intel/
-│
-├── app/                          ← Next.js website (auto-deployed by Vercel)
-│   ├── layout.js                 ← Playfair Display + Space Grotesk fonts
-│   ├── page.js                   ← Landing page (investigative cyber design)
-│   ├── transparency/page.js      ← Public accountability wall
-│   ├── sitemap.js                ← SEO sitemap
-│   ├── robots.js                 ← Robots.txt
-│   └── not-found.js              ← Custom 404
-│
-├── backend/                      ← Node.js backend services
-│   ├── safuu-bot.js              ← Telegram bot (11-step intake)
-│   ├── safuu-server.js           ← REST API + WebSocket
-│   ├── safuu-server-secure.js    ← Hardened server variant
-│   ├── safuu-sms.js              ← Africa's Talking SMS intake
-│   ├── safuu-security.js         ← AES-256-GCM, JWT, RBAC, audit log
-│   ├── safuu-transparency-api.js ← Progressive disclosure endpoints
-│   ├── ecosystem.config.js       ← PM2 config
-│   ├── setup.sh                  ← One-shot server setup
-│   ├── test.js                   ← 76 automated security tests
-│   └── safuu-nginx.conf          ← Hardened Nginx config
-│
-├── dashboard/                    ← Admin React components
-│   ├── safuu-v2-dashboard.jsx    ← Splunk-grade dashboard + ORACLE AI
-│   ├── safuu-public-wall.jsx     ← Public transparency wall (JSX source)
-│   ├── safuu-notes-panel.jsx     ← Multilingual notes browser
-│   └── safuu-landing.jsx         ← Legacy landing page
-│
-├── next.config.js
-├── package.json
-├── vercel.json
-└── .gitignore
-```
+The evidence ledger has 256 independent hash chains. Each transaction locks one head; the report, ledger link, and head change commit together. This avoids a single global head bottleneck. Hashes cover the encrypted report and its attachment references. Evidence files have their own metadata/content hashes when ingested by Telegram; browser files are not independently content-hashed in this release. Tamper evidence is not an external trusted timestamp or a legal admissibility guarantee; an attacker controlling the server, database administrator role, and keys can still rewrite history. Backups and independent checkpoint export remain necessary.
 
----
+Telegram intake jobs update the session, create any report, enqueue replies, and finish the input job together. Replies retry separately. Telegram has no sendMessage idempotency key: a timeout after Telegram accepts a message can cause a duplicate reply, while duplicate reports are prevented. Standard Telegram delivery is paced at 25 messages/second globally and one/second per private chat. Capacity for web intake and Telegram delivery is therefore different.
 
-## 11 Ethiopian Languages
-
-```
-አማርኛ (Amharic)   ·   Oromiffa   ·   ትግርኛ (Tigrinya)   ·   Soomaali
-Qafar (Afar)      ·   Sidaamu    ·   Wolayttatto        ·   Hadiyyissa
-Dawro              ·   Gamo       ·   Bench               ·   English
-```
-
----
-
-## Progressive Name Disclosure
-
-| Reports | What's Shown |
-|---------|-------------|
-| 0–14    | City + Office only · Name masked as `T••••••• B•••••` |
-| 15+     | Full name disclosed · Case escalated to agency |
-
-Threshold is admin-configurable via `POST /api/admin/threshold`.
-
----
-
-## Security Architecture
-
-| Layer | Implementation |
-|-------|---------------|
-| Identity | One-way SHA-256 hash — never stored, never reversible |
-| Encryption | AES-256-GCM at rest, PBKDF2 SHA-512 310k iterations |
-| Auth | JWT HS256 (8hr) + API key, timing-safe comparison |
-| RBAC | admin(3) > analyst(2) > viewer(1) |
-| Rate limiting | SQLite sliding-window per action per user |
-| Evidence | Tamper-evident hash chain — court-ready |
-| Audit | No-PII audit log with hash chain |
-| Transport | TLS 1.3 only, HSTS preload |
-
----
-
-## Quick Start — Backend
-
-```bash
-# 1. Clone
-git clone https://github.com/sifgamachu/safuu-intel
-cd safuu-intel/backend
-
-# 2. Setup (generates secrets, installs deps, runs tests)
-bash setup.sh
-
-# 3. Configure
-cp safuu-security.env.example .env
-nano .env   # fill in REPLACE_ME_ values
-
-# 4. Start
-pm2 start ecosystem.config.js
-pm2 save && pm2 startup
-
-# 5. Verify
-node test.js          # 76 tests, all should pass
-curl localhost:3001/health
-```
-
-### Required Environment Variables
-
-| Variable | Source |
-|----------|--------|
-| `TELEGRAM_BOT_TOKEN` | [@BotFather](https://t.me/BotFather) |
-| `ADMIN_CHANNEL_ID` | Private Telegram channel (starts with -100) |
-| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) |
-| `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com) |
-| `HIVE_AI_KEY` | [thehive.ai](https://thehive.ai) |
-| `ENCRYPTION_MASTER_KEY` | `openssl rand -hex 32` |
-| `DEDUP_SALT` | `openssl rand -hex 32` |
-| `JWT_SECRET` | `openssl rand -hex 32` |
-| `DASHBOARD_API_KEY` | `openssl rand -hex 32` |
-
----
-
-## Domain Setup (safuu.net → Vercel)
-
-1. **Vercel Dashboard** → safuu-intel project → **Settings → Domains** → Add `safuu.net` and `www.safuu.net`
-
-2. **Add DNS records at your registrar:**
-
-```
-Type    Name    Value
-A       @       76.76.21.21
-CNAME   www     cname.vercel-dns.com
-```
-
-3. DNS propagation: 5–30 minutes. Then `safuu.net` will serve the platform.
-
----
-
-## API Reference
-
-All endpoints require `X-Api-Key` header or `Authorization: Bearer <JWT>`.
-
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/health` | None | System health |
-| POST | `/api/auth/login` | None | Get JWT |
-| GET | `/api/public/stats` | None | Aggregate counts (no PII) |
-| GET | `/api/public/transparency` | None | Leaderboard with masking |
-| GET | `/api/persons` | API key | Full person registry |
-| POST | `/api/persons/:id/escalate` | Analyst+ | Change investigation status |
-| GET | `/api/analytics` | API key | Stats, trends, breakdowns |
-| GET | `/api/ledger` | API key | Evidence ledger + integrity |
-| POST | `/api/admin/threshold` | Analyst+ | Set disclosure threshold |
-| GET | `/api/security/audit` | Admin | Audit log |
-| WS | `/ws?key=<key>` | API key | Live event stream |
-
----
-
-## Ethiopian Accountability Bodies
-
-| Agency | Hotline | Jurisdiction |
-|--------|---------|-------------|
-| **FEACC** | **959** | All corruption types |
-| **EHRC** | **1488** | Human rights violations |
-| **Ombudsman** | **6060** | Abuse of power |
-| **Federal Police** | **911** | Criminal cases |
-| **OFAG** | +251 111 57 11 11 | Public fund misuse |
-
----
-
-## Test Suite
-
-```bash
-cd backend && node test.js
-```
-
-76 automated tests across 14 groups — no native module builds required:
-
-Identity & Encryption · Input Sanitization · File Validation · JWT Lifecycle  
-Rate Limiting · Nonces · Sessions · Auth Middleware · RBAC  
-UUID Validation · Webhook Verification · SMS Parser · Security Headers · Audit Log
-
----
-
-## License
-
-MIT — built for Ethiopian civic accountability.
-
----
-
-*ሙስናን ሪፖርት አድርጉ። ሃገርዎን ያጠናክሩ།*  
-*Report corruption. Strengthen your country.*
+See `.env.example`, `docs/SCALING.md`, and `supabase/migrations/` for the deployable contract and rollout requirements.

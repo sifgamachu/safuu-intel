@@ -1,5 +1,7 @@
 export const metadata = {
-  title:"API Reference — SAFUU Intel",
-  description:"SAFUU Intel REST API reference. Endpoints for public stats, transparency wall, admin access, evidence ledger, and WebSocket live stream.",
+  title: 'Developer reference — SAFUU',
+  description: 'Safuu public read endpoints and private intake interfaces.',
 };
-export default function Layout({children}){return children;}
+export default function Layout({ children }) {
+  return children;
+}

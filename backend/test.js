@@ -536,7 +536,7 @@ if (errors.length) {
 }
 
 if (failed === 0) {
-  console.log("🟢  ALL TESTS PASSED — platform is safe to deploy\n");
+  console.log("🟢  ALL LEGACY REGRESSION TESTS PASSED — production validation is separate\n");
   process.exit(0);
 } else {
   console.log("🔴  TESTS FAILED — do not deploy until fixed\n");

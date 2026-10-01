@@ -5,13 +5,25 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "worker": "node scripts/worker.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "load:test": "node scripts/load-test.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.0",
-    "next": "16.2.3",
+    "@supabase/supabase-js": "2.117.2",
+    "next": "16.3.8",
     "react": "19.2.5",
     "react-dom": "19.2.5",
-    "recharts": "3.8.1"
+    "recharts": "3.8.1",
+    "server-only": "0.0.1",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "prettier": "3.9.9"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
