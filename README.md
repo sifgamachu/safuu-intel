@@ -20,7 +20,7 @@ SMS is not provisioned. A receipt confirms storage, not guilt or a review deadli
 
 ## Development
 
-Use Node 22 or later. Dependencies and lockfiles are pinned.
+Use Node 22.19.0 or later. Dependencies and lockfiles are pinned.
 
 ```sh
 npm ci
@@ -38,7 +38,7 @@ For an existing Supabase project initialized with `supabase/001_schema.sql`, app
 2. Configure the same `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `TIPPER_HASH_SALT` in the app and workers. The privacy salt also derives the application encryption key: back it up separately from the database and do not rotate it blindly. A versioned key rotation process is required before a broad rollout.
 3. Configure Telegram webhook secrets and a bot token. The webhook acknowledges only after a durable enqueue; it returns 503 on persistence failure so Telegram can retry. Use private chats only.
 4. The scheduled-drain migration prepares a one-minute Supabase Cron backstop and hourly queue maintenance, both initially inactive. It keeps the bearer credential in Vault; the app reads only a digest through a service-only RPC. After the production route is live, verify `SELECT safuu_ops.request_worker();` through `net._http_response`, then activate the two named jobs using `cron.alter_job(jobid, active := true)`. Never print Vault values or request headers. For staging, change the fixed endpoint to the staging app before enabling any job. A separate scheduler can still POST `/api/internal/worker` using a strong `CRON_SECRET`. For national throughput, run `npm run worker` as a persistent service with the same app secrets; multiple workers can share the queue. The webhook's `after()` drain accelerates processing while the scheduled drain covers quiet-period retries.
-5. Create staff users through an authorized administrative process, enroll TOTP, and grant the verified Auth UUID a `reviewer`, `publisher`, or `admin` entry in `public.staff_members`. Roles do not come from editable user metadata. There is no public staff signup. Do not disable MFA in production.
+5. Create staff users through an authorized administrative process and grant the verified Auth UUID a `reviewer`, `publisher`, or `admin` entry in `public.staff_members`. Then staff enter their credentials at `/admin`, choose **Set up authenticator**, scan the QR code or enter the setup key in their authenticator app, and verify a six-digit code. The ten-minute enrollment cookie cannot access private reports; review access starts only after verification. Existing enrolled staff sign in with their code. Roles do not come from editable user metadata. There is no public staff signup. Do not disable MFA in production. A lost authenticator requires an authorized administrator-assisted recovery; this UI does not remove verified factors.
 6. Configure both Turnstile keys, allowed hostname, and edge abuse controls before national promotion. Cookie-based limits alone are easy to evade by obtaining another cookie. Uploaded files are reserved through rate-limited routes; provider-level storage quotas and upload abuse controls are still required.
 7. Verify actual hosting quotas, database compute, backups, key recovery, monitoring, and review staffing. See [deployment and capacity plan](docs/SCALING.md).
 
@@ -46,7 +46,7 @@ Existing hosting, checked 30 September 2026: application on Vercel; domain regis
 
 ## Delivery status
 
-See [the public claims and delivery audit](docs/DELIVERY-AUDIT.md). Live `/status` separates database/storage checks, staff setup, bot/webhook configuration, and the worker heartbeat. The reporting form discloses pending review setup. A configured directory is not a review deadline; appoint and enroll real staff before relying on human review.
+See [the public claims and delivery audit](docs/DELIVERY-AUDIT.md) and [the forms and setup acceptance record](docs/FORM-AND-SETUP-AUDIT.md). Live `/status` separates database/storage checks, staff setup, bot/webhook configuration, and the worker heartbeat. The reporting form discloses pending review setup. A configured directory is not a review deadline; appoint and enroll real staff before relying on human review.
 
 ## Verification
 

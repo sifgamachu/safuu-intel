@@ -13,7 +13,10 @@ export async function prepareDatabase(db) {
   await db.exec(`CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
     CREATE SCHEMA auth; CREATE TABLE auth.users(id uuid PRIMARY KEY);
     CREATE SCHEMA storage; CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean,
-      file_size_limit bigint,allowed_mime_types text[]);`);
+      file_size_limit bigint,allowed_mime_types text[]);
+    -- Managed Storage reads metadata through its own provider connection.
+    GRANT USAGE ON SCHEMA storage TO service_role;
+    GRANT SELECT ON storage.buckets TO service_role;`);
   await db.exec(await readFile(new URL('../supabase/001_schema.sql', import.meta.url), 'utf8'));
   const migrations = new URL('../supabase/migrations/', import.meta.url);
   for (const file of (await readdir(migrations)).filter((name) => name.endsWith('.sql')).sort())

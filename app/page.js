@@ -103,8 +103,8 @@ export default function Safuu() {
       a: 'Saved reports appear in aggregate totals. Reports and attachments stay private while authorized staff review them. Only explicitly approved cases appear on the public wall.',
     },
     {
-      q: 'Why is the public wall empty?',
-      a: 'No cases have been approved for publication yet. We show real saved totals and approved records, rather than invented incidents or public allegations awaiting review.',
+      q: 'Why might the public wall be empty?',
+      a: 'The wall stays empty until cases have been approved for publication. It shows approved records, while incident reports and evidence stay in the private review queue.',
     },
     {
       q: 'How do I know the platform works?',
@@ -116,7 +116,7 @@ export default function Safuu() {
     },
     {
       q: 'What happens to my report?',
-      a: 'The report goes to a restricted review queue. Authorized staff assess the evidence. Publication requires at least 100 distinct verified reporting identities and an explicit staff decision; it is not automatic.',
+      a: 'The report goes to a restricted review queue. Authorized staff assess the evidence. The default publication threshold is 100 distinct verified reporting identities, followed by an explicit staff decision. The status page shows whether staff access is configured.',
     },
   ];
 
@@ -599,7 +599,7 @@ export default function Safuu() {
                 n: '04',
                 icon: '📊',
                 title: 'Reviewed public record',
-                body: 'Cases require 100 distinct verified reporting identities and explicit staff approval before publication. Reports and attachments remain private.',
+                body: 'The default case threshold is 100 distinct verified reporting identities, followed by explicit staff approval. Reports and attachments remain private.',
               },
             ].map((s, i) => (
               <div
@@ -1202,11 +1202,11 @@ export default function Safuu() {
                   'PLATFORM',
                   [
                     ['/', ' Home'],
-                    ['/demo', 'Live Dashboard Demo'],
+                    ['/demo', 'Dashboard Demo'],
                     ['/transparency', 'Transparency Wall'],
                     ['/report', 'File a Report'],
                     ['/analytics', 'Analytics'],
-                    ['/sms', 'Telegram'],
+                    ['/sms', 'SMS Status'],
                   ],
                 ],
                 [
@@ -1232,7 +1232,7 @@ export default function Safuu() {
                 [
                   'DEVELOPERS',
                   [
-                    ['/backend', 'Backend Setup'],
+                    ['/backend', 'Developer Reference'],
                     ['/api-docs', 'API Reference'],
                     ['https://github.com/sifgamachu/safuu-intel', 'GitHub'],
                     ['https://t.me/SafuuIntelBot', 'Telegram'],

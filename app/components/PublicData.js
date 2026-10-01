@@ -11,7 +11,9 @@ export function usePublicData() {
       if (loading || document.hidden) return;
       loading = true;
       try {
-        const response = await fetch('/api/public/summary', { signal: controller.signal });
+        const response = await fetch('/api/public/summary', {
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]),
+        });
         if (!response.ok) throw new Error();
         const next = await response.json();
         if (!controller.signal.aborted) {
@@ -88,7 +90,9 @@ export function CaseList() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Name, office, or location"
         />
-        <span>{data ? `${cases.length} shown · latest 50` : 'Loading…'}</span>
+        <span>
+          {error ? 'Unavailable' : data ? `${cases.length} shown · latest 50` : 'Loading…'}
+        </span>
       </div>
       {error ? (
         <div className="sf-alert" role="status">

@@ -8,15 +8,26 @@ export default function Case({ params }) {
     [error, setError] = useState('');
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`/api/public/cases/${id}`, { signal: controller.signal })
+    setData(null);
+    setError('');
+    fetch(`/api/public/cases/${id}`, {
+      signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]),
+    })
       .then(async (r) => {
         const data = await r.json();
         if (!r.ok) throw new Error(data.error);
         return data;
       })
-      .then(setData)
+      .then((value) => {
+        if (!controller.signal.aborted) setData(value);
+      })
       .catch((e) => {
-        if (e.name !== 'AbortError') setError(e.message);
+        if (!controller.signal.aborted)
+          setError(
+            e.name === 'TimeoutError'
+              ? 'The public record did not respond. Please retry.'
+              : e.message,
+          );
       });
     return () => controller.abort();
   }, [id]);
@@ -26,7 +37,9 @@ export default function Case({ params }) {
         <PageHeading eyebrow="Reviewed public case" title={data?.display_name || 'Public case'}>
           {data
             ? `${data.office} · ${data.city}, ${data.region}`
-            : 'Loading an approved public record.'}
+            : error
+              ? 'This public record could not be loaded.'
+              : 'Loading an approved public record.'}
         </PageHeading>
         {error ? (
           <div className="sf-alert" role="status">

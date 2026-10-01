@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Shell, PageHeading } from '../components/Shell';
+import { UUID } from '../../lib/domain.mjs';
 const STATUS = {
   pending: 'Saved · waiting for human review',
   verified: 'Reviewed',
@@ -20,7 +21,10 @@ export default function Tracker() {
     setError('');
     setReceipt(null);
     try {
-      const [id, secret] = code.trim().split('.');
+      const parts = code.trim().split('.');
+      const [id, secret] = parts;
+      if (parts.length !== 2 || !UUID.test(id) || !/^[a-f0-9]{64}$/i.test(secret || ''))
+        throw new Error('Enter the complete private tracking code, including its private key.');
       const r = await fetch('/api/reports/status', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -31,7 +35,11 @@ export default function Tracker() {
       if (!r.ok) throw new Error(body.error);
       setReceipt(body.receipt);
     } catch (err) {
-      setError(err.message);
+      setError(
+        err.name === 'TimeoutError'
+          ? 'The status check timed out. Keep your code and try again.'
+          : err.message,
+      );
     } finally {
       setBusy(false);
     }

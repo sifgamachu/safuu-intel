@@ -45,3 +45,7 @@ The test JPEG/OGG data is a transport fixture, not a content-analysis or playbac
 Appoint and provision review staff and an authorized publisher, enroll their authenticators, and complete a live authenticated review/evidence-download/publication drill in isolated staging. Configure Turnstile and edge abuse controls. Complete a live Telegram conversation with an authorized test chat. Provision persistent workers and verify hosting/database/provider quotas, sustained multi-region write/file workloads, monitoring, backup restoration, encryption-key recovery, and independent ledger checkpoints before claiming national readiness.
 
 The site does not promise a review deadline, court admissibility, a government outcome, full anonymity, an active donation program, or certified service for 130 million people.
+
+## Follow-up form and setup acceptance
+
+The [forms/navigation/setup audit](FORM-AND-SETUP-AUDIT.md) records the additional functional corrections, 24-page/96-layout browser acceptance, authorized authenticator enrollment, and current operational limits. Its provider transport checks use controlled fixtures; live staff acceptance still requires appointed people and real enrollment.

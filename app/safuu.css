@@ -527,6 +527,7 @@ body {
   padding-bottom: 75px;
 }
 .sf-card {
+  min-width: 0;
   background: var(--sf-panel);
   border: 1px solid var(--sf-line);
   padding: 30px;
@@ -638,7 +639,7 @@ body {
 }
 .sf-form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 22px;
 }
 .sf-field-wide {
@@ -768,6 +769,13 @@ body {
   margin-bottom: 7px;
   gap: 12px;
   overflow-wrap: anywhere;
+}
+.sf-files li > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.sf-files li > button {
+  flex-shrink: 0;
 }
 .sf-text-button {
   border: none;

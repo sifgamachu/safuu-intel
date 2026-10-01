@@ -92,8 +92,8 @@ export default function ClassicDashboard() {
               <div>
                 <h3>Publication approval</h3>
                 <p>
-                  A case needs at least 100 distinct verified reporting identities and explicit
-                  staff approval to appear publicly.
+                  The default case threshold is 100 distinct verified reporting identities and
+                  explicit staff approval to appear publicly.
                 </p>
               </div>
             </li>

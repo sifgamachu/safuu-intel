@@ -235,6 +235,7 @@ test('human publication counts distinct identities and respects staff roles', as
   assert(!('description' in publicCase));
   const snapshot = await call(db, 'sf_public_snapshot');
   assert.equal(snapshot.published, 1);
+  assert.equal(snapshot.reviewed, 3);
   assert(!JSON.stringify(snapshot).includes('demanded a payment'));
   await call(db, 'sf_review_report', {
     p_actor: reviewer,
@@ -242,6 +243,7 @@ test('human publication counts distinct identities and respects staff roles', as
     p_decision: 'dismissed',
     p_reason: 'Independent review withdrew verification.',
   });
+  assert.equal((await call(db, 'sf_public_snapshot')).reviewed, 3);
   assert.equal(await call(db, 'sf_public_case', { p_id: person.person_id }), null);
 });
 test('queue deduplication, per-chat ordering, leases, and atomic session commits', async () => {

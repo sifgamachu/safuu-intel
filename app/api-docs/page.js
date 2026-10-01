@@ -40,6 +40,28 @@ export default function API() {
             endpoints require a verified Supabase Auth session, a server-managed staff role, and an
             authenticator by default.
           </p>
+          <h2>Complete the setup</h2>
+          <p>
+            Apply the database migrations and configure the server variables before deploying. An
+            administrator must create staff Auth accounts and grant their verified user IDs a role
+            in the staff directory. Staff can then use “Set up authenticator” at the review desk,
+            scan the code, and verify it before gaining access. Enrollment does not grant a staff
+            role.
+          </p>
+          <p>
+            The repository’s{' '}
+            <a
+              className="sf-link"
+              href="https://github.com/sifgamachu/safuu-intel/blob/main/README.md#production-setup"
+              target="_blank"
+              rel="noreferrer"
+            >
+              production setup instructions
+            </a>{' '}
+            cover the webhook, scheduled worker, private storage, anti-spam keys, and recovery
+            requirements. Check service status after each configuration change. Paid capacity, staff
+            appointments, and provider accounts are separate operating steps.
+          </p>
         </article>
       </div>
     </Shell>

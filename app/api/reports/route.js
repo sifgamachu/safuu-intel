@@ -40,6 +40,6 @@ export async function POST(request) {
     const receipt = await submit(args);
     return noStore({ receipt }, receipt.duplicate ? 200 : 201);
   } catch (error) {
-    return fail(error);
+    return fail(error, { save: true });
   }
 }

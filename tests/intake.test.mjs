@@ -25,6 +25,7 @@ export const SAMPLE = {
   description: 'A public employee demanded a payment to process a routine application.',
 };
 test('validation bounds and optional unknown names', () => {
+  assert.equal(validateReport({ ...SAMPLE, amount_etb: '125.50' }).amount_etb, 125.5);
   assert.equal(validateReport({ ...SAMPLE, full_name: '' }).full_name, 'Unknown');
   for (const patch of [
     { description: 'short' },
@@ -35,6 +36,7 @@ test('validation bounds and optional unknown names', () => {
     { amount_etb: -1 },
     { corruption_type: 'invalid' },
     { evidence_ids: ['invalid'] },
+    { evidence_ids: [[randomUUID()]] },
   ])
     assert.throws(() => validateReport({ ...SAMPLE, ...patch }));
   assert.throws(() => validateEvidence({ type: 'text/html', size: 100 }));
@@ -101,6 +103,21 @@ test('bounded JSON bodies and same-origin writes', async () => {
   assert(initial.cookie.includes('HttpOnly; SameSite=Strict'));
   assert(initial.cookie.includes('Secure'));
 });
+test('all JSON write routes reject non-object bodies with a validation error', async () => {
+  for (const body of ['null', '[]', 'true', '12', '"text"']) {
+    await assert.rejects(
+      () =>
+        readJson(
+          new Request('https://safuu.net/api/reports/status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+          }),
+        ),
+      (error) => error.status === 422,
+    );
+  }
+});
 test('request fingerprints are stable while ciphertext remains randomized', () => {
   const id = randomUUID(),
     owner = privateHash('test', 'owner'),
@@ -108,6 +125,10 @@ test('request fingerprints are stable while ciphertext remains randomized', () =
   const a = submissionArgs(id, owner, key, SAMPLE),
     b = submissionArgs(id, owner, key, { ...SAMPLE });
   assert.equal(a.p_fingerprint, b.p_fingerprint);
+  assert.equal(
+    submissionArgs(id.toUpperCase(), owner, key.toUpperCase(), SAMPLE).p_receipt_hash,
+    a.p_receipt_hash,
+  );
   assert.notEqual(a.p_sealed, b.p_sealed);
   assert.notEqual(
     submissionArgs(randomUUID(), owner, key, { ...SAMPLE, full_name: '' }).p_case_key,

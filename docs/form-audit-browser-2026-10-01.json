@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-10-01T18:59:20.113Z",
+  "scope": "Isolated Next production build and fresh PGlite SQL; Auth/Storage and Turnstile providers use controlled fixtures; all writes are loopback-only.",
+  "checks": [
+    "Validation, decimal Birr, all entered fields, file limits/removal, and Back preserve the draft",
+    "An upload outage retains the draft and issues no receipt",
+    "A committed but interrupted response retries the same payload and four attachments exactly once; receipt copy works",
+    "Private tracking accepts complete codes and rejects wrong keys or extra text",
+    "Malformed forms and unauthenticated private routes fail with the expected status",
+    "Staff credential checks, MFA setup, QR rendering, cancellation, code rejection, and verified sign-in work through app routes",
+    "Private evidence download is audited; review reasoning is required; reviewer publication is denied",
+    "Queue outage is never presented as empty, refresh recovers, and sign-out removes browser access",
+    "Only an authorized publisher can approve the threshold-qualified case; public details and missing cases are correct",
+    "Dismissal accepts the full 2,000-character Ethiopic reason and counts as a reviewed report without publishing a name",
+    "Health failure settles, Check again recovers, and anti-spam setup status is accurate",
+    "Anti-spam script/widget failures can retry without reloading or losing the draft (controlled widget fixture)",
+    "All 24 top-level pages, every internal link, homepage anchor, FAQ toggle, and 96 responsive layouts pass"
+  ],
+  "page_errors": [],
+  "production_staff_acceptance": "Still requires appointed staff and a real managed-provider enrollment/review drill.",
+  "production_capacity": "Not established by this browser audit."
+}

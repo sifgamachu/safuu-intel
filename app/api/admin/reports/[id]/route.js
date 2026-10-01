@@ -8,7 +8,8 @@ export async function POST(request, { params }) {
     requireOrigin(request);
     const actor = await staff(request),
       { id } = await params,
-      body = await readJson(request, 4000);
+      // 2,000 characters can exceed 4 KB in Ethiopic or escaped JSON text.
+      body = await readJson(request, 16000);
     if (
       !UUID.test(id) ||
       !['verified', 'dismissed'].includes(body.decision) ||

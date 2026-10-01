@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import Script from 'next/script';
 import Link from 'next/link';
 import { LANGUAGES, CORRUPTION_TYPES, getPrompts } from '../../lib/intake-prompts.mjs';
 import { validateReport, validateEvidence } from '../../lib/domain.mjs';
@@ -123,7 +122,11 @@ async function jsonRequest(path, body) {
     signal: AbortSignal.timeout(75000),
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error || 'Request failed. Please retry.');
+  if (!response.ok) {
+    const error = new Error(data.error || 'Request failed. Please retry.');
+    error.status = response.status;
+    throw error;
+  }
   return data;
 }
 export default function ReportForm() {
@@ -143,6 +146,9 @@ export default function ReportForm() {
     [reviewTeam, setReviewTeam] = useState('unconfirmed'),
     [evidenceReady, setEvidenceReady] = useState(false),
     [challenge, setChallenge] = useState('');
+  const [pendingSubmission, setPendingSubmission] = useState(null);
+  const [challengeAttempt, setChallengeAttempt] = useState(0);
+  const [challengeError, setChallengeError] = useState(false);
   const widget = useRef(null),
     widgetId = useRef(null),
     reconnect = useRef(null),
@@ -208,13 +214,54 @@ export default function ReportForm() {
         sitekey: siteKey,
         action: 'report',
         theme: 'dark',
-        callback: setChallenge,
+        callback: (token) => {
+          setChallenge(token);
+          setChallengeError(false);
+        },
+        size: 'compact',
         'expired-callback': () => setChallenge(''),
+        'error-callback': () => {
+          setChallenge('');
+          setChallengeError(true);
+          return true;
+        },
+        'timeout-callback': () => {
+          setChallenge('');
+          setChallengeError(true);
+        },
       });
   }
   useEffect(() => {
-    if (siteKey && step === 2) renderChallenge();
-  }, [siteKey, step]);
+    if (!siteKey || step !== 2) return;
+    if (window.turnstile) {
+      renderChallenge();
+      return;
+    }
+    let active = true;
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    const timer = setTimeout(() => {
+      if (active) setChallengeError(true);
+    }, 20000);
+    script.onload = () => {
+      clearTimeout(timer);
+      if (active) {
+        setChallengeError(false);
+        renderChallenge();
+      }
+    };
+    script.onerror = () => {
+      clearTimeout(timer);
+      if (active) setChallengeError(true);
+    };
+    document.head.appendChild(script);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+      script.remove();
+    };
+  }, [siteKey, step, challengeAttempt]);
   useEffect(() => {
     if (siteKey && step !== 2 && widgetId.current !== null) {
       window.turnstile?.remove(widgetId.current);
@@ -270,7 +317,7 @@ export default function ReportForm() {
     setError('');
     try {
       const evidence = [];
-      for (const item of files) {
+      for (const item of pendingSubmission ? [] : files) {
         let id = item.id;
         if (!id) {
           const reservation = await jsonRequest('/api/evidence/upload', {
@@ -292,10 +339,16 @@ export default function ReportForm() {
         }
         evidence.push(id);
       }
-      const { receipt: saved } = await jsonRequest('/api/reports', {
+      const submission = pendingSubmission || {
         request_id: keys.id,
         receipt_secret: keys.secret,
-        report: { ...draft, language, evidence_ids: evidence },
+        report: validateReport({ ...draft, language, evidence_ids: evidence }),
+      };
+      // A lost response may follow a committed save. Preserve the exact report
+      // until a retry confirms it; changing the language or draft would conflict.
+      setPendingSubmission(submission);
+      const { receipt: saved } = await jsonRequest('/api/reports', {
+        ...submission,
         challenge_token: challenge,
       });
       setReceipt(saved);
@@ -303,6 +356,7 @@ export default function ReportForm() {
       setFiles([]);
       requestAnimationFrame(() => window.scrollTo({ top: 0 }));
     } catch (err) {
+      if (err.status >= 400 && err.status < 500 && err.status !== 409) setPendingSubmission(null);
       setError(
         err.name === 'TimeoutError'
           ? 'The connection timed out before we could confirm a save. Keep this page open and retry.'
@@ -334,6 +388,9 @@ export default function ReportForm() {
           onChange={(e) => change(key, e.target.value)}
           required={!optional}
           type={type}
+          step={type === 'number' ? 'any' : undefined}
+          min={type === 'number' ? 0 : undefined}
+          max={type === 'number' ? 1e15 : undefined}
           maxLength={maxLength}
           placeholder={placeholder}
           autoComplete="off"
@@ -367,6 +424,7 @@ export default function ReportForm() {
             try {
               await navigator.clipboard.writeText(code);
               setCopied(true);
+              setError('');
             } catch {
               setCopied(false);
               setError('Select and copy the code above.');
@@ -431,6 +489,7 @@ export default function ReportForm() {
             aria-label="Reporting language"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
+            disabled={busy || !!pendingSubmission}
           >
             {LANGUAGES.map((l) => (
               <option key={l.code} value={l.code}>
@@ -439,6 +498,12 @@ export default function ReportForm() {
             ))}
           </select>
         </div>
+        {pendingSubmission && !busy && (
+          <p className="sf-alert" role="status">
+            A save was attempted. Retry this same report to confirm its receipt before editing or
+            leaving this page.
+          </p>
+        )}
         {error && (
           <div className="sf-alert" role="alert">
             {error}
@@ -564,6 +629,7 @@ export default function ReportForm() {
               <dl className="sf-review-list">
                 {[
                   [c.name, draft.full_name || 'Unknown'],
+                  [c.title, draft.position_title || 'Not provided'],
                   [c.office, draft.office],
                   [c.city, `${draft.city}${draft.region ? `, ${draft.region}` : ''}`],
                   [c.date, draft.incident_date_raw || 'Unknown'],
@@ -600,11 +666,26 @@ export default function ReportForm() {
               </label>
               {siteKey && (
                 <>
-                  <Script
-                    src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
-                    onReady={renderChallenge}
-                  />
                   <div ref={widget} style={{ marginTop: 20 }} />
+                  {challengeError && (
+                    <div className="sf-alert" role="status">
+                      <p>The anti-spam check could not finish. Your draft is still here.</p>
+                      <button
+                        className="sf-button sf-secondary"
+                        type="button"
+                        disabled={busy}
+                        onClick={() => {
+                          setChallenge('');
+                          setChallengeError(false);
+                          if (window.turnstile && widgetId.current !== null)
+                            window.turnstile.reset(widgetId.current);
+                          else setChallengeAttempt((value) => value + 1);
+                        }}
+                      >
+                        Retry anti-spam check
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
             </>
@@ -614,7 +695,7 @@ export default function ReportForm() {
               <button
                 type="button"
                 className="sf-button sf-secondary"
-                disabled={busy}
+                disabled={busy || !!pendingSubmission}
                 onClick={() => go(step - 1)}
               >
                 ← {c.back}
