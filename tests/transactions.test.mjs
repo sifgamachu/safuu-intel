@@ -129,22 +129,31 @@ test('clients cannot read private rows or execute server RPCs', async () => {
   try {
     await assert.rejects(() => db.query('SELECT * FROM public.reports'), /permission denied/);
     await assert.rejects(() => db.query('SELECT public.sf_public_snapshot()'), /permission denied/);
+    await assert.rejects(() => call(db, 'sf_worker_credential_digest'), /permission denied/);
+    await assert.rejects(
+      () => db.query('SELECT * FROM public.worker_credentials'),
+      /permission denied/,
+    );
     await assert.rejects(() => db.query('SELECT * FROM public.v_live_feed'), /permission denied/);
   } finally {
     await db.exec('RESET ROLE');
   }
   const flags = await db.query(
-    "SELECT bool_and(relrowsecurity) AS enabled FROM pg_class WHERE relname IN ('reports','persons','report_evidence','staff_members','job_queue')",
+    "SELECT bool_and(relrowsecurity) AS enabled FROM pg_class WHERE relname IN ('reports','persons','report_evidence','staff_members','job_queue','worker_credentials')",
   );
   assert(flags.rows[0].enabled);
 });
 
 test('the production service role can execute intake after extension relocation', async () => {
+  await db.exec(
+    "INSERT INTO public.worker_credentials(name,token_digest) VALUES ('queue_drain',repeat('a',64));",
+  );
   await db.exec('SET ROLE service_role');
   try {
     const args = make('service role', { office: 'Service role office' });
     assert.equal((await call(db, 'sf_submit_report', args)).status, 'pending');
     assert.equal((await call(db, 'sf_health')).database, 'available');
+    assert.equal(await call(db, 'sf_worker_credential_digest'), 'a'.repeat(64));
   } finally {
     await db.exec('RESET ROLE');
   }

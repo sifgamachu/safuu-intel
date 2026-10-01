@@ -1,11 +1,10 @@
-import { constantEqual } from '../../../../lib/privacy.mjs';
+import { authorizeWorker } from '../../../../lib/worker-auth.mjs';
 import { drain } from '../../../../lib/worker.mjs';
 import { noStore } from '../../../../lib/http.mjs';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 export async function POST(request) {
-  const key = process.env.CRON_SECRET;
-  if (!key || !constantEqual(request.headers.get('authorization'), `Bearer ${key}`))
+  if (!(await authorizeWorker(request.headers.get('authorization'))))
     return noStore({ error: 'Unauthorized' }, 401);
   try {
     return noStore(await drain({ budgetMs: 20000 }));
