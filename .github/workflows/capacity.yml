@@ -1,0 +1,37 @@
+name: 20,000-client capacity check
+on:
+  workflow_dispatch:
+  push:
+    branches: ['codex/20k-capacity']
+permissions:
+  contents: read
+jobs:
+  capacity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+      - name: Find PostgreSQL 17 binaries
+        run: test -x /usr/lib/postgresql/17/bin/initdb
+      - name: 20,000 reads, reports, and identical retries
+        run: npm run load:test
+        env:
+          LOAD_CONCURRENCY: '20000'
+          LOAD_INSTANCES: '4'
+          LOAD_POSTGRES_BIN: /usr/lib/postgresql/17/bin
+          LOAD_REPORT_PATH: docs/load-results-20000-native-2026-10-01.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: capacity-20000
+          path: docs/load-results-20000-native-2026-10-01.json
+          if-no-files-found: ignore

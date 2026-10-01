@@ -6,6 +6,10 @@ import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
 
 export async function testDatabase() {
   const db = new PGlite({ extensions: { pgcrypto, fuzzystrmatch, pg_trgm } });
+  await prepareDatabase(db);
+  return db;
+}
+export async function prepareDatabase(db) {
   await db.exec(`CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;
     CREATE SCHEMA auth; CREATE TABLE auth.users(id uuid PRIMARY KEY);
     CREATE SCHEMA storage; CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean,
@@ -14,7 +18,6 @@ export async function testDatabase() {
   const migrations = new URL('../supabase/migrations/', import.meta.url);
   for (const file of (await readdir(migrations)).filter((name) => name.endsWith('.sql')).sort())
     await db.exec(await readFile(new URL(file, migrations), 'utf8'));
-  return db;
 }
 export async function call(db, name, args = {}) {
   if (!/^sf_[a-z_]+$/.test(name) || Object.keys(args).some((k) => !/^p_[a-z_]+$/.test(k)))

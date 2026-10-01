@@ -56,7 +56,9 @@ npm run build
 npm run load:test
 ```
 
-The load test is **local only**: it starts a production Next server and a temporary PostgreSQL WASM/PGlite PostgREST harness. It submits synthetic reports and refuses production URLs. Default: 2,000 concurrent clients for each of three bursts (public reads, submissions, identical retries). `LOAD_CONCURRENCY=100 npm run load:test` is the CI smoke test.
+The load test is **local only**: it starts production Next instances and a temporary database HTTP harness. It submits synthetic reports and refuses production URLs. Default: **20,000 clients**, starting together for each of three bursts (public reads, submissions, identical retries), across four application/client processes. The report records actual peak outstanding requests, failures, latency, and transaction integrity. `LOAD_CONCURRENCY=100 npm run load:test` is the CI smoke test.
+
+For a real, isolated PostgreSQL 17 database rather than the default PostgreSQL WASM/PGlite harness, run as an unprivileged user with `LOAD_POSTGRES_BIN=/path/to/postgresql/17/bin npm run load:test`. The `20,000-client capacity check` workflow runs this profile on GitHub Actions. It never connects to the live whistleblower database. [Capacity changes and measured evidence](docs/CAPACITY-20000.md).
 
 The transaction tests cover rollback, ownership, replay, receipt access, public isolation, disclosure gates, job deduplication, leases, and session atomicity. PGlite serializes database execution; these tests do not prove multi-connection PostgreSQL lock behaviour, production Supabase performance, provider rate limits, or regional capacity. Those require staging tests against the real deployment. Legacy `backend/test.js` has 76 mocked regression assertions and is not a production security certification.
 

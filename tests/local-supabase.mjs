@@ -2,8 +2,8 @@
 // This verifies HTTP behaviour and database effects; it is not a Supabase benchmark.
 import http from 'node:http';
 import { testDatabase, call } from './database.mjs';
-export async function localSupabase(port = 54391) {
-  const db = await testDatabase();
+export async function localSupabase(port = 54391, options = {}) {
+  const db = options.db || (await testDatabase());
   await db.exec('SET ROLE service_role');
   const server = http.createServer(async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
