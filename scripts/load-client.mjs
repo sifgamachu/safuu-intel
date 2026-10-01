@@ -51,8 +51,9 @@ process.on('message', async (message) => {
         while (sockets.length) {
           const socket = sockets.pop();
           if (!socket.destroyed) {
-            callback(null, socket);
-            return;
+            // Connect listeners are installed after the connector returns.
+            queueMicrotask(() => callback(null, socket));
+            return socket;
           }
         }
         fallback(options, callback);
