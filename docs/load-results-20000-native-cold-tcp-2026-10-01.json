@@ -1,0 +1,103 @@
+{
+  "timestamp": "2026-10-01T17:21:56.577Z",
+  "environment": {
+    "node": "v22.23.3",
+    "application": "Next production build on loopback",
+    "application_instances": 4,
+    "client_processes": 4,
+    "database": "Native PostgreSQL, temporary isolated cluster, 24 pooled connections",
+    "database_settings": {
+      "version": "17.10",
+      "max_connections": "60",
+      "shared_buffers": "256MB",
+      "fsync": "on",
+      "synchronous_commit": "on"
+    },
+    "database_role": "service_role",
+    "network": "loopback only",
+    "files": "none",
+    "telegram": "not exercised",
+    "production_capacity": "not established by this test",
+    "concurrency_definition": "All clients start together; peak outstanding counts client requests awaiting completion, including transport dispatch."
+  },
+  "results": [
+    {
+      "label": "Warm public summary HTTP",
+      "concurrent_clients": 20000,
+      "peak_outstanding_requests": 20000,
+      "requests": 20000,
+      "launch_span_ms": 1583,
+      "failures": 3822,
+      "http_statuses": {
+        "0": 3822,
+        "200": 16178
+      },
+      "errors": {
+        "ECONNRESET": 154,
+        "UND_ERR_CONNECT_TIMEOUT": 3668
+      },
+      "elapsed_ms": 17378,
+      "requests_per_second": 1151,
+      "latency_ms": {
+        "p50": 8045,
+        "p95": 12515,
+        "p99": 16389
+      }
+    },
+    {
+      "label": "Transactional report HTTP",
+      "concurrent_clients": 20000,
+      "peak_outstanding_requests": 20000,
+      "requests": 20000,
+      "launch_span_ms": 1361,
+      "failures": 214,
+      "http_statuses": {
+        "0": 214,
+        "201": 19786
+      },
+      "errors": {
+        "UND_ERR_SOCKET": 214
+      },
+      "elapsed_ms": 30626,
+      "requests_per_second": 653,
+      "latency_ms": {
+        "p50": 21147,
+        "p95": 28846,
+        "p99": 29426
+      }
+    },
+    {
+      "label": "Identical report retry HTTP",
+      "concurrent_clients": 20000,
+      "peak_outstanding_requests": 20000,
+      "requests": 20000,
+      "launch_span_ms": 1609,
+      "failures": 1020,
+      "http_statuses": {
+        "0": 922,
+        "200": 18980,
+        "201": 98
+      },
+      "errors": {
+        "ECONNRESET": 529,
+        "UND_ERR_CONNECT_TIMEOUT": 393,
+        "ERR_ASSERTION": 98
+      },
+      "elapsed_ms": 18606,
+      "requests_per_second": 1075,
+      "latency_ms": {
+        "p50": 13278,
+        "p95": 16969,
+        "p99": 17753
+      }
+    }
+  ],
+  "effects": {
+    "reports": 19884,
+    "ledger_entries": 19884,
+    "metric_reports": 19884,
+    "orphan_reports": 0,
+    "public_names": 0
+  },
+  "broken_ledger_links": 0
+}

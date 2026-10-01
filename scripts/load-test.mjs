@@ -57,7 +57,16 @@ async function server() {
     base = `http://127.0.0.1:${port}`;
   const next = spawn(
     process.execPath,
-    ['node_modules/next/dist/bin/next', 'start', '-p', String(port), '-H', '127.0.0.1'],
+    [
+      'node_modules/next/dist/bin/next',
+      'start',
+      '-p',
+      String(port),
+      '-H',
+      '127.0.0.1',
+      '--keepAliveTimeout',
+      '120000',
+    ],
     {
       stdio: ['ignore', 'pipe', 'pipe'],
       env: {
@@ -190,6 +199,11 @@ try {
       application: 'Next production build on loopback',
       application_instances: instances,
       client_processes: instances,
+      client_connect_timeout_ms: 30000,
+      client_request_timeout_ms: 75000,
+      client_and_server_keep_alive_ms: 120000,
+      client_tcp_connections:
+        'Pre-established in bounded untimed startup; timed HTTP requests start together, without automatic retries.',
       database: native
         ? 'Native PostgreSQL, temporary isolated cluster, 24 pooled connections'
         : 'PostgreSQL WASM / PGlite, one local process',

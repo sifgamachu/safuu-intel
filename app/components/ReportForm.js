@@ -118,7 +118,9 @@ async function jsonRequest(path, body) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
-    signal: AbortSignal.timeout(30000),
+    // Allow the bounded server queue and execution deadline to finish during
+    // a large burst. An interrupted request still keeps its original identity.
+    signal: AbortSignal.timeout(75000),
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || 'Request failed. Please retry.');
