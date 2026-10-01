@@ -1,10 +1,10 @@
-# Capacity and rollout · 30 September 2026
+# Capacity and rollout · updated 1 October 2026
 
-Safuu is intended to serve a population of 130 million. Population is not a concurrency or requests-per-second target. The code now handles a measured local burst of 2,000 simultaneous HTTP clients with transaction integrity. **Production capacity is not yet established.**
+Safuu is intended to serve a population of 130 million. Population is not a concurrency or requests-per-second target. The current target is **at least 20,000 simultaneous clients**. Four application instances passed an isolated 20k submission/retry test with transaction integrity. The live public-summary path also passed a 30k read burst with 25,795 requests outstanding at the peak. Production report throughput and sustained national capacity are not yet established. [Current 20k evidence and limits](CAPACITY-20000.md).
 
 Production follow-up, 1 October 2026 UTC: 2,000 simultaneous public-summary reads from a native Supabase Edge probe in `eu-west-2` all succeeded with cache HITs, p95 234 ms, and 4,197 requests/s over a 476 ms burst. [Full production record](production-validation-2026-10-01.json). This verifies one warm-cache public-read burst. Production report intake, sustained/regional traffic, file uploads, and Telegram throughput remain unestablished.
 
-## Measured local result
+## Historical 2k local result
 
 Next 16.3.8 production build, Node 24.19.0, one local process, loopback network, temporary PostgreSQL WASM/PGlite database. No evidence files, Telegram sends, real regional network latency, real multi-connection Postgres, autoscaling, or managed-provider quotas were exercised.
 
@@ -20,11 +20,11 @@ Run `npm run build && npm run load:test` to reproduce. JSON results are in `docs
 
 ## Initial traffic model (assumptions, not observed usage)
 
-| Scenario                                                      |         Daily volume |        Average requests/s | Assumed 20× peak |
-| ------------------------------------------------------------- | -------------------: | ------------------------: | ---------------: |
-| 1% of the population visits, 5 public page/data requests each |      6,500,000 reads |                      75.2 |          1,505/s |
-| 0.1% of the population submits one report                     |      130,000 reports |                      1.50 |           30.1/s |
-| One-time synchronized reporting burst                         | 2,000 writes at once | Depends on burst duration |  Test separately |
+| Scenario                                                      |          Daily volume |        Average requests/s | Assumed 20× peak |
+| ------------------------------------------------------------- | --------------------: | ------------------------: | ---------------: |
+| 1% of the population visits, 5 public page/data requests each |       6,500,000 reads |                      75.2 |          1,505/s |
+| 0.1% of the population submits one report                     |       130,000 reports |                      1.50 |           30.1/s |
+| One-time synchronized reporting burst                         | 20,000 writes at once | Depends on burst duration |  Test separately |
 
 At 130,000 reports/day and an assumed 1 MB of evidence per report, evidence alone grows by roughly 130 GB/day before backups. Four maximum-size files would be 40 MB per report. Actual evidence rates, retention, spending controls, and review capacity need an operating budget. A sustainable review queue needs staff throughput matched to incoming reports, not only more servers.
 
@@ -39,7 +39,7 @@ At 130,000 reports/day and an assumed 1 MB of evidence per report, evidence alon
 | Review       | Auth-verified staff, server-managed roles, MFA by default, audit trail, explicit publication                | Provision staff, verify language copy with native speakers, define investigative standards, coordination review, retention, and staffing                    |
 | Evidence     | Private bucket, non-overwriting upload links, short staff download links                                    | Independent content hashing and malware isolation, unattached-file cleanup, immutable checkpoints, evidence backup and key recovery                         |
 
-The whole application can autoscale only as far as its slowest dependency. A Vercel concurrency limit does not establish Supabase transaction capacity. Telegram delivery is provider-limited; 2,000 queued messages at 25/s take at least 80 seconds even with idle workers. A complete intake generates multiple replies, so a large launch must use the web channel as the primary burst path.
+The whole application can autoscale only as far as its slowest dependency. A Vercel concurrency limit does not establish Supabase transaction capacity. Telegram delivery is provider-limited; 20,000 queued messages at 25/s take at least 800 seconds even with idle workers. A complete intake generates multiple replies, so a large launch must use the web channel as the primary burst path.
 
 The ledger is tamper-evident at the application level, with 256 chains. It is not anchored outside the administrator's control. Copy signed checkpoints to independently controlled storage before relying on it for long-term integrity assurance. The current encryption key derives from `TIPPER_HASH_SALT`; loss or blind rotation makes encrypted reports unreadable. Introduce and rehearse versioned key rotation before national rollout.
 
@@ -47,9 +47,9 @@ The ledger is tamper-evident at the application level, with 256 chains. It is no
 
 These are proposed acceptance goals, not achieved production measurements:
 
-- 2,000 concurrently active clients over representative mobile connections.
+- At least 20,000 concurrently active clients over representative mobile connections.
 - Public reads: 1,500 requests/s for 30 minutes, with a target p95 below 1 second at the edge and at least 95% cache hits.
-- Reports: 30 accepted writes/s sustained, then 2,000-report bursts; target p95 receipt time below 5 seconds, with zero silent loss, duplicates, or broken ledger links. Measure the file-upload path separately.
+- Reports: 30 accepted writes/s sustained, then 20,000-report bursts; target p95 receipt time below 5 seconds, with zero silent loss, duplicates, or broken ledger links. The isolated 20k PGlite burst passes integrity but has a 30.75-second p95 and does not meet that latency goal. Measure the file-upload path separately.
 - Repeat with duplicate retries, provider 429s, workers killed mid-job, database timeouts, and two or more worker instances. Public failures must remain honest; receipts require successful commits.
 - Run same-case submissions, not only many independent cases. A hot case still serializes on its person row and requires coordination controls.
 - Define queue oldest-job age and dead-letter alerts; stop a rollout if they exceed operational response capacity. Do not automatically publish to drain a queue.

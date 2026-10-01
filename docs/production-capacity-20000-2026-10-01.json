@@ -1,0 +1,297 @@
+{
+  "timestamp": "2026-10-01T17:14:34.116Z",
+  "target": "https://www.safuu.net/api/public/summary",
+  "scope": "One synchronized public-summary burst from ten native Supabase Edge generators in eu-west-2. No report submissions, files or Telegram sends.",
+  "total_requests": 30000,
+  "peak_outstanding_requests": 25795,
+  "concurrency_definition": "Sum of measured outstanding HTTP request intervals across synchronized generators; waiting for transport or response consumption is included. This does not count database connections.",
+  "failures": 0,
+  "http_statuses": {
+    "200": 30000
+  },
+  "edge_cache": {
+    "HIT": 29900,
+    "MISS": 100
+  },
+  "launch_span_ms": 396,
+  "elapsed_ms": 1754,
+  "requests_per_second": 17104,
+  "latency_ms": {
+    "p50": 300,
+    "p95": 424,
+    "p99": 483
+  },
+  "duration_limitations": "A single burst does not establish sustained or regional capacity, cold-cache performance, or production report throughput.",
+  "load_generators_disabled_after_run": true,
+  "unit_results": [
+    {
+      "unit": 1,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:33.705Z",
+      "edge_cache": {
+        "HIT": 2999,
+        "MISS": 1
+      },
+      "elapsed_ms": 1341,
+      "latency_ms": {
+        "p50": 323,
+        "p95": 391,
+        "p99": 402
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 282,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 2237,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 2,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:33.657Z",
+      "edge_cache": {
+        "HIT": 2996,
+        "MISS": 4
+      },
+      "elapsed_ms": 1294,
+      "latency_ms": {
+        "p50": 298,
+        "p95": 322,
+        "p99": 329
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 242,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 2318,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 3,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:34.000Z",
+      "edge_cache": {
+        "HIT": 2997,
+        "MISS": 3
+      },
+      "elapsed_ms": 1637,
+      "latency_ms": {
+        "p50": 232,
+        "p95": 256,
+        "p99": 263
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 174,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 1832,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 4,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:33.211Z",
+      "edge_cache": {
+        "HIT": 2997,
+        "MISS": 3
+      },
+      "elapsed_ms": 846,
+      "latency_ms": {
+        "p50": 411,
+        "p95": 427,
+        "p99": 446
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 394,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 3546,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 5,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:33.862Z",
+      "edge_cache": {
+        "HIT": 2996,
+        "MISS": 4
+      },
+      "elapsed_ms": 1499,
+      "latency_ms": {
+        "p50": 295,
+        "p95": 308,
+        "p99": 317
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 249,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 2001,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 6,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:33.776Z",
+      "edge_cache": {
+        "HIT": 2997,
+        "MISS": 3
+      },
+      "elapsed_ms": 1413,
+      "latency_ms": {
+        "p50": 304,
+        "p95": 319,
+        "p99": 331
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 258,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 2124,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 7,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:34.111Z",
+      "edge_cache": {
+        "HIT": 2971,
+        "MISS": 29
+      },
+      "elapsed_ms": 1748,
+      "latency_ms": {
+        "p50": 230,
+        "p95": 260,
+        "p99": 299
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 160,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 1716,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 8,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:34.116Z",
+      "edge_cache": {
+        "HIT": 2953,
+        "MISS": 47
+      },
+      "elapsed_ms": 1753,
+      "latency_ms": {
+        "p50": 231,
+        "p95": 266,
+        "p99": 355
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 158,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 1711,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 9,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:33.967Z",
+      "edge_cache": {
+        "HIT": 2994,
+        "MISS": 6
+      },
+      "elapsed_ms": 1605,
+      "latency_ms": {
+        "p50": 405,
+        "p95": 485,
+        "p99": 493
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 255,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 1870,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    },
+    {
+      "unit": 10,
+      "scope": "One unit of a synchronized native-HTTP read-only burst; no report submissions or files",
+      "failures": 0,
+      "checked_at": "2026-10-01T17:14:33.067Z",
+      "edge_cache": {
+        "HIT": 3000
+      },
+      "elapsed_ms": 704,
+      "latency_ms": {
+        "p50": 375,
+        "p95": 403,
+        "p99": 413
+      },
+      "client_errors": {},
+      "http_statuses": {
+        "200": 3000
+      },
+      "source_region": "eu-west-2",
+      "launch_span_ms": 308,
+      "scheduled_start": 1790874872359,
+      "requests_per_second": 4263,
+      "simultaneous_requests": 3000,
+      "concurrency_definition": "HTTP requests awaiting completion; transport and edge caching are included. This does not measure database write concurrency.",
+      "peak_outstanding_requests": 3000
+    }
+  ]
+}

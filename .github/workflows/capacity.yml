@@ -20,14 +20,18 @@ jobs:
       - run: npm run build
         env:
           NEXT_TELEMETRY_DISABLED: '1'
-      - name: Find PostgreSQL 17 binaries
-        run: test -x /usr/lib/postgresql/17/bin/initdb
+      - name: Install isolated PostgreSQL 17 test runtime
+        run: |
+          npm install --prefix "$RUNNER_TEMP/safuu-pg" --no-save --package-lock=false --ignore-scripts @embedded-postgres/linux-x64@17.10.0-beta.17
+          cd "$RUNNER_TEMP/safuu-pg/node_modules/@embedded-postgres/linux-x64"
+          node scripts/hydrate-symlinks.js
+          native/bin/postgres --version
+          echo "LOAD_POSTGRES_BIN=$PWD/native/bin" >> "$GITHUB_ENV"
       - name: 20,000 reads, reports, and identical retries
         run: npm run load:test
         env:
           LOAD_CONCURRENCY: '20000'
           LOAD_INSTANCES: '4'
-          LOAD_POSTGRES_BIN: /usr/lib/postgresql/17/bin
           LOAD_REPORT_PATH: docs/load-results-20000-native-2026-10-01.json
       - uses: actions/upload-artifact@v4
         if: always()

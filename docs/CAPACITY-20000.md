@@ -27,7 +27,9 @@ The initial 20k write burst with connection pooling alone returned 10,720 failur
 
 ## Production and rollout
 
-The live database currently reports 60 maximum connections and 256 MB shared buffers. Those settings alone do not establish transaction throughput or guarantee 20,000 simultaneous production report saves. Native PostgreSQL validation and live cached-read measurements are recorded separately when complete.
+At 17:14 UTC, ten synchronized native Edge generators sent 30,000 public-summary reads to `www.safuu.net`. All returned HTTP 200, with **25,795 measured requests outstanding at the peak**, p95 424 ms, p99 483 ms, and a 1.754-second burst duration. There were 29,900 cache HITs and 100 MISSes. This establishes one live public-read burst above the requested 20k overlap; it does not establish sustained, regional, cold-cache, upload, Telegram, or production report throughput. The generators were disabled and JWT enforcement restored immediately after measurement. [Full production record](production-capacity-20000-2026-10-01.json).
+
+The live database currently reports 60 maximum connections and 256 MB shared buffers. Those settings alone do not establish transaction throughput or guarantee 20,000 simultaneous production report saves. Native PostgreSQL validation is recorded separately when complete.
 
 Before a national launch, measure sustained mixed traffic in isolated staging, hot-case contention, uploads, actual Vercel scaling, database CPU/IO and lock wait, recovery, and review backlog. Configure production Turnstile and enroll reviewers. Telegram remains limited to the configured 25 outbound messages/s: 20,000 queued messages require at least 800 seconds before accounting for multi-step conversations.
 
