@@ -5,6 +5,10 @@
   --sf-muted: #b6c4bd;
   --sf-gold: #e5bb72;
   --sf-line: #344746;
+  --font-display: 'Playfair Display Variable';
+  --font-body: 'Space Grotesk Variable';
+  --font-headline: 'Bebas Neue';
+  --font-ethiopic: 'Noto Sans Ethiopic Variable';
   --sf-serif: var(--font-display), var(--font-ethiopic), Georgia, serif;
 }
 html {

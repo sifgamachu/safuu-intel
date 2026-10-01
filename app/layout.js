@@ -1,31 +1,9 @@
-import { Playfair_Display, Space_Grotesk, Bebas_Neue, Noto_Sans_Ethiopic } from 'next/font/google';
+import '@fontsource-variable/playfair-display';
+import '@fontsource-variable/playfair-display/wght-italic.css';
+import '@fontsource-variable/space-grotesk';
+import '@fontsource/bebas-neue';
+import '@fontsource-variable/noto-sans-ethiopic';
 import './safuu.css';
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['700', '800', '900'],
-  style: ['normal', 'italic'],
-  variable: '--font-display',
-  display: 'swap',
-});
-const grotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-body',
-  display: 'swap',
-});
-const bebas = Bebas_Neue({
-  subsets: ['latin'],
-  weight: ['400'],
-  variable: '--font-headline',
-  display: 'swap',
-});
-const ethiopic = Noto_Sans_Ethiopic({
-  subsets: ['ethiopic'],
-  weight: ['400', '500', '600'],
-  variable: '--font-ethiopic',
-  display: 'swap',
-});
 
 export const metadata = {
   metadataBase: new URL('https://www.safuu.net'),
@@ -44,10 +22,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      className={`${playfair.variable} ${grotesk.variable} ${bebas.variable} ${ethiopic.variable}`}
-    >
+    <html lang="en">
       <head>
         <link
           rel="icon"
