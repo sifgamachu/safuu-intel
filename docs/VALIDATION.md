@@ -27,3 +27,11 @@ Production national capacity, evidence-file throughput, actual Telegram delivery
 - The temporary probe was disabled after measurement and its gateway JWT verification restored. Its checked-in source also defaults to disabled. Credentials stayed in Vault/server environment and were not placed in Git or logs.
 
 [Detailed production record](production-validation-2026-10-01.json). Production report-write/file/Telegram throughput, provider quotas, staff enrollment, Turnstile, persistent workers, and recovery acceptance remain outstanding. The successful public-read result does not establish report-ingestion capacity.
+
+## Original design restoration · 1 October 2026 UTC
+
+- Restored the pre-redesign black/gold/cyan appearance from `e89b542`, including the declassified headline, Ge’ez background, original section structure, and footer. Shared navigation and working reporting pages now use the same visual theme.
+- The dashboard uses actual saved aggregate totals and approved public cases. It no longer presents a simulated ledger seal, private intake feed, automated evidence verification, or automatic agency referrals as live services.
+- Private intake, evidence protection, receipt tracking, publication gates, database migrations, worker authorization, queue retries, and all server routes are unchanged by this visual restoration.
+- A fresh production build and Chromium checks passed: 320/390/768/1440px layouts without clipped controls or headings, mobile navigation and Escape handling, keyboard-accessible FAQs, reduced motion, bundled display/body/Ethiopic fonts, real local report saving and receipt lookup, interrupted saves and retries, staff sign-in protection, and empty/populated/unavailable public dashboard states. Populated/error display fixtures and synthetic reports were local only.
+- The existing capacity measurements and their limits remain applicable to the unchanged API/database implementation. This visual release does not add evidence of national write capacity.

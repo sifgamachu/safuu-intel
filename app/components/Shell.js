@@ -1,43 +1,17 @@
 import Link from 'next/link';
-import { SafuuMark } from './SafuuMark';
+import ClassicNav from './ClassicNav';
 export function Shell({ children, active }) {
   return (
     <div className="sf">
       <a className="sf-skip" href="#main">
         Skip to content
       </a>
-      <header className="sf-nav">
-        <div className="sf-wrap sf-nav-inner">
-          <Link href="/" className="sf-brand" aria-label="Safuu home">
-            <SafuuMark size={27} tile />
-            <span>
-              SAFUU<small>CIVIC ACCOUNTABILITY</small>
-            </span>
-          </Link>
-          <nav aria-label="Main navigation">
-            <Link
-              href="/transparency"
-              aria-current={active === 'transparency' ? 'page' : undefined}
-            >
-              Public record
-            </Link>
-            <Link href="/tracker" aria-current={active === 'tracker' ? 'page' : undefined}>
-              Track a report
-            </Link>
-            <Link href="/about" aria-current={active === 'about' ? 'page' : undefined}>
-              Our approach
-            </Link>
-          </nav>
-          <Link className="sf-button sf-small" href="/report">
-            Report an incident <span aria-hidden="true">↗</span>
-          </Link>
-        </div>
-      </header>
+      <ClassicNav active={active} />
       <main id="main">{children}</main>
       <footer className="sf-footer sf-wrap">
         <div>
           <Link href="/" className="sf-wordmark">
-            SAFUU <span>ሳፉ</span>
+            SAFUU INTEL <span>ሳፉ</span>
           </Link>
           <p>
             Every voice deserves to be heard.

@@ -12,6 +12,12 @@ export default function Changelog() {
           <p className="sf-eyebrow">
             <time dateTime="2026-10-01">1 October 2026 · UTC</time>
           </p>
+          <h2>Original design. Stronger reporting.</h2>
+          <p>
+            Safuu’s original black, gold, and cyan design is back, with the declassified headline
+            and familiar dashboard panels. The dashboard shows saved totals and approved cases.
+            Private report saving, receipt tracking, and background retries remain active.
+          </p>
           <h2>Private reporting. Clearer receipts.</h2>
           <ul>
             <li>
