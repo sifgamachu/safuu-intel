@@ -17,48 +17,50 @@ process.on('message', async (message) => {
     // Establish real sockets during untimed startup. This separates the shared
     // runner's TCP listen-backlog limit from simultaneous application requests.
     // The timed bursts still dispatch all HTTP requests together without retries.
-    const sockets = [];
-    const port = Number(new URL(base).port);
-    for (let offset = 0; offset < message.count; offset += 128) {
-      await Promise.all(
-        Array.from(
-          { length: Math.min(128, message.count - offset) },
-          () =>
-            new Promise((resolve, reject) => {
-              const socket = net.createConnection({ host: '127.0.0.1', port });
-              socket.setTimeout(30000, () => {
-                socket.destroy();
-                reject(new Error('Socket warm-up timed out.'));
-              });
-              socket.once('error', reject);
-              socket.once('connect', () => {
-                socket.setTimeout(0);
-                sockets.push(socket);
-                resolve();
-              });
-            }),
-        ),
-      );
-    }
-    const fallback = buildConnector({ timeout: 30000 });
-    transport = new Pool(base, {
-      connections: message.count,
-      connectTimeout: 30000,
-      keepAliveTimeout: 120000,
-      keepAliveMaxTimeout: 120000,
-      pipelining: 1,
-      connect: (options, callback) => {
-        while (sockets.length) {
-          const socket = sockets.pop();
-          if (!socket.destroyed) {
-            // Connect listeners are installed after the connector returns.
-            queueMicrotask(() => callback(null, socket));
-            return socket;
+    if (message.native) {
+      const sockets = [];
+      const port = Number(new URL(base).port);
+      for (let offset = 0; offset < message.count; offset += 128) {
+        await Promise.all(
+          Array.from(
+            { length: Math.min(128, message.count - offset) },
+            () =>
+              new Promise((resolve, reject) => {
+                const socket = net.createConnection({ host: '127.0.0.1', port });
+                socket.setTimeout(30000, () => {
+                  socket.destroy();
+                  reject(new Error('Socket warm-up timed out.'));
+                });
+                socket.once('error', reject);
+                socket.once('connect', () => {
+                  socket.setTimeout(0);
+                  sockets.push(socket);
+                  resolve();
+                });
+              }),
+          ),
+        );
+      }
+      const fallback = buildConnector({ timeout: 30000 });
+      transport = new Pool(base, {
+        connections: message.count,
+        connectTimeout: 30000,
+        keepAliveTimeout: 120000,
+        keepAliveMaxTimeout: 120000,
+        pipelining: 1,
+        connect: (options, callback) => {
+          while (sockets.length) {
+            const socket = sockets.pop();
+            if (!socket.destroyed) {
+              // Connect listeners are installed after the connector returns.
+              queueMicrotask(() => callback(null, socket));
+              return socket;
+            }
           }
-        }
-        fallback(options, callback);
-      },
-    });
+          fallback(options, callback);
+        },
+      });
+    }
     items = Array.from({ length: message.count }, (_, i) => ({
       cookie: `sf_visitor=${signVisitor(randomUUID())}`,
       body: {
@@ -92,17 +94,24 @@ process.on('message', async (message) => {
         error = null;
       try {
         const isRead = message.phase === 'read';
-        const r = await loadFetch(base + (isRead ? '/api/public/summary' : '/api/reports'), {
-          dispatcher: transport,
-          signal: AbortSignal.timeout(75000),
-          ...(isRead
-            ? {}
-            : {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', Origin: base, Cookie: item.cookie },
-                body: JSON.stringify(item.body),
-              }),
-        });
+        const r = await (transport ? loadFetch : fetch)(
+          base + (isRead ? '/api/public/summary' : '/api/reports'),
+          {
+            ...(transport ? { dispatcher: transport } : {}),
+            signal: AbortSignal.timeout(75000),
+            ...(isRead
+              ? {}
+              : {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Origin: base,
+                    Cookie: item.cookie,
+                  },
+                  body: JSON.stringify(item.body),
+                }),
+          },
+        );
         status = r.status;
         const body = await r.json();
         if (isRead && r.ok) {
@@ -114,7 +123,7 @@ process.on('message', async (message) => {
         }
         if (!r.ok) error = body.error || 'HTTP error';
       } catch (e) {
-        error = e.cause?.code || e.code || e.name || 'Error';
+        error = e.cause?.code || (typeof e.code === 'string' ? e.code : e.name) || 'Error';
       }
       return { started, ended: Date.now(), status, error };
     }),

@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-10-01T17:40:07.442Z",
+  "timestamp": "2026-10-01T17:33:27.517Z",
   "environment": {
     "node": "v24.19.0",
     "application": "Next production build on loopback",
     "application_instances": 4,
     "client_processes": 4,
-    "client_connect_timeout_ms": 10000,
+    "client_connect_timeout_ms": 30000,
     "client_request_timeout_ms": 75000,
     "client_and_server_keep_alive_ms": 120000,
-    "client_tcp_connections": "Established during measured bursts by Node fetch; no automatic client retries.",
+    "client_tcp_connections": "Pre-established in bounded untimed startup; timed HTTP requests start together, without automatic retries.",
     "database": "PostgreSQL WASM / PGlite, one local process",
     "database_settings": null,
     "database_role": "service_role",
@@ -24,18 +24,18 @@
       "concurrent_clients": 20000,
       "peak_outstanding_requests": 20000,
       "requests": 20000,
-      "launch_span_ms": 586,
+      "launch_span_ms": 522,
       "failures": 0,
       "http_statuses": {
         "200": 20000
       },
       "errors": {},
-      "elapsed_ms": 5305,
-      "requests_per_second": 3770,
+      "elapsed_ms": 5396,
+      "requests_per_second": 3706,
       "latency_ms": {
-        "p50": 2567,
-        "p95": 4657,
-        "p99": 4847
+        "p50": 2867,
+        "p95": 4601,
+        "p99": 4769
       }
     },
     {
@@ -43,18 +43,21 @@
       "concurrent_clients": 20000,
       "peak_outstanding_requests": 20000,
       "requests": 20000,
-      "launch_span_ms": 868,
-      "failures": 0,
+      "launch_span_ms": 1187,
+      "failures": 11420,
       "http_statuses": {
-        "201": 20000
+        "201": 8580,
+        "503": 11420
       },
-      "errors": {},
-      "elapsed_ms": 32575,
-      "requests_per_second": 614,
+      "errors": {
+        "We could not confirm a save. Keep this page open and retry; you will not create another copy.": 11420
+      },
+      "elapsed_ms": 40579,
+      "requests_per_second": 493,
       "latency_ms": {
-        "p50": 19024,
-        "p95": 30466,
-        "p99": 31507
+        "p50": 6226,
+        "p95": 39100,
+        "p99": 40047
       }
     },
     {
@@ -62,18 +65,21 @@
       "concurrent_clients": 20000,
       "peak_outstanding_requests": 20000,
       "requests": 20000,
-      "launch_span_ms": 737,
-      "failures": 0,
+      "launch_span_ms": 571,
+      "failures": 11420,
       "http_statuses": {
-        "200": 20000
+        "200": 8580,
+        "201": 11420
       },
-      "errors": {},
-      "elapsed_ms": 15558,
-      "requests_per_second": 1286,
+      "errors": {
+        "ERR_ASSERTION": 11420
+      },
+      "elapsed_ms": 24450,
+      "requests_per_second": 818,
       "latency_ms": {
-        "p50": 9888,
-        "p95": 14482,
-        "p99": 14872
+        "p50": 12847,
+        "p95": 22851,
+        "p99": 23608
       }
     }
   ],

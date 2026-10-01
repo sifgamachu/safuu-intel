@@ -39,13 +39,20 @@ test('a database burst reuses at most 32 connections and returns every RPC resul
 
 test('bounded queue rejects excess work, expires waiting requests, and recovers without dispatching them', async () => {
   let received = 0,
-    allowFirst;
+    allowFirst,
+    sawFirst;
+  const firstStarted = new Promise((r) => {
+    sawFirst = r;
+  });
   const blocked = new Promise((r) => {
     allowFirst = r;
   });
   const server = http.createServer(async (req, res) => {
     received++;
-    if (received === 1) await blocked;
+    if (received === 1) {
+      sawFirst();
+      await blocked;
+    }
     res.setHeader('Content-Type', 'application/json');
     res.end('{}');
   });
@@ -58,6 +65,7 @@ test('bounded queue rejects excess work, expires waiting requests, and recovers 
   });
   try {
     const first = transport.fetch(origin);
+    await firstStarted;
     const expired = assert.rejects(transport.fetch(origin), { code: 'database_busy' });
     await assert.rejects(transport.fetch(origin), { code: 'database_busy' });
     await expired;

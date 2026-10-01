@@ -16,7 +16,7 @@ Next 16.3.8 production build, Node 24.19.0, one local process, loopback network,
 
 After both write bursts: exactly 2,000 reports, 2,000 ledger entries, and 2,000 metric counts; zero orphan reports, zero automatically published names, and zero broken ledger links. This is a successful burst-integrity result, not a promise of 2,000 reports per second. The current local p95 for an instant 2,000-report burst exceeds the proposed 5-second production receipt goal.
 
-Run `npm run build && npm run load:test` to reproduce. JSON results are in `docs/load-results-2026-09-30.json`. An initial run found a proxy Origin/Host mismatch; the corrected guard is tested, and the results above are from the successful run.
+The original 2k workload uses `npm run build && LOAD_CONCURRENCY=2000 LOAD_INSTANCES=1 npm run load:test`. Its historical JSON result is in `docs/load-results-2026-09-30.json`. An initial run found a proxy Origin/Host mismatch; the corrected guard is tested, and the results above are from the successful run.
 
 ## Initial traffic model (assumptions, not observed usage)
 
@@ -49,7 +49,7 @@ These are proposed acceptance goals, not achieved production measurements:
 
 - At least 20,000 concurrently active clients over representative mobile connections.
 - Public reads: 1,500 requests/s for 30 minutes, with a target p95 below 1 second at the edge and at least 95% cache hits.
-- Reports: 30 accepted writes/s sustained, then 20,000-report bursts; target p95 receipt time below 5 seconds, with zero silent loss, duplicates, or broken ledger links. The isolated 20k PGlite burst passes integrity but has a 30.75-second p95 and does not meet that latency goal. Measure the file-upload path separately.
+- Reports: 30 accepted writes/s sustained, then 20,000-report bursts; target p95 receipt time below 5 seconds, with zero silent loss, duplicates, or broken ledger links. The isolated 20k PGlite burst passes integrity but has a 30.47-second p95 and does not meet that latency goal. Measure the file-upload path separately.
 - Repeat with duplicate retries, provider 429s, workers killed mid-job, database timeouts, and two or more worker instances. Public failures must remain honest; receipts require successful commits.
 - Run same-case submissions, not only many independent cases. A hot case still serializes on its person row and requires coordination controls.
 - Define queue oldest-job age and dead-letter alerts; stop a rollout if they exceed operational response capacity. Do not automatically publish to drain a queue.

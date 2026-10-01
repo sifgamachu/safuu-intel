@@ -172,7 +172,7 @@ try {
     const exited = new Promise((r) => child.once('exit', r));
     clients.push({ child, exited });
     const ready = messageFrom(child, 'ready');
-    child.send({ type: 'init', base, count: size, offset });
+    child.send({ type: 'init', base, count: size, offset, native: Boolean(native) });
     await ready;
     offset += size;
   }
@@ -199,11 +199,12 @@ try {
       application: 'Next production build on loopback',
       application_instances: instances,
       client_processes: instances,
-      client_connect_timeout_ms: 30000,
+      client_connect_timeout_ms: native ? 30000 : 10000,
       client_request_timeout_ms: 75000,
       client_and_server_keep_alive_ms: 120000,
-      client_tcp_connections:
-        'Pre-established in bounded untimed startup; timed HTTP requests start together, without automatic retries.',
+      client_tcp_connections: native
+        ? 'Pre-established in bounded untimed startup; timed HTTP requests start together, without automatic retries.'
+        : 'Established during measured bursts by Node fetch; no automatic client retries.',
       database: native
         ? 'Native PostgreSQL, temporary isolated cluster, 24 pooled connections'
         : 'PostgreSQL WASM / PGlite, one local process',

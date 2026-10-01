@@ -19,9 +19,9 @@ Production Next build, Node 24.19.0, four app instances, four synchronized clien
 
 | Burst                    | Clients | Peak outstanding requests | Successful responses | Failures | p95 latency |
 | ------------------------ | ------: | ------------------------: | -------------------: | -------: | ----------: |
-| Public summary           |  20,000 |                    19,953 |               20,000 |        0 |      5.54 s |
-| Report submission        |  20,000 |                    20,000 |               20,000 |        0 |     30.75 s |
-| Identical report retries |  20,000 |                    20,000 |               20,000 |        0 |     16.15 s |
+| Public summary           |  20,000 |                    20,000 |               20,000 |        0 |      4.66 s |
+| Report submission        |  20,000 |                    20,000 |               20,000 |        0 |     30.47 s |
+| Identical report retries |  20,000 |                    20,000 |               20,000 |        0 |     14.48 s |
 
 After the save and retry bursts: exactly 20,000 reports, ledger entries, and metric counts; zero orphan reports, public names, or broken ledger links. [Full result](load-results-20000-pglite-2026-10-01.json).
 
@@ -29,9 +29,15 @@ The initial 20k write burst with connection pooling alone returned 10,720 failur
 
 ## Production and rollout
 
+The independent native PostgreSQL 17.10 run passed all three 20,000-client bursts, with exactly **20,000 outstanding requests at each peak and zero failures**. Submission p95 was 28.534 seconds (650 completed requests/s across the burst); identical-retry p95 was 17.492 seconds. Counts after retry were exactly 20,000 reports, ledger entries, and metric counts, with zero orphans, public names, or broken chains. Fsync and synchronous commits were enabled, the service-role pool was limited to 24 connections, and the database had 60 maximum connections and 256 MB shared buffers. [Native result](load-results-20000-native-2026-10-01.json) · [Successful independent workflow](https://github.com/sifgamachu/safuu-intel/actions/runs/36900079284).
+
+The native workload used independent synthetic cases and an isolated cluster on a shared GitHub runner. It tests real concurrent SQL transactions, but not Supabase/PostgREST overhead, production CPU/IO quotas, same-case contention, uploads, or regional networks. The earlier cold-TCP run had client socket failures, preserved in [its result](load-results-20000-native-cold-tcp-2026-10-01.json); connections were pre-established before the successful timed workload. A pre-established-socket PGlite experiment also returned 503s on the first write burst, then committed all 20,000 on retries; [that failed experiment](load-results-20000-pglite-preconnected-2026-10-01.json) is retained and is not counted as a pass. PGlite remains the serialized smoke/integrity harness; the native profile supplies the concurrent SQL result.
+
+Browser verification included a real committed receipt delayed by 31 seconds, beyond the old browser timeout. The form accepted the receipt, and private tracking, draft-preserving retry, 22 public routes, and 88 responsive layouts passed without page errors.
+
 At 17:14 UTC, ten synchronized native Edge generators sent 30,000 public-summary reads to `www.safuu.net`. All returned HTTP 200, with **25,795 measured requests outstanding at the peak**, p95 424 ms, p99 483 ms, and a 1.754-second burst duration. There were 29,900 cache HITs and 100 MISSes. This establishes one live public-read burst above the requested 20k overlap; it does not establish sustained, regional, cold-cache, upload, Telegram, or production report throughput. The generators were disabled and JWT enforcement restored immediately after measurement. [Full production record](production-capacity-20000-2026-10-01.json).
 
-The live database currently reports 60 maximum connections and 256 MB shared buffers. Those settings alone do not establish transaction throughput or guarantee 20,000 simultaneous production report saves. Native PostgreSQL validation is recorded separately when complete.
+The live database currently reports 60 maximum connections and 256 MB shared buffers. Those settings alone do not establish transaction throughput or guarantee 20,000 simultaneous production report saves.
 
 Before a national launch, measure sustained mixed traffic in isolated staging, hot-case contention, uploads, actual Vercel scaling, database CPU/IO and lock wait, recovery, and review backlog. Configure production Turnstile and enroll reviewers. Telegram remains limited to the configured 25 outbound messages/s: 20,000 queued messages require at least 800 seconds before accounting for multi-step conversations.
 

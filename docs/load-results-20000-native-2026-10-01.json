@@ -1,16 +1,22 @@
 {
-  "timestamp": "2026-10-01T17:40:07.442Z",
+  "timestamp": "2026-10-01T17:33:51.513Z",
   "environment": {
-    "node": "v24.19.0",
+    "node": "v22.23.3",
     "application": "Next production build on loopback",
     "application_instances": 4,
     "client_processes": 4,
-    "client_connect_timeout_ms": 10000,
+    "client_connect_timeout_ms": 30000,
     "client_request_timeout_ms": 75000,
     "client_and_server_keep_alive_ms": 120000,
-    "client_tcp_connections": "Established during measured bursts by Node fetch; no automatic client retries.",
-    "database": "PostgreSQL WASM / PGlite, one local process",
-    "database_settings": null,
+    "client_tcp_connections": "Pre-established in bounded untimed startup; timed HTTP requests start together, without automatic retries.",
+    "database": "Native PostgreSQL, temporary isolated cluster, 24 pooled connections",
+    "database_settings": {
+      "version": "17.10",
+      "max_connections": "60",
+      "shared_buffers": "256MB",
+      "fsync": "on",
+      "synchronous_commit": "on"
+    },
     "database_role": "service_role",
     "network": "loopback only",
     "files": "none",
@@ -24,18 +30,18 @@
       "concurrent_clients": 20000,
       "peak_outstanding_requests": 20000,
       "requests": 20000,
-      "launch_span_ms": 586,
+      "launch_span_ms": 1511,
       "failures": 0,
       "http_statuses": {
         "200": 20000
       },
       "errors": {},
-      "elapsed_ms": 5305,
-      "requests_per_second": 3770,
+      "elapsed_ms": 14341,
+      "requests_per_second": 1395,
       "latency_ms": {
-        "p50": 2567,
-        "p95": 4657,
-        "p99": 4847
+        "p50": 8261,
+        "p95": 12363,
+        "p99": 12803
       }
     },
     {
@@ -43,18 +49,18 @@
       "concurrent_clients": 20000,
       "peak_outstanding_requests": 20000,
       "requests": 20000,
-      "launch_span_ms": 868,
+      "launch_span_ms": 1734,
       "failures": 0,
       "http_statuses": {
         "201": 20000
       },
       "errors": {},
-      "elapsed_ms": 32575,
-      "requests_per_second": 614,
+      "elapsed_ms": 30764,
+      "requests_per_second": 650,
       "latency_ms": {
-        "p50": 19024,
-        "p95": 30466,
-        "p99": 31507
+        "p50": 21312,
+        "p95": 28534,
+        "p99": 28992
       }
     },
     {
@@ -62,18 +68,18 @@
       "concurrent_clients": 20000,
       "peak_outstanding_requests": 20000,
       "requests": 20000,
-      "launch_span_ms": 737,
+      "launch_span_ms": 1178,
       "failures": 0,
       "http_statuses": {
         "200": 20000
       },
       "errors": {},
-      "elapsed_ms": 15558,
-      "requests_per_second": 1286,
+      "elapsed_ms": 19063,
+      "requests_per_second": 1049,
       "latency_ms": {
-        "p50": 9888,
-        "p95": 14482,
-        "p99": 14872
+        "p50": 13882,
+        "p95": 17492,
+        "p99": 17864
       }
     }
   ],
@@ -84,5 +90,7 @@
     "orphan_reports": 0,
     "public_names": 0
   },
-  "broken_ledger_links": 0
+  "broken_ledger_links": 0,
+  "source_commit": "4eb7cda0b8803417739222a2796f021cb276e1ce",
+  "workflow_url": "https://github.com/sifgamachu/safuu-intel/actions/runs/36900079284"
 }
