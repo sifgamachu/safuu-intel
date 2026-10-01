@@ -2,10 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { visitor, requireOrigin, readJson, fail, noStore } from '../../../../lib/http.mjs';
 import { IntakeError, validateEvidence } from '../../../../lib/domain.mjs';
 import { rpc, serviceClient } from '../../../../lib/db-client.mjs';
+import { readiness } from '../../../../lib/readiness.mjs';
 export const runtime = 'nodejs';
 export async function POST(request) {
   try {
     requireOrigin(request);
+    if ((await readiness.reporting()).evidence !== 'private_storage_verified')
+      throw new IntakeError('Private attachments are temporarily unavailable.', 503);
     const owner = visitor(request);
     if (owner.fresh) throw new IntakeError('Reload the report form.', 403);
     const file = validateEvidence(await readJson(request, 1000));
@@ -24,16 +27,14 @@ export async function POST(request) {
     const id = randomUUID(),
       object_path = `${owner.hash}/${id}`;
     const client = serviceClient();
-    const { error } = await client
-      .from('report_evidence')
-      .insert({
-        id,
-        owner_hash: owner.hash,
-        object_path,
-        kind: file.kind,
-        byte_size: file.size,
-        content_type: file.type,
-      });
+    const { error } = await client.from('report_evidence').insert({
+      id,
+      owner_hash: owner.hash,
+      object_path,
+      kind: file.kind,
+      byte_size: file.size,
+      content_type: file.type,
+    });
     if (error) throw new Error('Evidence reservation failed.');
     const { data, error: signing } = await client.storage
       .from('evidence')

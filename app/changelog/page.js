@@ -18,6 +18,20 @@ export default function Changelog() {
             and familiar dashboard panels. The dashboard shows saved totals and approved cases.
             Private report saving, receipt tracking, and background retries remain active.
           </p>
+          <h2>Claims checked against delivery.</h2>
+          <p>
+            Older partnership counts, funding tiers, and promises of automated analysis have been
+            corrected. The demo uses clearly fictional examples, and language descriptions match the
+            five available guides. The form and status page show whether review staff are
+            configured. Dashboard updates now run once a minute while visible, with recovery after
+            an unavailable response.
+          </p>
+          <p>
+            Private file delivery and access restrictions were checked on the live service with
+            temporary test files, then cleaned up. The release checks also exercise complete queued
+            intake and provider failure recovery using controlled Telegram responses. These checks
+            do not establish nationwide capacity or promise a review deadline.
+          </p>
           <h2>Private reporting. Clearer receipts.</h2>
           <ul>
             <li>

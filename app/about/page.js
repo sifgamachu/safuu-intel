@@ -23,11 +23,12 @@ export default function About() {
           </p>
           <h2>Review before publication.</h2>
           <p>
-            Reports stay in a private review queue. Authorized reviewers consider their content and
-            evidence. A case needs its configured threshold of reviewed reports from distinct
-            reporting identities and explicit publication approval before a name appears publicly.
-            Distinct identities do not guarantee distinct people; coordinated reporting still
-            requires human assessment.
+            Reports stay in a private review queue. Human review can begin once authorized staff
+            have been configured; the service status page shows whether review access is set up. A
+            case needs its configured threshold of reviewed reports from distinct reporting
+            identities and explicit publication approval before a name appears publicly. Distinct
+            identities do not guarantee distinct people; coordinated reporting still requires human
+            assessment.
           </p>
           <h2>Clear limits.</h2>
           <p>
@@ -43,6 +44,9 @@ export default function About() {
             </Link>
             <Link href="/privacy" className="sf-button sf-secondary">
               Privacy & safety
+            </Link>
+            <Link href="/status" className="sf-button sf-secondary">
+              Review setup status
             </Link>
           </div>
         </article>

@@ -176,6 +176,14 @@ test('human publication counts distinct identities and respects staff roles', as
   const {
     rows: [person],
   } = await db.query('SELECT person_id FROM public.reports WHERE id=$1', [a.p_id]);
+  assert.equal(
+    (
+      await db.query('SELECT disclosure_threshold FROM public.persons WHERE id=$1', [
+        person.person_id,
+      ])
+    ).rows[0].disclosure_threshold,
+    100,
+  );
   await db.query('UPDATE public.persons SET disclosure_threshold=2 WHERE id=$1', [
     person.person_id,
   ]);
@@ -211,6 +219,16 @@ test('human publication counts distinct identities and respects staff roles', as
     () => call(db, 'sf_publish_case', { p_actor: reviewer, p_id: person.person_id }),
     /not_authorized/,
   );
+  await db.query('UPDATE public.persons SET coordination_hold=true WHERE id=$1', [
+    person.person_id,
+  ]);
+  await assert.rejects(
+    () => call(db, 'sf_publish_case', { p_actor: publisher, p_id: person.person_id }),
+    /publication_not_ready/,
+  );
+  await db.query('UPDATE public.persons SET coordination_hold=false WHERE id=$1', [
+    person.person_id,
+  ]);
   await call(db, 'sf_publish_case', { p_actor: publisher, p_id: person.person_id });
   const publicCase = await call(db, 'sf_public_case', { p_id: person.person_id });
   assert.equal(publicCase.verified_report_count, 2);

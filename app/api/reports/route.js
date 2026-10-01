@@ -6,14 +6,18 @@ import {
   verifyChallenge,
 } from '../../../lib/intake-service.mjs';
 import { IntakeError } from '../../../lib/domain.mjs';
+import { readiness, antiSpamState } from '../../../lib/readiness.mjs';
 export const runtime = 'nodejs';
 export async function GET(request) {
   try {
-    if (!!process.env.TURNSTILE_SITE_KEY !== !!process.env.TURNSTILE_SECRET_KEY)
+    if (antiSpamState() === 'configuration_incomplete')
       throw new Error('Anti-spam configuration incomplete.');
     const identity = visitor(request);
+    const capabilities = await readiness.reporting();
+    if (capabilities.review_team === 'unconfirmed')
+      throw new Error('Reporting database unavailable.');
     return noStore(
-      { ready: true, turnstile_site_key: process.env.TURNSTILE_SITE_KEY || null },
+      { ready: true, turnstile_site_key: process.env.TURNSTILE_SITE_KEY || null, ...capabilities },
       200,
       { 'Set-Cookie': identity.cookie },
     );

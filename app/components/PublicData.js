@@ -6,16 +6,35 @@ export function usePublicData() {
     [error, setError] = useState(false);
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/api/public/summary', { signal: controller.signal })
-      .then(async (r) => {
-        if (!r.ok) throw new Error();
-        return r.json();
-      })
-      .then(setData)
-      .catch((e) => {
-        if (e.name !== 'AbortError') setError(true);
-      });
-    return () => controller.abort();
+    let loading = false;
+    async function refresh() {
+      if (loading || document.hidden) return;
+      loading = true;
+      try {
+        const response = await fetch('/api/public/summary', { signal: controller.signal });
+        if (!response.ok) throw new Error();
+        const next = await response.json();
+        if (!controller.signal.aborted) {
+          setData(next);
+          setError(false);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setData(null);
+          setError(true);
+        }
+      } finally {
+        loading = false;
+      }
+    }
+    refresh();
+    const timer = setInterval(refresh, 60000);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      controller.abort();
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', refresh);
+    };
   }, []);
   return { data, error };
 }
@@ -31,7 +50,7 @@ export function Stats() {
             {error
               ? 'Data temporarily unavailable'
               : data
-                ? 'From saved reports · refreshed every minute'
+                ? 'From saved reports · updates once a minute while visible'
                 : 'Connecting to the reporting record…'}
           </small>
         </span>

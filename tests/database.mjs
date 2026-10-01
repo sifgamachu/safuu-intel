@@ -20,6 +20,14 @@ export async function call(db, name, args = {}) {
   if (!/^sf_[a-z_]+$/.test(name) || Object.keys(args).some((k) => !/^p_[a-z_]+$/.test(k)))
     throw new Error('Invalid RPC');
   const keys = Object.keys(args);
+  if (name === 'sf_claim_jobs') {
+    return (
+      await db.query(
+        `SELECT * FROM public.${name}(${keys.map((k, i) => `${k} => $${i + 1}`).join(',')})`,
+        Object.values(args),
+      )
+    ).rows;
+  }
   const result = await db.query(
     `SELECT public.${name}(${keys.map((k, i) => `${k} => $${i + 1}`).join(',')}) AS value`,
     Object.values(args),

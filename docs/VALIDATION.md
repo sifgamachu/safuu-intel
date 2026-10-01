@@ -35,3 +35,13 @@ Production national capacity, evidence-file throughput, actual Telegram delivery
 - Private intake, evidence protection, receipt tracking, publication gates, database migrations, worker authorization, queue retries, and all server routes are unchanged by this visual restoration.
 - A fresh production build and Chromium checks passed: 320/390/768/1440px layouts without clipped controls or headings, mobile navigation and Escape handling, keyboard-accessible FAQs, reduced motion, bundled display/body/Ethiopic fonts, real local report saving and receipt lookup, interrupted saves and retries, staff sign-in protection, and empty/populated/unavailable public dashboard states. Populated/error display fixtures and synthetic reports were local only.
 - The existing capacity measurements and their limits remain applicable to the unchanged API/database implementation. This visual release does not add evidence of national write capacity.
+
+## Public claims and delivery audit · 1 October 2026 UTC
+
+[Claim-by-claim delivery record](DELIVERY-AUDIT.md). Corrected older partner/support/demo pages and localized metadata, added measured review/storage/Telegram configuration states, blocked partially configured anti-spam submissions, and implemented visible-page minute refresh with outage recovery. The original homepage appearance remains unchanged.
+
+Twenty-one root tests pass, including a complete worker conversation, provider rate-limit and outage recovery, cache coalescing, bot/webhook configuration checks, storage policy failure states, and the existing SQL access/publication controls. Chromium checked 22 public pages and metadata at four widths (88 layouts), real temporary-database reporting and receipt tracking, error recovery, and one-minute refresh.
+
+Live private PDF/PNG/JPEG/OGG transport uploads, non-overwrite enforcement, anonymous-read denial, other-session attachment rejection, actual metadata, service downloads, and 60-second signed downloads passed. An evidence-linked save/receipt/replay transaction passed on production Postgres and rolled back. Four owned synthetic objects/reservations were removed, and the protected audit function was disabled with gateway JWT verification restored. Production retained zero synthetic reports.
+
+Review staff remain unconfigured; a full live staff MFA/review flow, live Telegram conversation, Turnstile, persistent national workers, sustained production write/file/provider throughput, quotas, and recovery drills are outstanding. These limits are disclosed instead of being presented as delivered services.

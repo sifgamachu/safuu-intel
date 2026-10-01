@@ -530,6 +530,22 @@ body {
 .sf-language-list a:hover {
   background: rgba(0, 212, 255, 0.08);
 }
+
+.sf-status-row {
+  gap: 20px;
+}
+.sf-status-row strong {
+  text-align: right;
+}
+@media (max-width: 480px) {
+  .sf-status-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sf-status-row strong {
+    text-align: left;
+  }
+}
 @media (max-width: 1080px) {
   .classic-desktop-nav {
     display: none;

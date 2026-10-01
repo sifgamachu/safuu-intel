@@ -98,6 +98,14 @@ export default function ClassicDashboard() {
               </div>
             </li>
           </ol>
+          {data && data.review_team !== 'configured' && (
+            <p className="classic-panel-note">
+              {data.review_team === 'not_configured'
+                ? 'Review team setup is pending. Reports can be saved, but human review cannot begin until authorized staff are configured.'
+                : 'Review team setup is not confirmed. Check service status before relying on a review.'}{' '}
+              <Link href="/status">Service status →</Link>
+            </p>
+          )}
         </article>
         <article className="classic-panel">
           <div className="classic-panel-heading">

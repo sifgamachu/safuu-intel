@@ -132,14 +132,18 @@ export default function ReportForm() {
     [error, setError] = useState(''),
     [busy, setBusy] = useState(false),
     [ready, setReady] = useState(false),
+    [connecting, setConnecting] = useState(true),
     [keys, setKeys] = useState(null),
     [receipt, setReceipt] = useState(null),
     [consent, setConsent] = useState(false),
     [copied, setCopied] = useState(false),
     [siteKey, setSiteKey] = useState(null),
+    [reviewTeam, setReviewTeam] = useState('unconfirmed'),
+    [evidenceReady, setEvidenceReady] = useState(false),
     [challenge, setChallenge] = useState('');
   const widget = useRef(null),
     widgetId = useRef(null),
+    reconnect = useRef(null),
     title = useRef(null);
   const c = COPY[language];
   useEffect(() => {
@@ -147,23 +151,42 @@ export default function ReportForm() {
     if (COPY[lang]) setLanguage(lang);
     setKeys({ id: crypto.randomUUID(), secret: secret() });
     let active = true;
-    fetch('/api/reports', { cache: 'no-store' })
-      .then(async (r) => {
-        const data = await r.json();
-        if (!r.ok) throw new Error(data.error);
+    let fetching = false;
+    const controller = new AbortController();
+    async function initialize() {
+      if (fetching) return;
+      fetching = true;
+      setConnecting(true);
+      try {
+        const response = await fetch('/api/reports', {
+          cache: 'no-store',
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
         if (active) {
           setReady(true);
           setSiteKey(data.turnstile_site_key);
+          setReviewTeam(data.review_team);
+          setEvidenceReady(data.evidence === 'private_storage_verified');
+          setError('');
         }
-      })
-      .catch(() => {
+      } catch {
         if (active)
           setError(
             'Reporting is temporarily unavailable. Keep your draft on this page and try again later.',
           );
-      });
+      } finally {
+        fetching = false;
+        if (active) setConnecting(false);
+      }
+    }
+    reconnect.current = initialize;
+    initialize();
     return () => {
       active = false;
+      controller.abort();
+      reconnect.current = null;
     };
   }, []);
   useEffect(() => {
@@ -280,7 +303,7 @@ export default function ReportForm() {
     } catch (err) {
       setError(
         err.name === 'TimeoutError'
-          ? 'The connection timed out before we could confirm a save. Retry on this page using the same tracking code.'
+          ? 'The connection timed out before we could confirm a save. Keep this page open and retry.'
           : err.message || 'We could not confirm a save. Keep this page open and retry.',
       );
       if (siteKey) {
@@ -355,6 +378,12 @@ export default function ReportForm() {
         <p>
           A receipt confirms storage. It does not verify the allegation or promise a review date.
         </p>
+        {reviewTeam !== 'configured' && (
+          <p className="sf-alert">
+            Review team setup is pending. Your report is saved, but human review cannot begin until
+            authorized staff are configured.
+          </p>
+        )}
         <Link href="/tracker" className="sf-link">
           Check a report’s status ↗
         </Link>
@@ -364,6 +393,26 @@ export default function ReportForm() {
   return (
     <div className="sf-form-layout">
       <div className="sf-card">
+        {!ready && !connecting && error && (
+          <button
+            className="sf-button sf-secondary"
+            type="button"
+            onClick={() => reconnect.current?.()}
+          >
+            Retry connection
+          </button>
+        )}
+        {ready && reviewTeam !== 'configured' && (
+          <p className="sf-alert" role="status">
+            Review team setup is pending. Reports can be saved privately, but human review cannot
+            begin until authorized staff are configured. No review deadline is promised.
+          </p>
+        )}
+        {ready && !evidenceReady && (
+          <p className="sf-alert" role="status">
+            Private attachments are temporarily unavailable. You can continue with a written report.
+          </p>
+        )}
         <ol className="sf-form-steps" aria-label="Report progress">
           {c.steps.map((label, i) => (
             <li key={i} aria-current={i === step ? 'step' : undefined}>
@@ -477,6 +526,7 @@ export default function ReportForm() {
                   accept="image/jpeg,image/png,application/pdf,audio/ogg,audio/mpeg,audio/mp4"
                   aria-label="Attach private evidence"
                   onChange={addFiles}
+                  disabled={!evidenceReady || busy}
                 />
               </label>
               <ul className="sf-files">

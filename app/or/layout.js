@@ -1,6 +1,14 @@
 export const metadata = {
-  title:"SAFUU — Malaanmmaltummaa Gabaasi | Oromiffa",
-  description:"Malaanmmaltummaa gabaasi. Eenyummaan kee gonkumaa hin qabamtu — SHA-256 qofa. FEACC, Poolisii Federaalaa, ykn dhaabbata biraa bira ni ergama.",
-  openGraph:{title:"SAFUU — Malaanmmaltummaa Gabaasi",description:"Eenyummaa hin sassaabu. Anonymous anti-corruption reporting for Ethiopia.",url:"https://safuu.net/or"},
+  title: 'SAFUU — Malaammaltummaa Gabaasi | Afaan Oromoo',
+  description:
+    'Private corruption reporting with Afaan Oromoo guidance. Your own name and phone number are not required. A receipt confirms storage; review is separate.',
+  openGraph: {
+    title: 'SAFUU — Malaammaltummaa Gabaasi | Afaan Oromoo',
+    description:
+      'Private corruption reporting with Afaan Oromoo guidance. Your own name and phone number are not required. A receipt confirms storage; review is separate.',
+    url: 'https://safuu.net/or',
+  },
 };
-export default function Layout({children}){return children;}
+export default function Layout({ children }) {
+  return children;
+}

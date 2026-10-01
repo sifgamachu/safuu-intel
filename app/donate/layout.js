@@ -1,5 +1,14 @@
 export const metadata = {
-  title:"Support SAFUU Intel",
-  description:"Keep the SAFUU Intel platform running. AI processing costs, infrastructure, and SMS routing for anonymous corruption reporting in Ethiopia.",
+  title: 'Support SAFUU Intel',
+  description:
+    'Support Safuu through code, language review, and civic collaboration. Financial donations and payment checkout are not open.',
+  openGraph: {
+    title: 'Support SAFUU Intel',
+    description:
+      'Support Safuu through code, language review, and civic collaboration. Financial donations and payment checkout are not open.',
+    url: 'https://safuu.net/donate',
+  },
 };
-export default function Layout({children}){return children;}
+export default function Layout({ children }) {
+  return children;
+}

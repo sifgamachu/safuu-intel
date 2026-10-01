@@ -22,7 +22,61 @@ export async function localSupabase(port = 54391) {
         res.end(JSON.stringify(value));
         return;
       }
-      // Used by evidence-free report submissions: no direct tables are needed.
+      const url = new URL(req.url, 'http://localhost');
+      if (req.method === 'GET' && url.pathname === '/storage/v1/bucket/evidence') {
+        const { rows } = await db.query("SELECT * FROM storage.buckets WHERE id='evidence'");
+        res.end(JSON.stringify(rows[0]));
+        return;
+      }
+      // Narrow table support for real worker execution and readiness checks.
+      // Auth and Storage transport are not simulated by this database harness.
+      const columns = {
+        staff_members: ['user_id', 'role', 'active', 'created_at'],
+        telegram_sessions: [
+          'tipper_hash',
+          'current_step',
+          'language',
+          'version',
+          'sealed_draft',
+          'draft',
+        ],
+        worker_heartbeats: ['id', 'last_seen'],
+      };
+      const table = url.pathname.match(/^\/rest\/v1\/([a-z_]+)$/)?.[1];
+      if (columns[table] && ['GET', 'HEAD'].includes(req.method)) {
+        const selected = (url.searchParams.get('select') || '*').split(',');
+        if (selected.some((column) => column !== '*' && !columns[table].includes(column)))
+          throw new Error('Invalid column');
+        const args = [],
+          filters = [];
+        for (const [column, value] of url.searchParams) {
+          if (['select', 'limit', 'order'].includes(column)) continue;
+          if (!columns[table].includes(column) || !value.startsWith('eq.'))
+            throw new Error('Unsupported filter');
+          args.push(value.slice(3));
+          filters.push(`${column} = $${args.length}`);
+        }
+        const where = filters.length ? ` WHERE ${filters.join(' AND ')}` : '';
+        const { rows } = await db.query(
+          `SELECT ${selected.join(',')} FROM public.${table}${where}`,
+          args,
+        );
+        res.setHeader('Content-Range', `0-${Math.max(0, rows.length - 1)}/${rows.length}`);
+        res.end(req.method === 'HEAD' ? undefined : JSON.stringify(rows));
+        return;
+      }
+      if (table === 'worker_heartbeats' && req.method === 'POST') {
+        let body = '';
+        for await (const chunk of req) body += chunk;
+        const value = JSON.parse(body);
+        await db.query(
+          'INSERT INTO public.worker_heartbeats(id,last_seen) VALUES($1,$2) ON CONFLICT(id) DO UPDATE SET last_seen=excluded.last_seen',
+          [value.id, value.last_seen],
+        );
+        res.statusCode = 201;
+        res.end();
+        return;
+      }
       res.statusCode = 404;
       res.end(JSON.stringify({ message: 'Unsupported harness operation' }));
     } catch (error) {

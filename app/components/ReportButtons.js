@@ -181,6 +181,9 @@ export function ReportSection({ compact = false }) {
         fullWidth
         style={{ whiteSpace: 'normal', textAlign: 'center' }}
       />
+      <a className="sf-link" href="/status" style={{ fontSize: 12 }}>
+        Check Telegram and review setup →
+      </a>
       <div className="classic-report-links" aria-label="Reporting languages">
         {[
           ['en', 'English'],

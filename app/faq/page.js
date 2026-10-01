@@ -16,7 +16,7 @@ export default function FAQ() {
     ],
     [
       'When will I get a receipt?',
-      'Only after the database confirms that the report, evidence references, and receipt were saved together. If the connection fails, keep the page open and retry with the same tracking code.',
+      'Only after the database confirms that the report, evidence references, and receipt were saved together. If the connection fails, keep the page open and retry. The form reuses the same request identifier to avoid a duplicate report.',
     ],
     [
       'Does my report appear in public?',

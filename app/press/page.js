@@ -13,6 +13,11 @@ export default function Press() {
             Written web and Telegram intake, optional private attachments, receipts, an authorized
             review desk, and aggregate reporting data. Guided intake supports five languages.
           </p>
+          <p>
+            Review requires appointed staff. Check the service status page for review setup and
+            Telegram configuration; worker activity alone does not prove message delivery. Financial
+            donations and a formal partner data access program are not open.
+          </p>
           <h2>Publication standard</h2>
           <p>
             Names are published only after a case meets its configured review threshold and receives

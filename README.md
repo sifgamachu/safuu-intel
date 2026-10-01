@@ -44,6 +44,10 @@ For an existing Supabase project initialized with `supabase/001_schema.sql`, app
 
 Existing hosting, checked 30 September 2026: application on Vercel; domain registration and DNS with Cloudflare. Deployment URLs and configured project quotas must be checked in the hosting account; this repository does not provision paid plans.
 
+## Delivery status
+
+See [the public claims and delivery audit](docs/DELIVERY-AUDIT.md). Live `/status` separates database/storage checks, staff setup, bot/webhook configuration, and the worker heartbeat. The reporting form discloses pending review setup. A configured directory is not a review deadline; appoint and enroll real staff before relying on human review.
+
 ## Verification
 
 ```sh

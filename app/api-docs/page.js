@@ -11,8 +11,11 @@ export default function API() {
           <h2>Public read endpoints</h2>
           <p>
             GET /api/public/summary returns aggregate totals, monthly counts, and up to 50 approved
-            cases. GET /api/public/cases/:id returns one approved case. Responses are cached for 60
-            seconds; pending cases and private evidence are excluded.
+            cases. GET /api/public/cases/:id returns one approved case. The server cache refreshes
+            after 60 seconds; the CDN can serve a previous public response while refreshing for up
+            to five minutes. Pending cases and private evidence are excluded. Visible dashboard
+            pages request an update once a minute and show an unavailable state if that request
+            fails.
           </p>
           <h2>Web intake</h2>
           <p>
@@ -30,10 +33,12 @@ export default function API() {
           </p>
           <h2>Operations</h2>
           <p>
-            The Telegram webhook durably queues updates before acknowledging them. Persistent
-            workers process leased jobs with bounded concurrency, per-chat ordering, and provider
-            rate limits. Staff endpoints require a verified Supabase Auth session, a server-managed
-            staff role, and an authenticator by default.
+            The Telegram webhook durably queues updates before acknowledging them. Persistent worker
+            code processes leased jobs with bounded concurrency, per-chat ordering, and provider
+            rate limits. Production uses the webhook drain and a one-minute scheduled retry
+            backstop; persistent workers for national throughput are not provisioned. Staff
+            endpoints require a verified Supabase Auth session, a server-managed staff role, and an
+            authenticator by default.
           </p>
         </article>
       </div>
