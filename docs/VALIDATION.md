@@ -15,3 +15,14 @@
 - Production performance advisor: unused-index informational notices are expected for an empty reporting database. Auth currently has an absolute ten-connection allocation; review it during compute sizing. [Provider guidance](https://supabase.com/docs/guides/deployment/going-into-prod).
 
 Production national capacity, evidence-file throughput, actual Telegram delivery, live staff MFA sessions, recovery drills, and sustained multi-connection contention remain deployment acceptance work. Existing Auth users and reports were zero when the migration was applied. Staff accounts, persistent workers for national throughput, and national traffic quotas have not been provisioned by this change.
+
+## Production release · 1 October 2026 UTC
+
+- [PR #1](https://github.com/sifgamachu/safuu-intel/pull/1) merged to `main`; production GitHub CI and Vercel deployment passed. Both `www.safuu.net` and `safuu-intel.vercel.app` serve the redesign and current API routes.
+- Live form initialization, secure/HttpOnly/SameSite cookie attributes, malformed input, cross-origin writes, oversized requests, protected staff/worker routes, and unknown receipts/cases were checked. Expected 200/422/403/413/401/404 responses all passed. These checks did not submit synthetic reports to production.
+- A signed manual queue drain succeeded. The one-minute Supabase Cron job was activated and recurring runs returned HTTP 200 with fresh worker heartbeats. Hourly queue maintenance is enabled. This is a retry backstop; persistent workers for national throughput remain unprovisioned.
+- The workspace runner repeatedly completed 256 public requests, then cancelled the remaining transports without receiving server error responses. Those attempts are retained as invalid capacity evidence rather than presented as server throughput.
+- A separate native-HTTP Supabase Edge probe in `eu-west-2` completed **2,000 simultaneous production public-summary reads**, all HTTP 200/cache HIT, with zero failures. The burst took 476 ms: 4,197 requests/s, p95 234 ms, p99 246 ms. This is a warm-cache, single-source, sub-second burst, not a sustained or nationwide capacity measurement.
+- The temporary probe was disabled after measurement and its gateway JWT verification restored. Its checked-in source also defaults to disabled. Credentials stayed in Vault/server environment and were not placed in Git or logs.
+
+[Detailed production record](production-validation-2026-10-01.json). Production report-write/file/Telegram throughput, provider quotas, staff enrollment, Turnstile, persistent workers, and recovery acceptance remain outstanding. The successful public-read result does not establish report-ingestion capacity.

@@ -2,6 +2,8 @@
 
 Safuu is intended to serve a population of 130 million. Population is not a concurrency or requests-per-second target. The code now handles a measured local burst of 2,000 simultaneous HTTP clients with transaction integrity. **Production capacity is not yet established.**
 
+Production follow-up, 1 October 2026 UTC: 2,000 simultaneous public-summary reads from a native Supabase Edge probe in `eu-west-2` all succeeded with cache HITs, p95 234 ms, and 4,197 requests/s over a 476 ms burst. [Full production record](production-validation-2026-10-01.json). This verifies one warm-cache public-read burst. Production report intake, sustained/regional traffic, file uploads, and Telegram throughput remain unestablished.
+
 ## Measured local result
 
 Next 16.3.8 production build, Node 24.19.0, one local process, loopback network, temporary PostgreSQL WASM/PGlite database. No evidence files, Telegram sends, real regional network latency, real multi-connection Postgres, autoscaling, or managed-provider quotas were exercised.

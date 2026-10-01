@@ -1,0 +1,230 @@
+{
+  "release": {
+    "production_url": "https://www.safuu.net",
+    "merged_pr": "https://github.com/sifgamachu/safuu-intel/pull/1",
+    "merge_commit": "3a9834bc83adc8368f142e0ab33fe68d42438428",
+    "ci": "https://github.com/sifgamachu/safuu-intel/actions/runs/36804881777",
+    "ci_result": "success"
+  },
+  "production_public_reads": {
+    "scope": "One native-HTTP read-only burst from Supabase Edge; no report submissions or files",
+    "source_region": "eu-west-2",
+    "simultaneous_requests": 2000,
+    "failures": 0,
+    "http_statuses": {
+      "200": 2000
+    },
+    "edge_cache": {
+      "HIT": 2000
+    },
+    "client_errors": {},
+    "elapsed_ms": 476,
+    "requests_per_second": 4197,
+    "latency_ms": {
+      "p50": 223,
+      "p95": 234,
+      "p99": 246
+    },
+    "checked_at": "2026-10-01T02:39:30.073Z"
+  },
+  "earlier_runner_attempt": {
+    "checked_at": "2026-10-01T02:25:40.407Z",
+    "scope": "Single-source read-only HTTP burst against www.safuu.net. No reports, evidence uploads, or Telegram messages were submitted.",
+    "results": [
+      {
+        "channel": "Production public summary reads only",
+        "concurrent_clients": 100,
+        "requests": 100,
+        "failures": 0,
+        "http_statuses": {
+          "200": 100
+        },
+        "edge_cache": {
+          "HIT": 100
+        },
+        "client_errors": {},
+        "elapsed_ms": 12576,
+        "requests_per_second": 8,
+        "latency_ms": {
+          "p50": 8642,
+          "p95": 12356,
+          "p99": 12504
+        }
+      },
+      {
+        "channel": "Production public summary reads only",
+        "concurrent_clients": 2000,
+        "requests": 2000,
+        "failures": 1744,
+        "http_statuses": {
+          "200": 256
+        },
+        "edge_cache": {
+          "HIT": 256
+        },
+        "client_errors": {
+          "TypeError": 1744
+        },
+        "elapsed_ms": 25646,
+        "requests_per_second": 78,
+        "latency_ms": {
+          "p50": 1898,
+          "p95": 18072,
+          "p99": 24434
+        }
+      }
+    ]
+  },
+  "runner_diagnostic": {
+    "attempts": 350,
+    "successful_http_responses": 256,
+    "remaining_errors": "fetch failed; cause: Request was cancelled",
+    "interpretation": "The repeatable 256-response ceiling appears to be a runner transport constraint. These attempts do not establish server capacity."
+  },
+  "live_safeguard_checks": [
+    {
+      "path": "/api/reports",
+      "method": "GET",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "ready": true,
+        "turnstile_site_key": null
+      },
+      "cookie": {
+        "http_only": true,
+        "secure": true,
+        "same_site_strict": true
+      }
+    },
+    {
+      "path": "/api/reports",
+      "method": "POST",
+      "status": 422,
+      "expected": 422,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "error": "Invalid tracking code."
+      }
+    },
+    {
+      "path": "/api/reports",
+      "method": "POST",
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "error": "Open this form on Safuu to submit."
+      }
+    },
+    {
+      "path": "/api/reports",
+      "method": "POST",
+      "status": 413,
+      "expected": 413,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "error": "Request is too large."
+      }
+    },
+    {
+      "path": "/api/admin/reports",
+      "method": "GET",
+      "status": 401,
+      "expected": 401,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "error": "Sign in to the review desk."
+      }
+    },
+    {
+      "path": "/api/internal/worker",
+      "method": "POST",
+      "status": 401,
+      "expected": 401,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "error": "Unauthorized"
+      }
+    },
+    {
+      "path": "/api/internal/worker",
+      "method": "POST",
+      "status": 401,
+      "expected": 401,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "error": "Unauthorized"
+      }
+    },
+    {
+      "path": "/api/reports/status",
+      "method": "POST",
+      "status": 404,
+      "expected": 404,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "error": "No receipt matches that tracking code."
+      }
+    },
+    {
+      "path": "/api/public/cases/00000000-0000-4000-8000-000000000000",
+      "method": "GET",
+      "status": 404,
+      "expected": 404,
+      "passed": true,
+      "no_store": false,
+      "response": {
+        "error": "Case not found."
+      }
+    },
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "no_store": true,
+      "response": {
+        "database": "available",
+        "checked_at": "2026-10-01T02:21:38.320261+00:00",
+        "telegram": "worker_unconfirmed"
+      }
+    }
+  ],
+  "database": {
+    "parallel_rollback_checks": 8,
+    "distinct_postgres_connections": 8,
+    "scenario": "Same-case save, identical retry, exactly one ledger entry, then full rollback",
+    "persistent_test_reports": 0
+  },
+  "background_processing": {
+    "signed_manual_probe": {
+      "status": 200,
+      "processed": 0
+    },
+    "recurring_drains": "Verified scheduled runs and HTTP 200 responses with fresh worker heartbeats",
+    "schedule": "Every minute",
+    "hourly_queue_maintenance": "Enabled at minute 15",
+    "temporary_load_probe": "Disabled after the successful measurement; JWT verification restored"
+  },
+  "remaining": {
+    "production_report_write_load_tested": false,
+    "evidence_upload_load_tested": false,
+    "telegram_delivery_load_tested": false,
+    "nationwide_capacity_certified": false,
+    "staff_accounts_provisioned": false,
+    "turnstile_configured": false,
+    "persistent_workers_for_national_throughput_provisioned": false
+  },
+  "limitations": "One warm-cache public-read burst from eu-west-2. It does not measure sustained traffic, cold starts, mobile networks, private report ingestion, evidence files, Telegram delivery, provider quotas, or nationwide readiness."
+}
